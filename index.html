@@ -64,7 +64,23 @@
   .game .dm-bar { height:10px; border-radius:6px; background:var(--line); overflow:hidden; }
   .game .dm-bar i { display:block; height:100%; width:100%; background:linear-gradient(90deg,#5aa9e6,#8bd0f5); }
   .game .dm-msg { min-height:1.6em; text-align:center; font-size:.9rem; margin:10px 0; }
-  .game .crowd { min-height:150px; display:flex; flex-wrap:wrap; gap:1px; justify-content:center; align-content:flex-start; margin:6px 0 10px; }
+  .game .crowd { height:112px; min-height:112px; overflow:hidden; display:flex; flex-wrap:wrap; gap:1px; justify-content:center; align-content:flex-start; margin:6px 0 8px; }
+  .loaves-stage{display:flex;flex-direction:column}
+  .loaves-hype{height:26px;min-height:26px;text-align:center;font-size:.86rem;font-weight:700;color:var(--accent);margin:0 0 4px}
+  .game .bread{flex:none;transition:transform .08s,filter .15s}
+  .game .bread.boost{filter:saturate(1.25);box-shadow:0 0 0 5px rgba(255,190,64,.25),0 6px 0 #b86f1f,0 12px 20px rgba(0,0,0,.18)}
+  .race-progress,.race-power{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:.78rem;font-weight:700;color:var(--accent)}
+  .race-progress i,.race-power i{display:block;flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .race-progress b,.race-power b{display:block;width:0;height:100%;background:linear-gradient(90deg,#e9ba54,#f08b46);border-radius:99px;transition:width .12s linear}
+  .race-power b{background:linear-gradient(90deg,#65c6e8,#8aebc0)}
+  .race-controls{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:8px;margin-top:12px}
+  .race-controls button{min-height:54px;border:1px solid var(--line);border-radius:16px;background:var(--hl);color:var(--fg);font-size:1rem;font-weight:800;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  .race-controls button:active{transform:scale(.97);background:var(--accent);color:var(--bg)}
+  .shared-mission{margin:12px 0 0;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left;font-size:.86rem;line-height:1.65}
+  .shared-mission strong{color:var(--accent)}
+  .shared-mission .sm-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .shared-mission .sm-tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--hl);font-weight:700}
+
   .game .pop { animation:pop .25s ease-out; }
   @keyframes pop { from { transform:scale(.3); opacity:0; } to { transform:scale(1); opacity:1; } }
   .game .bread { display:block; margin:6px auto 0; width:170px; height:170px; border-radius:50%; border:0; cursor:pointer;
@@ -966,17 +982,49 @@ var VIDEOS = {
       document.getElementById('game').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 400);
   }
+  function recordSharedChallenge(gameId, metric) {
+    var names = { racing: ['요셉','다윗','에스더','여호수아'], manna: ['미리암','갈렙','룻','다니엘'], loaves: ['안드레','빌립','마리아','바나바'] };
+    var targets = { racing: 260, manna: 45, loaves: 2500 };
+    var labels = { racing: '260점', manna: '45점', loaves: '2,500명' };
+    var rivals = names[gameId] || ['요셉','에스더','다윗','룻'], target = targets[gameId] || 10, targetLabel = labels[gameId] || '한 판 완료';
+    var today = dayStr(), yesterday = dayStr(new Date(Date.now()-86400000)), meta = {}, daily = {};
+    try { meta = JSON.parse(lsGet('neoGameMeta','{}')) || {}; } catch(e) { meta = {}; }
+    try { daily = JSON.parse(lsGet('neoGameDaily','{}')) || {}; } catch(e) { daily = {}; }
+    var plays = daily.day === today ? (daily.plays || 0) + 1 : 1;
+    var done = daily.day === today && daily.done || {};
+    var bests = meta.bests || {}, oldBest = Number(bests[gameId] || 0), newBest = metric > oldBest;
+    if (newBest) bests[gameId] = metric;
+    var complete = metric >= target, reward = complete && !(done[gameId]);
+    if (complete) done[gameId] = true;
+    var streak = meta.lastDay === today ? (meta.streak || 1) : meta.lastDay === yesterday ? (meta.streak || 0) + 1 : 1;
+    meta.lastDay = today; meta.streak = streak; meta.bests = bests;
+    daily = { day: today, plays: plays, done: done };
+    lsSet('neoGameMeta', JSON.stringify(meta)); lsSet('neoGameDaily', JSON.stringify(daily));
+    var rival = rivals[(new Date().getDate() + gameId.length) % rivals.length];
+    var bestLabel = (bests[gameId] || 0).toLocaleString() + (gameId === 'loaves' ? '명' : '점');
+    var badge = complete ? (gameId === 'racing' ? '광야 질주자' : gameId === 'manna' ? '생존 전문가' : '나눔의 기적') : plays >= 3 ? '끈기의 도전자' : '도전의 첫걸음';
+    var message = complete ? '목표를 넘었어요! 오늘의 도전 보너스 ' + (reward ? '획득 예정 🎁' : '이미 받았어요') + '.' : '이번 기록은 ' + metric.toLocaleString() + (gameId === 'loaves' ? '명' : '점') + '이에요. 목표까지 ' + Math.max(0,target-metric).toLocaleString() + (gameId === 'loaves' ? '명' : '점') + ' 더 도전해 봐요.';
+    return { plays: plays, streak: streak, complete: complete, reward: reward, newBest: newBest, bestLabel: bestLabel, rival: rival, targetLabel: targetLabel, badge: badge, message: message };
+  }
+
   function runGame() {
     if (gameCleanup) { try { gameCleanup(); } catch (e) {} gameCleanup = null; }
     var area = document.getElementById('gameArea');
     area.innerHTML = '';
     document.getElementById('goBox').hidden = true;
-    gameCleanup = curGame.init(area, function (title, desc, gain) {
-      var raw = Math.max(0, gain | 0), gg = grantGame(raw);
+    gameCleanup = curGame.init(area, function (title, desc, gain, metric) {
+      var raw = Math.max(0, gain | 0), gameId = gameKey(), challenge = recordSharedChallenge(gameId, Math.max(0, Number(metric == null ? gain : metric) || 0));
+      var gg = grantGame(raw + (challenge.reward ? 5 : 0));
       document.getElementById('goTitle').textContent = title;
-      document.getElementById('goDesc').textContent = desc + (gg.n ? ' 게임 코인 +' + gg.n : '') + (gg.msg ? ' ' + gg.msg : '');
+      document.getElementById('goDesc').textContent = desc + (gg.n ? ' 게임 코인 +' + gg.n : '') + (gg.msg ? ' ' + gg.msg : '') + (challenge.reward && gg.n ? ' 오늘의 도전 보너스가 포함됐어요!' : '');
+      var box = document.getElementById('goBox'), card = document.getElementById('sharedMissionCard');
+      if (!card) { card = document.createElement('div'); card.id = 'sharedMissionCard'; card.className = 'shared-mission'; box.insertBefore(card, document.getElementById('goAgain')); }
+      card.innerHTML = '<div class="sm-row"><strong>🏁 오늘의 도전</strong><span class="sm-tag">' + (challenge.complete ? '목표 달성!' : '다음 판에 도전') + '</span></div>' +
+        '<div>' + challenge.message + '</div><div>🤝 가상 라이벌 <strong>' + challenge.rival + '</strong> · 목표 ' + challenge.targetLabel + '</div>' +
+        '<div>🔥 연속 도전 ' + challenge.streak + '일 · 오늘 플레이 ' + challenge.plays + '회</div>' +
+        '<div>🏆 ' + (challenge.newBest ? '새 개인 최고 기록!' : '최고 기록 ' + challenge.bestLabel) + ' · ' + challenge.badge + '</div>';
       document.getElementById('goAgain').style.display = curGame.once ? 'none' : '';
-      document.getElementById('goBox').hidden = false;
+      box.hidden = false;
     }) || null;
   }
 
@@ -1089,41 +1137,46 @@ var VIDEOS = {
 
   // ================= 3. 오병이어 먹이기 =================
   GAMES.loaves = {
-    name: '오병이어 먹이기',
-    desc: '20초 안에 빵을 최대한 빨리 눌러서 많은 사람을 먹이세요. 연타를 끊지 않고 이어 가면 한 번에 먹이는 인원이 늘어납니다. 목표는 오천 명입니다.',
+    name: '오병이어 기적 챌린지',
+    desc: '제한 시간 동안 빵을 나누어 주세요. 빠르게 이어 누르면 콤보가 쌓이고, 중요한 구간마다 군중의 환호와 보너스가 터집니다. 사람 수가 늘어나도 버튼 위치는 고정됩니다.',
     init: function (area, finish) {
-      var TOTAL = 20, GOAL = 5000;
-      area.innerHTML = '<div class="stage"><div class="dm-top"><span id="lvT">20.0초</span><span id="lvN">0명</span></div>' +
-        '<div class="dm-bar"><i id="lvBar"></i></div><div class="dm-msg" id="lvMsg">빵을 눌러 시작하세요.</div>' +
-        '<div class="crowd" id="crowd"></div><button class="bread" id="bread">탭!<small>오병이어</small></button></div>';
-      var T = document.getElementById('lvT'), N = document.getElementById('lvN'), B = document.getElementById('lvBar'),
-        M = document.getElementById('lvMsg'), crowd = document.getElementById('crowd'), btn = document.getElementById('bread');
-      var fed = 0, combo = 0, lastTap = 0, started = false, done = false, startAt = 0, timer = null, ms = {};
-      function end() {
-        done = true; clearInterval(timer); btn.disabled = true;
-        var t = fed >= GOAL ? '기적을 일으킨 식당 사장님' : fed >= 3500 ? '인심 좋은 동네 빵집 주인' : fed >= 2000 ? '배고픈 청중을 달래는 중' : '빵 굽다 지친 견습생';
-        finish('칭호: ' + t, '20초 동안 ' + fed.toLocaleString() + '명을 먹였습니다.' + (fed >= GOAL ? ' 열두 광주리가 남았습니다.' : ' 오천 명까지 ' + (GOAL - fed).toLocaleString() + '명 남았습니다.'), Math.round(fed / 100));
+      var TOTAL = 25, GOAL = 5000;
+      area.innerHTML = '<div class="stage loaves-stage"><div class="dm-top"><span id="lvT">25.0초</span><span id="lvN">0명</span><span id="lvCombo">콤보 0</span></div>' +
+        '<div class="dm-bar"><i id="lvBar"></i></div><div class="dm-msg" id="lvMsg" aria-live="polite">빵을 눌러 기적을 시작하세요!</div>' +
+        '<div class="crowd" id="crowd" aria-label="기쁨으로 반응하는 사람들"></div><div class="loaves-hype" id="lvHype">🍞 작은 나눔이 큰 기적을 만들어요</div>' +
+        '<button class="bread" id="bread" type="button">🍞 나누기<small>연속으로 눌러 콤보!</small></button></div>';
+      var T=document.getElementById('lvT'),N=document.getElementById('lvN'),B=document.getElementById('lvBar'),
+        M=document.getElementById('lvMsg'),crowd=document.getElementById('crowd'),btn=document.getElementById('bread'),
+        comboEl=document.getElementById('lvCombo'),hype=document.getElementById('lvHype');
+      var fed=0,combo=0,lastTap=0,started=false,done=false,startAt=0,timer=null,ms={},tapCount=0,burst=0;
+      function end(){
+        if(done)return;done=true;clearInterval(timer);btn.disabled=true;
+        var t=fed>=GOAL?'오천 명의 기적을 함께한 나눔 대장':fed>=3500?'열두 광주리를 채운 나눔 고수':fed>=2000?'기쁨을 나눈 따뜻한 이웃':'첫 빵을 나눈 견습생';
+        M.textContent=fed>=GOAL?'기적 달성! 열두 광주리가 남았어요!':'도전 완료! 다음 판엔 '+Math.max(0,GOAL-fed).toLocaleString()+'명 더 먹여 봐요.';
+        finish(t,'25초 동안 '+fed.toLocaleString()+'명을 먹였습니다. 최고 콤보 '+comboEl.dataset.best+'회.',Math.round(fed/100),fed);
       }
-      function tick() {
-        var left = Math.max(0, TOTAL - (performance.now() - startAt) / 1000);
-        T.textContent = left.toFixed(1) + '초'; B.style.width = (left / TOTAL * 100) + '%';
-        if (left <= 0) end();
+      function tick(){
+        var left=Math.max(0,TOTAL-(performance.now()-startAt)/1000);
+        T.textContent=left.toFixed(1)+'초';B.style.width=(left/TOTAL*100)+'%';
+        if(left<=0)end();
       }
-      btn.addEventListener('pointerdown', function (e) {
-        e.preventDefault(); if (done) return;
-        var now = performance.now();
-        if (!started) { started = true; startAt = now; timer = setInterval(tick, 50); }
-        combo = (now - lastTap < 350) ? combo + 1 : 1; lastTap = now;
-        var mult = Math.min(4, 1 + Math.floor(combo / 12));
-        fed += 8 * mult; N.textContent = fed.toLocaleString() + '명';
-        if (crowd.children.length < 90) { var f = faceEl(Math.floor(Math.random() * KINDS.length), 30, 'happy'); f.className = 'pop'; crowd.appendChild(f); }
-        if (mult > 1) M.textContent = '연타 x' + mult + '!';
-        else if (!M.dataset.m) M.textContent = '더 빨리!';
-        [[1000, '천 명 돌파! 연속으로 눌러 콤보를 이어 가세요.'], [3000, '삼천 명 돌파! 마지막까지 집중하세요.'], [GOAL, '오천 명 달성! 열두 광주리가 남았습니다.']].forEach(function (m) {
-          if (fed >= m[0] && !ms[m[0]]) { ms[m[0]] = 1; M.textContent = m[1]; }
-        });
+      btn.addEventListener('pointerdown',function(e){
+        e.preventDefault();if(done)return;
+        var now=performance.now();
+        if(!started){started=true;startAt=now;timer=setInterval(tick,40);M.textContent='좋아요! 리듬을 이어 가세요!';}
+        combo=(now-lastTap<380)?combo+1:1;lastTap=now;tapCount++;
+        var mult=Math.min(6,1+Math.floor(combo/10)),amount=8*mult;
+        fed+=amount;N.textContent=fed.toLocaleString()+'명';comboEl.textContent='콤보 '+combo;comboEl.dataset.best=Math.max(Number(comboEl.dataset.best||0),combo);
+        btn.classList.toggle('boost',mult>=3);btn.innerHTML=(mult>=3?'✨ ':'🍞 ')+(mult>=3?'기적 x'+mult:'나누기')+'<small>연속 '+combo+'회 · +'+amount+'명</small>';
+        if(crowd.children.length>=84)crowd.removeChild(crowd.firstElementChild);
+        var f=faceEl(Math.floor(Math.random()*KINDS.length),27,'happy');f.className='pop';crowd.appendChild(f);
+        if(combo%10===0){burst++;hype.textContent=['🙌 군중이 환호해요!','✨ 나눔의 기쁨이 퍼져요!','🧺 광주리가 가득 차고 있어요!'][burst%3];M.textContent='콤보 '+combo+'회! 나눔 속도 상승!';}
+        if(fed>=GOAL&&!ms[GOAL]){ms[GOAL]=1;M.textContent='🎉 오천 명 달성! 열두 광주리가 남았어요!';hype.textContent='🧺 기적 달성!';}
+        else if(fed>=3000&&!ms[3000]){ms[3000]=1;M.textContent='🔥 삼천 명 돌파! 계속 나눠 주세요!';}
+        else if(fed>=1000&&!ms[1000]){ms[1000]=1;M.textContent='🙌 천 명 돌파! 콤보를 이어 가세요!';}
+        if(navigator.vibrate&&tapCount%10===0)navigator.vibrate(12);
       });
-      return function () { clearInterval(timer); };
+      return function(){clearInterval(timer);};
     }
   };
 
@@ -1186,31 +1239,104 @@ var VIDEOS = {
 
 
   // Desert racing game: keyboard and touch controls, personal best stored locally.
-  GAMES.racing={name:'광야 레이싱',desc:'자동차를 좌우로 움직여 바위와 다른 차를 피하세요. 만나를 모으면 점수가 올라갑니다. 시간이 지날수록 속도가 빨라져요. PC는 ← → 또는 A/D, 휴대폰은 아래 좌우 버튼으로 조작합니다.',init:function(area,finish){
-    var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
-    area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">점수 0</span><span id="raceDist">거리 0m</span><span id="raceBest">최고 0</span></div><canvas class="race-canvas" id="raceCanvas" aria-label="레이싱 게임 화면"></canvas><div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀ 왼쪽</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">오른쪽 ▶</button></div><div class="race-actions"><button type="button" id="raceStart">시작 / 다시 시작</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">시작을 누르거나 좌우 버튼을 눌러 출발하세요.</p></div>';
-    var cv=document.getElementById('raceCanvas'),ctx=cv.getContext('2d');cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
-    var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),bestEl=document.getElementById('raceBest'),msg=document.getElementById('raceMsg'),leftBtn=document.getElementById('raceLeft'),rightBtn=document.getElementById('raceRight'),startBtn=document.getElementById('raceStart'),pauseBtn=document.getElementById('racePause');
-    var lanes=[112,180,248],lane=1,obstacles=[],treats=[],road=0,score=0,dist=0,speed=190,spawn=.5,treatSpawn=1,last=0,raf=0,running=false,over=false,paused=false,best=parseInt(lsGet('raceBest','0'),10)||0;bestEl.textContent='최고 '+best;
-    function move(d){if(!running||paused||over)return;lane=Math.max(0,Math.min(2,lane+d))}
-    function rr(x,y,w,h,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.fill()}
-    function car(x,y,c,player){rr(x-16,y-25,32,48,8,c);rr(x-11,y-18,22,14,5,player?'#d9f2ff':'#e9ecef');ctx.fillStyle='#20252b';ctx.fillRect(x-20,y-17,5,13);ctx.fillRect(x+15,y-17,5,13);ctx.fillRect(x-20,y+10,5,13);ctx.fillRect(x+15,y+10,5,13);if(player){ctx.fillStyle='#fff4ad';ctx.fillRect(x-11,y-23,6,4);ctx.fillRect(x+5,y-23,6,4)}}
-    function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#b9d5a4';ctx.fillRect(0,0,W,H);ctx.fillStyle='#6d7768';ctx.fillRect(48,0,264,H);ctx.fillStyle='#4d5550';ctx.fillRect(60,0,240,H);ctx.fillStyle='#f7f0c7';for(var y=-40+road%60;y<H;y+=60){ctx.fillRect(137,y,4,30);ctx.fillRect(219,y,4,30)}ctx.fillStyle='#fff';ctx.fillRect(55,0,4,H);ctx.fillRect(301,0,4,H);
-      treats.forEach(function(t){ctx.fillStyle='#fff1ad';ctx.beginPath();ctx.arc(lanes[t.lane],t.y,10,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d6a73a';ctx.stroke();ctx.fillStyle='#9a7220';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('✦',lanes[t.lane],t.y+4)});
-      obstacles.forEach(function(o){if(o.type==='rock'){ctx.fillStyle='#8c887e';ctx.beginPath();ctx.moveTo(lanes[o.lane]-17,o.y+14);ctx.lineTo(lanes[o.lane]-10,o.y-12);ctx.lineTo(lanes[o.lane]+8,o.y-16);ctx.lineTo(lanes[o.lane]+18,o.y+10);ctx.closePath();ctx.fill()}else car(lanes[o.lane],o.y,'#d77c55',false)});car(lanes[lane],H-82,'#347bb7',true);
-      if(!running||paused||over){ctx.fillStyle='rgba(20,30,25,.55)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 25px sans-serif';ctx.fillText(over?'레이스 종료':paused?'일시 정지':'광야 레이싱',W/2,H/2-8);ctx.font='15px sans-serif';ctx.fillText(over?'시작을 눌러 다시 도전하세요':'시작 버튼을 눌러 출발하세요',W/2,H/2+22)}}
-    function reset(){if(raf)cancelAnimationFrame(raf);score=0;dist=0;speed=190;spawn=.5;treatSpawn=1;obstacles=[];treats=[];lane=1;road=0;over=false;paused=false;running=true;last=0;msg.textContent='달려요! 만나를 모으고 장애물을 피하세요.';scoreEl.textContent='점수 0';distEl.textContent='거리 0m';raf=requestAnimationFrame(frame)}
-    function end(){if(over)return;over=true;running=false;paused=false;if(raf)cancelAnimationFrame(raf);best=Math.max(best,Math.floor(score));lsSet('raceBest',String(best));bestEl.textContent='최고 '+best;msg.textContent='이번 기록: '+Math.floor(score)+'점 · '+Math.floor(dist)+'m';draw();finish(score>=250?'광야 레이싱 고수':score>=100?'숙련된 드라이버':'레이싱 도전자','거리 '+Math.floor(dist)+'m, 만나 '+Math.floor(score)+'점을 모았습니다. 최고 기록은 '+best+'점입니다.',Math.floor(score/10))}
-    function frame(ts){if(!running)return;if(!last)last=ts;var dt=Math.min((ts-last)/1000,.045);last=ts;dist+=speed*dt/10;score+=dt*.7;speed=Math.min(390,190+dist*.55);road=(road+speed*dt)%60;spawn-=dt;treatSpawn-=dt;
-      if(spawn<=0){obstacles.push({lane:Math.floor(Math.random()*3),y:-30,type:Math.random()<.5?'rock':'car'});spawn=Math.max(.42,1.05-dist/5000)*(.75+Math.random()*.55)}if(treatSpawn<=0){treats.push({lane:Math.floor(Math.random()*3),y:-15});treatSpawn=.8+Math.random()*1.1}
-      obstacles=obstacles.filter(function(o){o.y+=speed*dt;if(o.y>H+30)return false;if(o.lane===lane&&o.y>H-111&&o.y<H-48){end();return false}return true});
-      treats=treats.filter(function(t){t.y+=speed*dt;if(t.lane===lane&&t.y>H-112&&t.y<H-48){score+=25;return false}return t.y<H+20});
-      scoreEl.textContent='점수 '+Math.floor(score);distEl.textContent='거리 '+Math.floor(dist)+'m';draw();if(running)raf=requestAnimationFrame(frame)}
-    function key(e){if(['ArrowLeft','ArrowRight','KeyA','KeyD'].indexOf(e.code)>=0){e.preventDefault();if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);else move(1)}}
-    leftBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(-1)});rightBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(1)});window.addEventListener('keydown',key);startBtn.addEventListener('click',reset);
-    pauseBtn.addEventListener('click',function(){if(over)return;if(running){running=false;paused=true;if(raf)cancelAnimationFrame(raf);msg.textContent='일시 정지 중입니다.';draw()}else if(paused){paused=false;running=true;last=0;raf=requestAnimationFrame(frame)}});
-    draw();return function(){running=false;if(raf)cancelAnimationFrame(raf);window.removeEventListener('keydown',key)}
-  }};
+  GAMES.racing = {
+    name: '광야 레이싱: 만나 러시',
+    desc: '내가 꾸민 캐릭터가 직접 버기를 타고 광야를 달립니다. 만나를 모아 부스터를 충전하고, 바위와 불길을 피하세요. 부스터는 PC에서 스페이스바, 모바일에서는 부스터 버튼으로 사용합니다. 충돌해도 하트가 남아 있으면 다시 도전할 수 있어요.',
+    init: function(area,finish){
+      var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
+      area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">✨ 0</span><span id="raceDist">거리 0m</span><span id="raceLives">❤️❤️❤️</span></div>'+
+        '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+
+        '<canvas class="race-canvas" id="raceCanvas" aria-label="캐릭터 광야 레이싱"></canvas>'+
+        '<div class="race-power"><span>⚡ 부스터</span><i><b id="raceBoost"></b></i><span id="raceCombo">콤보 0</span></div>'+
+        '<div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀</button><button type="button" id="raceBoostBtn">⚡ 부스터</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">▶</button></div>'+
+        '<div class="race-actions"><button type="button" id="raceStart">출발 / 다시 도전</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">출발해 만나를 모으세요. 부스터로 위험 구간을 돌파하세요!</p></div>';
+      var cv=document.getElementById('raceCanvas'),ctx=cv.getContext('2d');cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+      var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),livesEl=document.getElementById('raceLives'),
+        msg=document.getElementById('raceMsg'),leftBtn=document.getElementById('raceLeft'),rightBtn=document.getElementById('raceRight'),
+        boostBtn=document.getElementById('raceBoostBtn'),startBtn=document.getElementById('raceStart'),pauseBtn=document.getElementById('racePause'),
+        boostBar=document.getElementById('raceBoost'),comboEl=document.getElementById('raceCombo'),progressEl=document.getElementById('raceProgress'),
+        rivalEl=document.getElementById('raceRival');
+      var lanes=[112,180,248],lane=1,px=180,targetX=180,obstacles=[],items=[],road=0,score=0,dist=0,speed=210,
+        spawn=.7,itemSpawn=1, last=0,raf=0,running=false,over=false,paused=false,lives=3,boost=0,boosting=0,
+        invuln=0,combo=0,near=0,shake=0,best=parseInt(lsGet('raceBest','0'),10)||0,rivalName=pick(['요셉','미리암','다윗','에스더']),rivalDist=0;
+      rivalEl.textContent='가상 라이벌: '+rivalName;
+      function move(d){if(!running||paused||over)return;lane=Math.max(0,Math.min(2,lane+d));targetX=lanes[lane];}
+      function rr(x,y,w,h,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.fill();}
+      function car(x,y,c,player){
+        ctx.save();
+        if(player){
+          rr(x-24,y-31,48,62,13,'#2e5147');rr(x-20,y-28,40,54,11,'#f0b44d');
+          rr(x-15,y-19,30,30,9,'#4d8b76');rr(x-11,y-17,22,18,7,'#bfe8f1');
+          ctx.fillStyle='#26332e';ctx.fillRect(x-26,y-18,5,15);ctx.fillRect(x+21,y-18,5,15);ctx.fillRect(x-26,y+12,5,15);ctx.fillRect(x+21,y+12,5,15);
+          ctx.fillStyle='#fff2a6';ctx.fillRect(x-14,y+20,8,4);ctx.fillRect(x+6,y+20,8,4);
+          // The equipped player avatar rides inside the buggy.
+          drawHero(ctx,x-14,y-16,28,26,invuln>0?'ouch':'happy',Math.sin(performance.now()/180)*.08);
+          if(boosting>0){ctx.fillStyle='#ff9e45';ctx.beginPath();ctx.moveTo(x-10,y+29);ctx.lineTo(x-4,y+43+Math.random()*4);ctx.lineTo(x,y+29);ctx.fill();ctx.beginPath();ctx.moveTo(x+4,y+29);ctx.lineTo(x+10,y+42+Math.random()*4);ctx.lineTo(x+14,y+29);ctx.fill();}
+        }else{
+          rr(x-19,y-25,38,50,9,c);rr(x-12,y-17,24,13,5,'#cce9ee');ctx.fillStyle='#242a28';ctx.fillRect(x-22,y-15,5,12);ctx.fillRect(x+17,y-15,5,12);ctx.fillRect(x-22,y+11,5,12);ctx.fillRect(x+17,y+11,5,12);
+        }
+        ctx.restore();
+      }
+      function draw(){
+        ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+        var sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#b7e3f1');sky.addColorStop(.62,'#f3e5b2');sky.addColorStop(1,'#e2bd77');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#d4b36f';ctx.beginPath();ctx.moveTo(0,300);ctx.quadraticCurveTo(65,250,130,310);ctx.quadraticCurveTo(245,230,360,300);ctx.lineTo(360,520);ctx.lineTo(0,520);ctx.fill();
+        ctx.fillStyle='#777c70';ctx.fillRect(48,0,264,H);ctx.fillStyle='#4e5854';ctx.fillRect(60,0,240,H);
+        ctx.fillStyle='#e9e1b6';for(var y=-40+road%58;y<H;y+=58){ctx.fillRect(137,y,4,27);ctx.fillRect(219,y,4,27);}
+        ctx.fillStyle='#fff';ctx.fillRect(55,0,4,H);ctx.fillRect(301,0,4,H);
+        items.forEach(function(it){
+          if(it.ty==='manna'){ctx.fillStyle='#fff2a8';ctx.beginPath();ctx.arc(lanes[it.lane],it.y,11+Math.sin(it.ph)*2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d9a638';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#9c6d1c';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.fillText('✦',lanes[it.lane],it.y+5);}
+          else if(it.ty==='shield'){ctx.fillStyle='#a7e4ff';ctx.beginPath();ctx.arc(lanes[it.lane],it.y,13,0,6.3);ctx.fill();ctx.fillStyle='#176b99';ctx.font='15px sans-serif';ctx.textAlign='center';ctx.fillText('🛡',lanes[it.lane],it.y+5);}
+          else {ctx.fillStyle='#ffb24b';ctx.beginPath();ctx.arc(lanes[it.lane],it.y,13,0,6.3);ctx.fill();ctx.fillStyle='#7a3b16';ctx.font='15px sans-serif';ctx.textAlign='center';ctx.fillText('⚡',lanes[it.lane],it.y+5);}
+        });
+        obstacles.forEach(function(o){
+          if(o.type==='rock'){ctx.fillStyle='#8d887e';ctx.beginPath();ctx.moveTo(lanes[o.lane]-18,o.y+13);ctx.lineTo(lanes[o.lane]-12,o.y-13);ctx.lineTo(lanes[o.lane]+8,o.y-18);ctx.lineTo(lanes[o.lane]+19,o.y+9);ctx.closePath();ctx.fill();ctx.strokeStyle='#6d675d';ctx.stroke();}
+          else if(o.type==='fire'){ctx.fillStyle='#f26e3b';ctx.beginPath();ctx.ellipse(lanes[o.lane],o.y,18,17,0,0,6.3);ctx.fill();ctx.fillStyle='#ffd66d';ctx.beginPath();ctx.ellipse(lanes[o.lane],o.y+3,8,10,0,0,6.3);ctx.fill();}
+          else car(lanes[o.lane],o.y,'#d77c55',false);
+        });
+        // Rival ghost car and the player's customized character in the buggy.
+        if(!over){var ry=H-130-(rivalDist%100);ctx.globalAlpha=.45;car(lanes[1],ry,'#a6c7c0',false);ctx.globalAlpha=1;}
+        car(px,H-82,'#347bb7',true);
+        if(invuln>0&&Math.floor(performance.now()/90)%2===0){ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(60,H-140,240,90);}
+        if(!running||paused||over){ctx.fillStyle='rgba(20,30,25,.55)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 24px sans-serif';ctx.fillText(over?'레이스 종료':paused?'잠깐 쉬어 가요':'광야 만나 러시',W/2,H/2-24);ctx.font='15px sans-serif';ctx.fillText(over?'기록을 확인하고 다시 도전해요':paused?'숨을 고르고 다시 출발하세요':'캐릭터와 함께 광야로 출발!',W/2,H/2+5);if(!running&&!paused&&!over)ctx.fillText('탭 또는 시작 버튼',W/2,H/2+30);}
+        ctx.restore();
+      }
+      function reset(){if(raf)cancelAnimationFrame(raf);score=0;dist=0;speed=210;spawn=.7;itemSpawn=.8;obstacles=[];items=[];lane=1;px=targetX=lanes[1];road=0;over=false;paused=false;running=true;lives=3;boost=0;boosting=0;invuln=0;combo=0;near=0;shake=0;last=0;rivalDist=0;msg.textContent='출발! 만나를 모아 부스터를 채우세요.';scoreEl.textContent='✨ 0';distEl.textContent='거리 0m';livesEl.textContent='❤️❤️❤️';comboEl.textContent='콤보 0';boostBar.style.width='0%';progressEl.style.width='0%';raf=requestAnimationFrame(frame);}
+      function useBoost(){if(!running||paused||over||boost<35||boosting>0)return;boost-=35;boosting=1.8;msg.textContent='⚡ 부스터 발동! 장애물을 뚫고 질주해요!';}
+      function end(){if(over)return;over=true;running=false;paused=false;if(raf)cancelAnimationFrame(raf);best=Math.max(best,Math.floor(score));lsSet('raceBest',String(best));bestElSafe();msg.textContent='이번 기록 '+Math.floor(score)+'점 · '+Math.floor(dist)+'m · 최고 '+best+'점';draw();finish(score>=300?'광야를 지배한 레이서':score>=150?'만나 러시 고수':'광야의 도전자','거리 '+Math.floor(dist)+'m, 만나 '+Math.floor(score)+'점을 모았습니다. 최고 기록 '+best+'점, 회피 성공 '+near+'회.',Math.floor(score/8),Math.floor(score));}
+      function bestElSafe(){}
+      function frame(ts){
+        if(!running)return;if(!last)last=ts;var dt=Math.min((ts-last)/1000,.04);last=ts;
+        dist+=speed*dt/10;score+=dt*(boosting>0?2.0:.65);speed=Math.min(boosting>0?520:360,210+dist*.42);road=(road+speed*dt)%58;spawn-=dt;itemSpawn-=dt;invuln=Math.max(0,invuln-dt);boosting=Math.max(0,boosting-dt);shake=Math.max(0,shake-dt*22);rivalDist+=speed*.88*dt;
+        px+=(targetX-px)*Math.min(1,dt*13);
+        if(spawn<=0){var lanePick=Math.floor(Math.random()*3);obstacles.push({lane:lanePick,y:-30,type:Math.random()<.18?'fire':Math.random()<.55?'rock':'car'});spawn=Math.max(.38,.92-dist/4200)*(.78+Math.random()*.45);}
+        if(itemSpawn<=0){items.push({lane:Math.floor(Math.random()*3),y:-20,ty:Math.random()<.16?'shield':Math.random()<.34?'boost':'manna',ph:Math.random()*6});itemSpawn=.65+Math.random()*.75;}
+        obstacles=obstacles.filter(function(o){
+          o.y+=(speed+(boosting>0?180:0))*dt;
+          if(o.y>H+30)return false;
+          if(o.lane===lane&&o.y>H-116&&o.y<H-50&&invuln<=0&&boosting<=0){
+            if(boost>=100){boost=55;msg.textContent='✨ 만나 에너지가 충돌을 막았어요!';}
+            else {lives--;combo=0;invuln=1.15;shake=10;msg.textContent='앗! 부딪혔어요. 하트를 확인하고 다시 피하세요.';livesEl.textContent='❤️'.repeat(lives)+'♡'.repeat(3-lives);if(lives<=0){end();return false;}}
+            return false;
+          }
+          if(o.lane===lane&&o.y>H-145&&o.y<H-116){near++;score+=3;combo++;msg.textContent='아슬아슬! 근접 회피 +3';}
+          return true;
+        });
+        items=items.filter(function(it){
+          it.y+=(speed+(boosting>0?180:0))*dt;
+          if(it.lane===lane&&it.y>H-118&&it.y<H-48){combo++;score+=it.ty==='manna'?20:it.ty==='shield'?8:10;if(it.ty==='manna')boost=Math.min(100,boost+14);else if(it.ty==='shield'){invuln=Math.max(invuln,3);msg.textContent='🛡 보호막 획득!';}else{boost=Math.min(100,boost+30);msg.textContent='⚡ 부스터 충전!';}return false;}
+          return it.y<H+25;
+        });
+        scoreEl.textContent='✨ '+Math.floor(score);distEl.textContent='거리 '+Math.floor(dist)+'m';comboEl.textContent='콤보 '+combo;boostBar.style.width=boost+'%';progressEl.style.width=Math.min(100,dist/Math.max(100,rivalDist)*100)+'%';
+        if(boosting>0&&Math.random()<.2)score+=1;
+        draw();if(running)raf=requestAnimationFrame(frame);
+      }
+      function key(e){if(['ArrowLeft','ArrowRight','KeyA','KeyD','Space'].indexOf(e.code)>=0){e.preventDefault();if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);else if(e.code==='ArrowRight'||e.code==='KeyD')move(1);else useBoost();}}
+      leftBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(-1);});rightBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(1);});boostBtn.addEventListener('pointerdown',function(e){e.preventDefault();useBoost();});startBtn.addEventListener('click',reset);
+      pauseBtn.addEventListener('click',function(){if(over)return;if(running){running=false;paused=true;if(raf)cancelAnimationFrame(raf);msg.textContent='일시 정지 중입니다.';draw();}else if(paused){paused=false;running=true;last=0;raf=requestAnimationFrame(frame);}});
+      window.addEventListener('keydown',key);draw();return function(){running=false;if(raf)cancelAnimationFrame(raf);window.removeEventListener('keydown',key);};
+    }
+  };
 
   // ---- 공용 도우미 ----
   function loop(upd) {
@@ -1225,67 +1351,63 @@ var VIDEOS = {
 
   // ================= 만나 받기 =================
   GAMES.manna = {
-    name: '광야 생존: 만나와 메추라기',
-    desc: '45초 동안 만나와 메추라기를 모으세요. 황금 만나는 5점, 메추라기는 3점입니다. 연속 5회 수확할 때마다 보너스 5점! 썩은 만나를 받으면 목숨이 줄고 콤보가 끊어집니다. 시간이 지날수록 낙하 속도가 빨라져요.',
-    init: function (area, finish) {
-      var CW = 360, CH = 520, o = mkCanvas(area, CW, CH), cv = o.cv, ctx = o.ctx;
-      cv.style.touchAction = 'none';
-      var RANKS = [[0, '빈 바구니 광야인'], [15, '아침마다 줍는 성실한 백성'], [35, '하늘 양식 수집가'], [60, '광야 40년 베테랑'], [90, '만나 박물관 관장']];
-      var bx = CW / 2, items = [], t = 0, sp = 0.4, score = 0, lives = 3, over = false, started = false, flash = 0, bub = null, timeLeft = 45, combo = 0, bestCombo = 0;
-      function move(e) { bx = Math.max(36, Math.min(CW - 36, ptX(cv, e, CW))); started = true; }
-      cv.addEventListener('pointerdown', function (e) { e.preventDefault(); move(e); });
-      cv.addEventListener('pointermove', move);
-      cv.addEventListener('keydown', function (e) {
-        if (e.code === 'ArrowLeft') { bx = Math.max(36, bx - 30); started = true; }
-        if (e.code === 'ArrowRight') { bx = Math.min(CW - 36, bx + 30); started = true; }
-      });
-      function say2(s) { bub = { s: s, t: 0 }; }
-      function upd(dt) {
-        if (bub) { bub.t += dt; if (bub.t > 1) bub = null; }
-        flash = Math.max(0, flash - dt);
-        if (over || !started) return;
-        t += dt; timeLeft = Math.max(0, 45 - t); sp -= dt;
-        if (sp <= 0) {
-          sp = Math.max(0.2, 0.7 - t * 0.011);
-          var r = Math.random(), rot = Math.min(0.38, 0.12 + t * 0.005);
-          var ty = r < 0.055 ? 'gold' : r < 0.055 + rot ? 'rot' : r < 0.055 + rot + 0.15 ? 'quail' : 'manna', x = 24 + Math.random() * (CW - 48);
-          items.push({ ty: ty, x: x, x0: x, y: -20, ph: Math.random() * 6, v: (130 + Math.min(t * 5, 260)) * (ty === 'quail' ? 1.25 : 1) });
+    name: '광야 생존 챌린지',
+    desc: '내 캐릭터를 움직여 만나와 메추라기를 모으세요. 황금 만나와 보호막을 챙기고, 썩은 만나를 피하세요. 메추라기 떼가 몰려오는 러시 구간에는 콤보 보너스가 커집니다.',
+    init: function(area,finish){
+      var CW=360,CH=520,o=mkCanvas(area,CW,CH),cv=o.cv,ctx=o.ctx;cv.style.touchAction='none';
+      var RANKS=[[0,'광야 생존 새내기'],[20,'아침 만나 수집가'],[45,'메추라기 떼 사냥꾼'],[75,'광야 생존 베테랑'],[110,'만나의 전설']];
+      var bx=180,targetX=180,items=[],t=0,spawn=.35,score=0,lives=4,over=false,started=false,flash=0,bub=null,timeLeft=40,combo=0,bestCombo=0,shield=0,rush=0,rushNext=8,shake=0,stars=0;
+      function move(e){var r=cv.getBoundingClientRect();targetX=Math.max(30,Math.min(CW-30,(e.clientX-r.left)/r.width*CW));started=true;}
+      cv.addEventListener('pointerdown',function(e){e.preventDefault();move(e);});
+      cv.addEventListener('pointermove',function(e){if(e.buttons||e.pointerType==='touch'){e.preventDefault();move(e);}});
+      cv.addEventListener('keydown',function(e){if(e.code==='ArrowLeft'||e.code==='KeyA'){targetX=Math.max(30,targetX-38);started=true;}if(e.code==='ArrowRight'||e.code==='KeyD'){targetX=Math.min(CW-30,targetX+38);started=true;}});
+      function say2(s){bub={s:s,t:0};}
+      function upd(dt){
+        if(bub){bub.t+=dt;if(bub.t>1.15)bub=null;}flash=Math.max(0,flash-dt);shield=Math.max(0,shield-dt);shake=Math.max(0,shake-dt*22);
+        bx+=(targetX-bx)*Math.min(1,dt*14);
+        if(over||!started)return;
+        t+=dt;timeLeft=Math.max(0,40-t);rush=Math.max(0,rush-dt);rushNext-=dt;spawn-=dt;
+        if(rushNext<=0){rush=3.5;rushNext=13;say2('🐦 메추라기 떼 러시! 콤보 보너스 2배!');}
+        if(spawn<=0){
+          spawn=Math.max(rush>0?.18:.25,(rush>0?.3:.62)-t*.006);
+          var r=Math.random(),ty=r<.07?'gold':r<.07+.11?'shield':r<.18+(Math.min(.32,t*.005))?'rot':r<.42?'quail':'manna';
+          if(rush>0&&Math.random()<.52)ty='quail';
+          var x=24+Math.random()*(CW-48);
+          items.push({ty:ty,x:x,x0:x,y:-24,ph:Math.random()*6,v:(150+Math.min(t*5,230))*(ty==='quail'?1.18:1)});
         }
-        items = items.filter(function (i) {
-          i.y += i.v * dt;
-          if (i.ty === 'quail') i.x = Math.max(20, Math.min(CW - 20, i.x0 + Math.sin(i.y / 38 + i.ph) * 55));
-          if (i.y > CH - 84 && i.y < CH - 36 && Math.abs(i.x - bx) < 44) {
-            if (i.ty === 'rot') { lives--; combo = 0; flash = 0.4; say2('윽, 썩었어요! 콤보가 끊겼어요.'); }
-            else { combo++; bestCombo = Math.max(bestCombo, combo); score += i.ty === 'gold' ? 5 : i.ty === 'quail' ? 3 : 1; if (combo % 5 === 0) { score += 5; say2('콤보 '+combo+'회! 보너스 +5점'); } else if (i.ty === 'gold') say2('황금 만나! +5점'); }
+        items=items.filter(function(i){
+          i.y+=i.v*dt;if(i.ty==='quail')i.x=Math.max(20,Math.min(CW-20,i.x0+Math.sin(i.y/34+i.ph)*56));
+          if(i.y>CH-125&&i.y<CH-55&&Math.abs(i.x-bx)<46){
+            if(i.ty==='rot'){if(shield>0){shield=0;score+=2;say2('🛡 보호막이 썩은 만나를 막았어요!');}else{lives--;combo=0;flash=.45;shake=7;say2('으악! 썩은 만나!');}}
+            else if(i.ty==='shield'){shield=5;score+=2;combo++;say2('✨ 보호막 5초! 이제 안전하게 수확해요.');}
+            else {combo++;bestCombo=Math.max(bestCombo,combo);var base=i.ty==='gold'?8:i.ty==='quail'?4:1,mult=Math.min(4,1+Math.floor(combo/6))*(rush>0?2:1);score+=base*mult;if(i.ty==='gold'){stars++;say2('🌟 황금 만나! +'+(base*mult));}else if(combo%6===0)say2('🔥 '+combo+'콤보! 점수 x'+mult);else if(i.ty==='quail')say2('🐦 메추라기 +'+(base*mult));}
             return false;
-          }
-          return i.y < CH + 30;
+          }return i.y<CH+35;
         });
-        if (lives <= 0 || timeLeft <= 0) { over = true; finish('칭호: ' + rankOf(RANKS, score), '45초 동안 '+score+'점을 모았습니다. 최고 콤보 '+bestCombo+'회입니다. 점수가 높을수록 코인을 더 받습니다.', Math.round(score / 3)); }
+        if(lives<=0||timeLeft<=0){over=true;finish('칭호: '+rankOf(RANKS,score),'40초 동안 '+score+'점을 모았습니다. 최고 콤보 '+bestCombo+'회, 황금 만나 '+stars+'개를 모았습니다.',Math.round(score/2),score);}
       }
-      function draw() {
-        skyBg(ctx, CW, CH, '#bfe3f6', '#f7e7b8');
-        ctx.fillStyle = '#e8cf8f'; ctx.fillRect(0, CH - 36, CW, 36);
-        items.forEach(function (i) {
-          if (i.ty === 'quail') drawAnimal(ctx, i.x - 18, i.y - 13, 36, 26, 5, 'happy', 0);
-          else {
-            ctx.beginPath(); ctx.arc(i.x, i.y, i.ty === 'rot' ? 12 : i.ty === 'gold' ? 13 : 10, 0, 6.3);
-            ctx.fillStyle = i.ty === 'rot' ? '#7d7a45' : i.ty === 'gold' ? '#ffd84d' : '#fff6cc'; ctx.fill();
-            ctx.lineWidth = 2; ctx.strokeStyle = i.ty === 'rot' ? '#4b4a22' : i.ty === 'gold' ? '#d28b00' : '#e0b020'; ctx.stroke();
-            if (i.ty === 'rot') { ctx.beginPath(); ctx.moveTo(i.x - 6, i.y - 4); ctx.lineTo(i.x - 2, i.y); ctx.moveTo(i.x - 2, i.y - 4); ctx.lineTo(i.x - 6, i.y); ctx.moveTo(i.x + 2, i.y - 4); ctx.lineTo(i.x + 6, i.y); ctx.moveTo(i.x + 6, i.y - 4); ctx.lineTo(i.x + 2, i.y); ctx.stroke(); }
-          }
+      function draw(){
+        ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+        skyBg(ctx,CW,CH,rush>0?'#f9d8a0':'#bfe3f6',rush>0?'#e9b96b':'#f7e7b8');
+        ctx.fillStyle='#e8cf8f';ctx.fillRect(0,CH-36,CW,36);
+        // Event banner and parallax dunes
+        ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.ellipse(80,CH-25,95,34,0,0,6.3);ctx.ellipse(285,CH-20,110,42,0,0,6.3);ctx.fill();
+        items.forEach(function(i){
+          if(i.ty==='quail')drawAnimal(ctx,i.x-19,i.y-14,38,28,10,'happy',Math.sin(t*8)*.12);
+          else if(i.ty==='shield'){ctx.fillStyle='#a5e4ff';ctx.beginPath();ctx.arc(i.x,i.y,13,0,6.3);ctx.fill();ctx.fillStyle='#12658b';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.fillText('✚',i.x,i.y+5);}
+          else {ctx.beginPath();ctx.arc(i.x,i.y,i.ty==='rot'?12:i.ty==='gold'?14:10,0,6.3);ctx.fillStyle=i.ty==='rot'?'#7d7a45':i.ty==='gold'?'#ffd84d':'#fff6cc';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=i.ty==='rot'?'#4b4a22':i.ty==='gold'?'#d28b00':'#e0b020';ctx.stroke();if(i.ty==='rot'){ctx.strokeStyle='#4b4a22';ctx.beginPath();ctx.moveTo(i.x-5,i.y-5);ctx.lineTo(i.x+5,i.y+5);ctx.moveTo(i.x+5,i.y-5);ctx.lineTo(i.x-5,i.y+5);ctx.stroke();}else if(i.ty==='gold'){ctx.fillStyle='#9a6a00';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.fillText('✦',i.x,i.y+5);}}
         });
-        drawHero(ctx, bx - 26, CH - 92, 52, 38, flash > 0 ? 'ouch' : 'happy', 0);
-        ctx.fillStyle = flash > 0 ? '#b0453a' : '#a8742f'; rrect(ctx, bx - 40, CH - 66, 80, 32, 8); ctx.fill();
-        ctx.fillStyle = '#c79446'; ctx.fillRect(bx - 40, CH - 66, 80, 7);
-        hearts(ctx, lives, 22, 24);
-        ctxText(ctx, score + '점', CW - 44, 24, 22, '#6b4f2a');
-        ctxText(ctx, '남은 시간 '+Math.ceil(timeLeft)+'초', CW / 2, 24, 17, '#6b4f2a');
-        if (combo >= 2) ctxText(ctx, '콤보 '+combo, CW / 2, 48, 15, '#9a5a17');
-        if (!started) ctxText(ctx, '손가락을 끌어 바구니를 움직이세요', CW / 2, CH / 2, 17);
-        if (bub) drawBubble(ctx, bub.s, bx, CH - 140, 1 - bub.t, CW);
+        drawHero(ctx,bx-27,CH-104,54,42,flash>0?'ouch':'happy',Math.sin(t*7)*.04);
+        ctx.fillStyle=shield>0?'#7dc9ed':'#a8742f';rrect(ctx,bx-40,CH-69,80,32,8);ctx.fill();ctx.fillStyle='#c79446';ctx.fillRect(bx-40,CH-69,80,7);
+        hearts(ctx,lives,22,24);ctxText(ctx,score+'점',CW-44,24,22,'#6b4f2a');ctxText(ctx,'남은 시간 '+Math.ceil(timeLeft)+'초',CW/2,24,16,'#6b4f2a');
+        if(combo>=2)ctxText(ctx,'콤보 '+combo+' · x'+Math.min(4,1+Math.floor(combo/6))+(rush>0?' · 러시 x2':''),CW/2,49,14,'#9a5a17');
+        if(shield>0)ctxText(ctx,'보호막 '+Math.ceil(shield)+'초',CW/2,70,13,'#12658b');
+        if(rush>0){ctx.fillStyle='rgba(255,125,40,.18)';ctx.fillRect(0,0,CW,CH);ctxText(ctx,'메추라기 러시!',CW/2,CH/2-60,22,'#9a4217');}
+        if(!started)ctxText(ctx,'손가락으로 캐릭터를 움직이세요',CW/2,CH/2,17);
+        if(bub)drawBubble(ctx,bub.s,bx,CH-154,1-bub.t/1.15,CW);
+        ctx.restore();
       }
-      return loop(function (dt) { upd(dt); draw(); });
+      return loop(function(dt){upd(dt);draw();});
     }
   };
 

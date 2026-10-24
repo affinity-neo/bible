@@ -986,7 +986,7 @@ var VIDEOS = {
     var names = { racing: ['요셉','다윗','에스더','여호수아'], manna: ['미리암','갈렙','룻','다니엘'], loaves: ['안드레','빌립','마리아','바나바'] };
     var targets = { racing: 260, manna: 45, loaves: 2500 };
     var labels = { racing: '260점', manna: '45점', loaves: '2,500명' };
-    var rivals = names[gameId] || ['요셉','에스더','다윗','룻'], target = targets[gameId] || 10, targetLabel = labels[gameId] || '한 판 완료';
+    var rivals = names[gameId] || ['요셉','에스더','다윗','룻'], target = targets[gameId] == null ? 0 : targets[gameId], targetLabel = labels[gameId] || '한 판 완료';
     var today = dayStr(), yesterday = dayStr(new Date(Date.now()-86400000)), meta = {}, daily = {};
     try { meta = JSON.parse(lsGet('neoGameMeta','{}')) || {}; } catch(e) { meta = {}; }
     try { daily = JSON.parse(lsGet('neoGameDaily','{}')) || {}; } catch(e) { daily = {}; }

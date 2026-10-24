@@ -1114,8 +1114,8 @@ var VIDEOS = {
         var now = performance.now();
         if (!started) { started = true; startAt = now; timer = setInterval(tick, 50); }
         combo = (now - lastTap < 350) ? combo + 1 : 1; lastTap = now;
-        var mult = Math.min(3, 1 + Math.floor(combo / 12));
-        fed += 5 * mult; N.textContent = fed.toLocaleString() + '명';
+        var mult = Math.min(4, 1 + Math.floor(combo / 12));
+        fed += 8 * mult; N.textContent = fed.toLocaleString() + '명';
         if (crowd.children.length < 90) { var f = faceEl(Math.floor(Math.random() * KINDS.length), 30, 'happy'); f.className = 'pop'; crowd.appendChild(f); }
         if (mult > 1) M.textContent = '연타 x' + mult + '!';
         else if (!M.dataset.m) M.textContent = '더 빨리!';

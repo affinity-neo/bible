@@ -1822,7 +1822,7 @@ var VIDEOS = {
     ids.forEach(function(id){ if(P.own.indexOf(id)<0) P.own.push(id); });
     P.eq = Object.assign({ch:'c0',hat:'',face:'',neck:'',theme:'auto',font:'default'},P.eq||{});
     P.eq.ch = 'h5'; P.eq.face = 'glasses'; P.eq.neck = 'cross'; P.eq.hat = 'straw'; P.eq.theme = 'sakura';
-    P.stat = P.stat || {}; P.stat.streak = 2; P.stat.last = dayStr(); P.stat.recoveryXP = Math.max(Number(P.stat.recoveryXP||0),210);
+    P.stat = P.stat || {}; P.stat.streak = 2; P.stat.last = dayStr(); P.stat.recoveryXP = Math.max(Number(P.stat.recoveryXP||0), Math.max(0,200 - (P.own.length * 10 + P.ach.length * 25 + wordCount() * 5)));
     P.gr.push(marker); saveLocal();
     cloud({own:P.own,eq:P.eq,stat:P.stat,gr:union(marker)});
     return true;

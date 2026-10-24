@@ -513,7 +513,7 @@ var VIDEOS = {
   var times = null;        // text/NN.time.txt 에서 읽은 정확한 구절 시작 시간(초)
   var est = null, estDur = 0;   // 파일이 없을 때 글자 수로 계산한 대략의 시간
   var curIdx = -1;
-  var api = null, dragging = false;
+  var api = null, dragging = false, playPending = false;
   var rate = 1;
   try { rate = parseFloat(localStorage.getItem('rate')) || 1; } catch (e) {}
 
@@ -2400,9 +2400,17 @@ var VIDEOS = {
   setInterval(refresh, 200);
 
   playBtn.onclick = function () {
-    if (!api) return;
-    api.isPlaying() ? api.pause() : api.play();
-    setTimeout(refresh, 100);
+    if (!api) { say('음성 플레이어를 준비하고 있어요. 잠시 후 다시 눌러 주세요.'); return; }
+    if (playPending) return;
+    playPending = true;
+    try {
+      if (api.isPlaying()) api.pause(); else api.play();
+      setTimeout(refresh, 120);
+    } catch (e) {
+      playPending = false;
+      say('재생을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    }
+    setTimeout(function () { playPending = false; }, 900);
   };
   seek.addEventListener('input', function () { dragging = true; });
   seek.addEventListener('change', function () {
@@ -2462,6 +2470,7 @@ var VIDEOS = {
             if (!times && !recordMode) say('구절 시간표(text/' + nn + '.time.txt)가 없어서 하이라이트가 대략적으로 움직입니다.');
           },
           onStateChange: function (e) {
+            if (e.data === 1 || e.data === 2 || e.data === 0) playPending = false;
             if (e.data === 1) player.setPlaybackRate(rate);
             if (e.data === 0) { trackListening(); onEnded(); }   // 재생 끝
           },

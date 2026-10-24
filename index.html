@@ -342,8 +342,8 @@
   .race-wrap{max-width:420px;margin:0 auto}
   .race-hud{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-weight:700;color:var(--accent)}
   .race-canvas{display:block;width:100%;height:auto;aspect-ratio:360/520;border-radius:16px;border:1px solid var(--line);background:#d9e7c6;touch-action:none}
-  .race-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-  .race-controls button{min-height:58px;border:1px solid var(--line);border-radius:16px;background:var(--hl);color:var(--fg);font-size:1.1rem;font-weight:800;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  .race-controls{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:8px;margin-top:12px}
+  .race-controls button{min-height:54px;border:1px solid var(--line);border-radius:16px;background:var(--hl);color:var(--fg);font-size:1rem;font-weight:800;touch-action:manipulation;user-select:none;-webkit-user-select:none}
   .race-controls button:active{transform:scale(.97);background:var(--accent);color:var(--bg)}
   .race-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
   .race-actions button{min-height:44px;padding:9px 18px;border:0;border-radius:999px;background:var(--accent);color:var(--bg);font-weight:700}
@@ -1307,27 +1307,27 @@ var VIDEOS = {
       function bestElSafe(){}
       function frame(ts){
         if(!running)return;if(!last)last=ts;var dt=Math.min((ts-last)/1000,.04);last=ts;
-        dist+=speed*dt/10;score+=dt*(boosting>0?2.0:.65);speed=Math.min(boosting>0?520:360,210+dist*.42);road=(road+speed*dt)%58;spawn-=dt;itemSpawn-=dt;invuln=Math.max(0,invuln-dt);boosting=Math.max(0,boosting-dt);shake=Math.max(0,shake-dt*22);rivalDist+=speed*.88*dt;
+        dist+=speed*dt/10;score+=dt*(boosting>0?2.0:.65);speed=Math.min(boosting>0?520:360,210+dist*.42);road=(road+speed*dt)%58;spawn-=dt;itemSpawn-=dt;invuln=Math.max(0,invuln-dt);boosting=Math.max(0,boosting-dt);shake=Math.max(0,shake-dt*22);rivalDist+=speed*.088*dt;
         px+=(targetX-px)*Math.min(1,dt*13);
         if(spawn<=0){var lanePick=Math.floor(Math.random()*3);obstacles.push({lane:lanePick,y:-30,type:Math.random()<.18?'fire':Math.random()<.55?'rock':'car'});spawn=Math.max(.38,.92-dist/4200)*(.78+Math.random()*.45);}
         if(itemSpawn<=0){items.push({lane:Math.floor(Math.random()*3),y:-20,ty:Math.random()<.16?'shield':Math.random()<.34?'boost':'manna',ph:Math.random()*6});itemSpawn=.65+Math.random()*.75;}
         obstacles=obstacles.filter(function(o){
           o.y+=(speed+(boosting>0?180:0))*dt;
           if(o.y>H+30)return false;
-          if(o.lane===lane&&o.y>H-116&&o.y<H-50&&invuln<=0&&boosting<=0){
+          if(Math.abs(lanes[o.lane]-px)<29&&o.y>H-116&&o.y<H-50&&invuln<=0&&boosting<=0){
             if(boost>=100){boost=55;msg.textContent='✨ 만나 에너지가 충돌을 막았어요!';}
             else {lives--;combo=0;invuln=1.15;shake=10;msg.textContent='앗! 부딪혔어요. 하트를 확인하고 다시 피하세요.';livesEl.textContent='❤️'.repeat(lives)+'♡'.repeat(3-lives);if(lives<=0){end();return false;}}
             return false;
           }
-          if(o.lane===lane&&o.y>H-145&&o.y<H-116){near++;score+=3;combo++;msg.textContent='아슬아슬! 근접 회피 +3';}
+          if(Math.abs(lanes[o.lane]-px)<29&&o.y>H-145&&o.y<H-116){near++;score+=3;combo++;msg.textContent='아슬아슬! 근접 회피 +3';}
           return true;
         });
         items=items.filter(function(it){
           it.y+=(speed+(boosting>0?180:0))*dt;
-          if(it.lane===lane&&it.y>H-118&&it.y<H-48){combo++;score+=it.ty==='manna'?20:it.ty==='shield'?8:10;if(it.ty==='manna')boost=Math.min(100,boost+14);else if(it.ty==='shield'){invuln=Math.max(invuln,3);msg.textContent='🛡 보호막 획득!';}else{boost=Math.min(100,boost+30);msg.textContent='⚡ 부스터 충전!';}return false;}
+          if(Math.abs(lanes[it.lane]-px)<31&&it.y>H-118&&it.y<H-48){combo++;score+=it.ty==='manna'?20:it.ty==='shield'?8:10;if(it.ty==='manna')boost=Math.min(100,boost+14);else if(it.ty==='shield'){invuln=Math.max(invuln,3);msg.textContent='🛡 보호막 획득!';}else{boost=Math.min(100,boost+30);msg.textContent='⚡ 부스터 충전!';}return false;}
           return it.y<H+25;
         });
-        scoreEl.textContent='✨ '+Math.floor(score);distEl.textContent='거리 '+Math.floor(dist)+'m';comboEl.textContent='콤보 '+combo;boostBar.style.width=boost+'%';progressEl.style.width=Math.min(100,dist/Math.max(100,rivalDist)*100)+'%';
+        scoreEl.textContent='✨ '+Math.floor(score);distEl.textContent='거리 '+Math.floor(dist)+'m';comboEl.textContent='콤보 '+combo;boostBar.style.width=boost+'%';progressEl.style.width=Math.min(100,dist/1000*100)+'%';
         if(boosting>0&&Math.random()<.2)score+=1;
         draw();if(running)raf=requestAnimationFrame(frame);
       }
@@ -1370,7 +1370,7 @@ var VIDEOS = {
         if(rushNext<=0){rush=3.5;rushNext=13;say2('🐦 메추라기 떼 러시! 콤보 보너스 2배!');}
         if(spawn<=0){
           spawn=Math.max(rush>0?.18:.25,(rush>0?.3:.62)-t*.006);
-          var r=Math.random(),ty=r<.07?'gold':r<.07+.11?'shield':r<.18+(Math.min(.32,t*.005))?'rot':r<.42?'quail':'manna';
+          var r=Math.random(),ty=r<.07?'gold':r<.07+.11?'shield':r<.16+Math.min(.32,t*.005)?'rot':r<.36+Math.min(.32,t*.005)?'quail':'manna';
           if(rush>0&&Math.random()<.52)ty='quail';
           var x=24+Math.random()*(CW-48);
           items.push({ty:ty,x:x,x0:x,y:-24,ph:Math.random()*6,v:(150+Math.min(t*5,230))*(ty==='quail'?1.18:1)});

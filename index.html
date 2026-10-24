@@ -1225,13 +1225,13 @@ var VIDEOS = {
 
   // ================= 만나 받기 =================
   GAMES.manna = {
-    name: '만나 받기',
-    desc: '광야에 만나와 메추라기가 내립니다. 손가락을 좌우로 끌어 바구니로 받으세요. 하루 지난 칙칙한 만나는 피하세요! 목숨은 3개입니다.',
+    name: '광야 생존: 만나와 메추라기',
+    desc: '45초 동안 만나와 메추라기를 모으세요. 황금 만나는 5점, 메추라기는 3점입니다. 연속 5회 수확할 때마다 보너스 5점! 썩은 만나를 받으면 목숨이 줄고 콤보가 끊어집니다. 시간이 지날수록 낙하 속도가 빨라져요.',
     init: function (area, finish) {
       var CW = 360, CH = 520, o = mkCanvas(area, CW, CH), cv = o.cv, ctx = o.ctx;
       cv.style.touchAction = 'none';
       var RANKS = [[0, '빈 바구니 광야인'], [15, '아침마다 줍는 성실한 백성'], [35, '하늘 양식 수집가'], [60, '광야 40년 베테랑'], [90, '만나 박물관 관장']];
-      var bx = CW / 2, items = [], t = 0, sp = 0.4, score = 0, lives = 3, over = false, started = false, flash = 0, bub = null;
+      var bx = CW / 2, items = [], t = 0, sp = 0.4, score = 0, lives = 3, over = false, started = false, flash = 0, bub = null, timeLeft = 45, combo = 0, bestCombo = 0;
       function move(e) { bx = Math.max(36, Math.min(CW - 36, ptX(cv, e, CW))); started = true; }
       cv.addEventListener('pointerdown', function (e) { e.preventDefault(); move(e); });
       cv.addEventListener('pointermove', move);
@@ -1244,24 +1244,24 @@ var VIDEOS = {
         if (bub) { bub.t += dt; if (bub.t > 1) bub = null; }
         flash = Math.max(0, flash - dt);
         if (over || !started) return;
-        t += dt; sp -= dt;
+        t += dt; timeLeft = Math.max(0, 45 - t); sp -= dt;
         if (sp <= 0) {
           sp = Math.max(0.2, 0.7 - t * 0.011);
           var r = Math.random(), rot = Math.min(0.38, 0.12 + t * 0.005);
-          var ty = r < rot ? 'rot' : r < rot + 0.14 ? 'quail' : 'manna', x = 24 + Math.random() * (CW - 48);
+          var ty = r < 0.055 ? 'gold' : r < 0.055 + rot ? 'rot' : r < 0.055 + rot + 0.15 ? 'quail' : 'manna', x = 24 + Math.random() * (CW - 48);
           items.push({ ty: ty, x: x, x0: x, y: -20, ph: Math.random() * 6, v: (130 + Math.min(t * 5, 260)) * (ty === 'quail' ? 1.25 : 1) });
         }
         items = items.filter(function (i) {
           i.y += i.v * dt;
           if (i.ty === 'quail') i.x = Math.max(20, Math.min(CW - 20, i.x0 + Math.sin(i.y / 38 + i.ph) * 55));
           if (i.y > CH - 84 && i.y < CH - 36 && Math.abs(i.x - bx) < 44) {
-            if (i.ty === 'rot') { lives--; flash = 0.4; say2('윽, 썩었어요!'); }
-            else score += i.ty === 'quail' ? 3 : 1;
+            if (i.ty === 'rot') { lives--; combo = 0; flash = 0.4; say2('윽, 썩었어요! 콤보가 끊겼어요.'); }
+            else { combo++; bestCombo = Math.max(bestCombo, combo); score += i.ty === 'gold' ? 5 : i.ty === 'quail' ? 3 : 1; if (combo % 5 === 0) { score += 5; say2('콤보 '+combo+'회! 보너스 +5점'); } else if (i.ty === 'gold') say2('황금 만나! +5점'); }
             return false;
           }
           return i.y < CH + 30;
         });
-        if (lives <= 0) { over = true; finish('칭호: ' + rankOf(RANKS, score), '만나를 ' + score + '점어치 받았습니다. 점수가 높을수록 코인을 더 받습니다.', Math.round(score / 3)); }
+        if (lives <= 0 || timeLeft <= 0) { over = true; finish('칭호: ' + rankOf(RANKS, score), '45초 동안 '+score+'점을 모았습니다. 최고 콤보 '+bestCombo+'회입니다. 점수가 높을수록 코인을 더 받습니다.', Math.round(score / 3)); }
       }
       function draw() {
         skyBg(ctx, CW, CH, '#bfe3f6', '#f7e7b8');
@@ -1269,9 +1269,9 @@ var VIDEOS = {
         items.forEach(function (i) {
           if (i.ty === 'quail') drawAnimal(ctx, i.x - 18, i.y - 13, 36, 26, 5, 'happy', 0);
           else {
-            ctx.beginPath(); ctx.arc(i.x, i.y, i.ty === 'rot' ? 12 : 10, 0, 6.3);
-            ctx.fillStyle = i.ty === 'rot' ? '#7d7a45' : '#fff6cc'; ctx.fill();
-            ctx.lineWidth = 2; ctx.strokeStyle = i.ty === 'rot' ? '#4b4a22' : '#e0b020'; ctx.stroke();
+            ctx.beginPath(); ctx.arc(i.x, i.y, i.ty === 'rot' ? 12 : i.ty === 'gold' ? 13 : 10, 0, 6.3);
+            ctx.fillStyle = i.ty === 'rot' ? '#7d7a45' : i.ty === 'gold' ? '#ffd84d' : '#fff6cc'; ctx.fill();
+            ctx.lineWidth = 2; ctx.strokeStyle = i.ty === 'rot' ? '#4b4a22' : i.ty === 'gold' ? '#d28b00' : '#e0b020'; ctx.stroke();
             if (i.ty === 'rot') { ctx.beginPath(); ctx.moveTo(i.x - 6, i.y - 4); ctx.lineTo(i.x - 2, i.y); ctx.moveTo(i.x - 2, i.y - 4); ctx.lineTo(i.x - 6, i.y); ctx.moveTo(i.x + 2, i.y - 4); ctx.lineTo(i.x + 6, i.y); ctx.moveTo(i.x + 6, i.y - 4); ctx.lineTo(i.x + 2, i.y); ctx.stroke(); }
           }
         });
@@ -1280,6 +1280,8 @@ var VIDEOS = {
         ctx.fillStyle = '#c79446'; ctx.fillRect(bx - 40, CH - 66, 80, 7);
         hearts(ctx, lives, 22, 24);
         ctxText(ctx, score + '점', CW - 44, 24, 22, '#6b4f2a');
+        ctxText(ctx, '남은 시간 '+Math.ceil(timeLeft)+'초', CW / 2, 24, 17, '#6b4f2a');
+        if (combo >= 2) ctxText(ctx, '콤보 '+combo, CW / 2, 48, 15, '#9a5a17');
         if (!started) ctxText(ctx, '손가락을 끌어 바구니를 움직이세요', CW / 2, CH / 2, 17);
         if (bub) drawBubble(ctx, bub.s, bx, CH - 140, 1 - bub.t, CW);
       }

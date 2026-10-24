@@ -1244,29 +1244,34 @@ var VIDEOS = {
     desc: '내가 꾸민 캐릭터가 직접 버기를 타고 광야를 달립니다. 만나를 모아 부스터를 충전하고, 바위와 불길을 피하세요. 부스터는 PC에서 스페이스바, 모바일에서는 부스터 버튼으로 사용합니다. 충돌해도 하트가 남아 있으면 다시 도전할 수 있어요.',
     init: function(area,finish){
       var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
-      area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">✨ 0</span><span id="raceDist">거리 0m</span><span id="raceLives">❤️❤️❤️</span></div>'+
+      area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">✨ 0</span><span id="raceDist">거리 0m</span><span id="raceLives">❤️❤️❤️</span><span id="raceSkin">🚙 기본 버기</span></div>'+
         '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+
         '<canvas class="race-canvas" id="raceCanvas" aria-label="캐릭터 광야 레이싱"></canvas>'+
         '<div class="race-power"><span>⚡ 부스터</span><i><b id="raceBoost"></b></i><span id="raceCombo">콤보 0</span></div>'+
         '<div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀</button><button type="button" id="raceBoostBtn">⚡ 부스터</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">▶</button></div>'+
         '<div class="race-actions"><button type="button" id="raceStart">출발 / 다시 도전</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">출발해 만나를 모으세요. 부스터로 위험 구간을 돌파하세요!</p></div>';
       var cv=document.getElementById('raceCanvas'),ctx=cv.getContext('2d');cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
-      var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),livesEl=document.getElementById('raceLives'),
+      var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),livesEl=document.getElementById('raceLives'),skinEl=document.getElementById('raceSkin'),
         msg=document.getElementById('raceMsg'),leftBtn=document.getElementById('raceLeft'),rightBtn=document.getElementById('raceRight'),
         boostBtn=document.getElementById('raceBoostBtn'),startBtn=document.getElementById('raceStart'),pauseBtn=document.getElementById('racePause'),
         boostBar=document.getElementById('raceBoost'),comboEl=document.getElementById('raceCombo'),progressEl=document.getElementById('raceProgress'),
         rivalEl=document.getElementById('raceRival');
       var lanes=[112,180,248],lane=1,px=180,targetX=180,obstacles=[],items=[],road=0,score=0,dist=0,speed=210,
         spawn=.7,itemSpawn=1, last=0,raf=0,running=false,over=false,paused=false,lives=3,boost=0,boosting=0,
-        invuln=0,combo=0,near=0,shake=0,best=parseInt(lsGet('raceBest','0'),10)||0,rivalName=pick(['요셉','미리암','다윗','에스더']),rivalDist=0;
+        invuln=0,combo=0,near=0,shake=0,best=parseInt(lsGet('raceBest','0'),10)||0,rivalName=pick(['요셉','미리암','다윗','에스더']),rivalDist=0,
+        skin=lsGet('raceSkin','classic'),skins=[];try{skins=JSON.parse(lsGet('raceSkins','[\"classic\"]'))||['classic'];}catch(e){skins=['classic'];}
+      function skinName(){return skin==='gold'?'🌟 황금 버기':skin==='jade'?'💚 에메랄드 버기':'🚙 기본 버기';}
+      function unlockSkin(id){if(skins.indexOf(id)>=0)return;skins.push(id);lsSet('raceSkins',JSON.stringify(skins));skin=id;lsSet('raceSkin',skin);skinEl.textContent=skinName();msg.textContent=id==='gold'?'🎁 새 스킨 해금! 황금 버기를 획득했어요!':'🎁 새 스킨 해금! 에메랄드 버기를 획득했어요!';}
+      skinEl.textContent=skinName();
       rivalEl.textContent='가상 라이벌: '+rivalName;
       function move(d){if(!running||paused||over)return;lane=Math.max(0,Math.min(2,lane+d));targetX=lanes[lane];}
       function rr(x,y,w,h,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.fill();}
       function car(x,y,c,player){
         ctx.save();
         if(player){
-          rr(x-24,y-31,48,62,13,'#2e5147');rr(x-20,y-28,40,54,11,'#f0b44d');
-          rr(x-15,y-19,30,30,9,'#4d8b76');rr(x-11,y-17,22,18,7,'#bfe8f1');
+          var shell=skin==='gold'?'#f0c84e':skin==='jade'?'#62c69a':'#f0b44d',trim=skin==='gold'?'#b87920':skin==='jade'?'#267b63':'#4d8b76';
+          rr(x-24,y-31,48,62,13,trim);rr(x-20,y-28,40,54,11,shell);
+          rr(x-15,y-19,30,30,9,trim);rr(x-11,y-17,22,18,7,'#bfe8f1');
           ctx.fillStyle='#26332e';ctx.fillRect(x-26,y-18,5,15);ctx.fillRect(x+21,y-18,5,15);ctx.fillRect(x-26,y+12,5,15);ctx.fillRect(x+21,y+12,5,15);
           ctx.fillStyle='#fff2a6';ctx.fillRect(x-14,y+20,8,4);ctx.fillRect(x+6,y+20,8,4);
           // The equipped player avatar rides inside the buggy.
@@ -1308,6 +1313,7 @@ var VIDEOS = {
       function frame(ts){
         if(!running)return;if(!last)last=ts;var dt=Math.min((ts-last)/1000,.04);last=ts;
         dist+=speed*dt/10;score+=dt*(boosting>0?2.0:.65);speed=Math.min(boosting>0?520:360,210+dist*.42);road=(road+speed*dt)%58;spawn-=dt;itemSpawn-=dt;invuln=Math.max(0,invuln-dt);boosting=Math.max(0,boosting-dt);shake=Math.max(0,shake-dt*22);rivalDist+=speed*.088*dt;
+        if(dist>=300&&skins.indexOf('gold')<0)unlockSkin('gold');if(dist>=700&&skins.indexOf('jade')<0)unlockSkin('jade');
         px+=(targetX-px)*Math.min(1,dt*13);
         if(spawn<=0){var lanePick=Math.floor(Math.random()*3);obstacles.push({lane:lanePick,y:-30,type:Math.random()<.18?'fire':Math.random()<.55?'rock':'car'});spawn=Math.max(.38,.92-dist/4200)*(.78+Math.random()*.45);}
         if(itemSpawn<=0){items.push({lane:Math.floor(Math.random()*3),y:-20,ty:Math.random()<.16?'shield':Math.random()<.34?'boost':'manna',ph:Math.random()*6});itemSpawn=.65+Math.random()*.75;}

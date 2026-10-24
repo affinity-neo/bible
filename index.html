@@ -69,7 +69,8 @@
   .loaves-hype{height:26px;min-height:26px;text-align:center;font-size:.86rem;font-weight:700;color:var(--accent);margin:0 0 4px}
   .game .bread{flex:none;transition:transform .08s,filter .15s}
   .game .bread.boost{filter:saturate(1.25);box-shadow:0 0 0 5px rgba(255,190,64,.25),0 6px 0 #b86f1f,0 12px 20px rgba(0,0,0,.18)}
-  .race-progress,.race-power{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:.78rem;font-weight:700;color:var(--accent)}\n  .race-guide{display:flex;flex-direction:column;gap:3px;padding:9px 11px;margin:8px 0;border-radius:12px;background:var(--hl);font-size:.78rem;line-height:1.4;color:var(--fg)}\n  .race-guide strong{color:var(--accent);font-size:.84rem}
+  .race-progress,.race-power{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:.78rem;font-weight:700;color:var(--accent)}
+  .race-guide{display:flex;flex-direction:column;gap:3px;padding:9px 11px;margin:8px 0;border-radius:12px;background:var(--hl);font-size:.78rem;line-height:1.4;color:var(--fg)}\n  .race-guide strong{color:var(--accent);font-size:.84rem}
   .race-progress i,.race-power i{display:block;flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
   .race-progress b,.race-power b{display:block;width:0;height:100%;background:linear-gradient(90deg,#e9ba54,#f08b46);border-radius:99px;transition:width .12s linear}
   .race-power b{background:linear-gradient(90deg,#65c6e8,#8aebc0)}
@@ -1239,7 +1240,8 @@ var VIDEOS = {
     init: function(area,finish){
       var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
       area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">✨ 0</span><span id="raceDist">거리 0m</span><span id="raceLives">❤️❤️❤️</span><span id="raceSkin">🚙 기본 버기</span></div>'+
-        '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+\n        '<div class="race-guide"><strong>🎮 플레이 방법</strong><span>◀ ▶ 좌우 이동 · ✨ 만나를 모아 점수 획득</span><span>🪨 바위·🔥 불길·🚙 차량은 피하기</span><span>🛡 보호막은 충돌 방어 · ⚡ 부스터는 게이지 35 이상일 때 사용</span></div>'+
+        '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+
+        '<div class="race-guide"><strong>🎮 플레이 방법</strong><span>◀ ▶ 좌우 이동 · ✨ 만나를 모아 점수 획득</span><span>🪨 바위·🔥 불길·🚙 차량은 피하기</span><span>🛡 보호막은 충돌 방어 · ⚡ 부스터는 게이지 35 이상일 때 사용</span></div>'+
         '<canvas class="race-canvas" id="raceCanvas" aria-label="캐릭터 광야 레이싱"></canvas>'+
         '<div class="race-power"><span>⚡ 부스터</span><i><b id="raceBoost"></b></i><span id="raceCombo">콤보 0</span></div>'+
         '<div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀ 왼쪽</button><button type="button" id="raceBoostBtn">⚡ 부스터</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">오른쪽 ▶</button></div>'+
@@ -1851,7 +1853,7 @@ var VIDEOS = {
     return out;
   }
   function loadLocal() {
-    var merged = blank(), found = false, target = String(user || '').replace(/\\s+/g, '').toLowerCase();
+    var merged = blank(), found = false, target = String(user || '').replace(/\s+/g, '').toLowerCase();
     try {
       for (var i = 0; i < localStorage.length; i++) {
         var key = localStorage.key(i);

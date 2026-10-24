@@ -69,7 +69,7 @@
   .loaves-hype{height:26px;min-height:26px;text-align:center;font-size:.86rem;font-weight:700;color:var(--accent);margin:0 0 4px}
   .game .bread{flex:none;transition:transform .08s,filter .15s}
   .game .bread.boost{filter:saturate(1.25);box-shadow:0 0 0 5px rgba(255,190,64,.25),0 6px 0 #b86f1f,0 12px 20px rgba(0,0,0,.18)}
-  .race-progress,.race-power{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:.78rem;font-weight:700;color:var(--accent)}
+  .race-progress,.race-power{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:.78rem;font-weight:700;color:var(--accent)}\n  .race-guide{display:flex;flex-direction:column;gap:3px;padding:9px 11px;margin:8px 0;border-radius:12px;background:var(--hl);font-size:.78rem;line-height:1.4;color:var(--fg)}\n  .race-guide strong{color:var(--accent);font-size:.84rem}
   .race-progress i,.race-power i{display:block;flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
   .race-progress b,.race-power b{display:block;width:0;height:100%;background:linear-gradient(90deg,#e9ba54,#f08b46);border-radius:99px;transition:width .12s linear}
   .race-power b{background:linear-gradient(90deg,#65c6e8,#8aebc0)}
@@ -860,7 +860,7 @@ var VIDEOS = {
     if (K.face) { ctx.fillStyle = K.face; ctx.beginPath(); ctx.ellipse(cx, cy + 3, Math.min(w * 0.36, 34), h * 0.42, 0, 0, 6.3); ctx.fill(); }
     if (D.mid) D.mid(ctx, g);
 
-    if (K.patch) { ctx.fillStyle = K.patch; for (i = -1; i <= 1; i += 2) { ctx.beginPath(); ctx.ellipse(cx + i * sp, ey + 1, 6.2, 7.6, i * 0.45, 0, 6.3); ctx.fill(); } }
+    if (K.patch) { ctx.fillStyle = K.patch; for (i = -1; i <= 1; i += 2) { ctx.beginPath(); ctx.ellipse(cx + i * sp, ey + 1, 7, 9, i * -0.45, 0, 6.3); ctx.fill(); } }
     ctx.fillStyle = '#2b2723'; ctx.strokeStyle = K.patch && mood !== 'happy' && mood !== 'ouch' ? '#fff' : '#2b2723'; ctx.lineWidth = 2.2;
     if (K.noeyes) {
     } else if (mood === 'happy') {
@@ -1012,19 +1012,13 @@ var VIDEOS = {
     var area = document.getElementById('gameArea');
     area.innerHTML = '';
     document.getElementById('goBox').hidden = true;
-    gameCleanup = curGame.init(area, function (title, desc, gain, metric) {
-      var raw = Math.max(0, gain | 0), gameId = gameKey(), challenge = recordSharedChallenge(gameId, Math.max(0, Number(metric == null ? gain : metric) || 0));
-      var gg = grantGame(raw + (challenge.reward ? 5 : 0));
+    gameCleanup = curGame.init(area, function (title, desc, gain) {
+      var raw = Math.max(0, gain | 0), gg = grantGame(raw);
       document.getElementById('goTitle').textContent = title;
-      document.getElementById('goDesc').textContent = desc + (gg.n ? ' 게임 코인 +' + gg.n : '') + (gg.msg ? ' ' + gg.msg : '') + (challenge.reward && gg.n ? ' 오늘의 도전 보너스가 포함됐어요!' : '');
-      var box = document.getElementById('goBox'), card = document.getElementById('sharedMissionCard');
-      if (!card) { card = document.createElement('div'); card.id = 'sharedMissionCard'; card.className = 'shared-mission'; box.insertBefore(card, document.getElementById('goAgain')); }
-      card.innerHTML = '<div class="sm-row"><strong>🏁 오늘의 도전</strong><span class="sm-tag">' + (challenge.complete ? '목표 달성!' : '다음 판에 도전') + '</span></div>' +
-        '<div>' + challenge.message + '</div><div>🤝 가상 라이벌 <strong>' + challenge.rival + '</strong> · 목표 ' + challenge.targetLabel + '</div>' +
-        '<div>🔥 연속 도전 ' + challenge.streak + '일 · 오늘 플레이 ' + challenge.plays + '회</div>' +
-        '<div>🏆 ' + (challenge.newBest ? '새 개인 최고 기록!' : '최고 기록 ' + challenge.bestLabel) + ' · ' + challenge.badge + '</div>';
+      document.getElementById('goDesc').textContent = desc + (gg.n ? ' 게임 코인 +' + gg.n : '') + (gg.msg ? ' ' + gg.msg : '');
+      var card = document.getElementById('sharedMissionCard'); if (card) card.remove();
       document.getElementById('goAgain').style.display = curGame.once ? 'none' : '';
-      box.hidden = false;
+      document.getElementById('goBox').hidden = false;
     }) || null;
   }
 
@@ -1245,11 +1239,11 @@ var VIDEOS = {
     init: function(area,finish){
       var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
       area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">✨ 0</span><span id="raceDist">거리 0m</span><span id="raceLives">❤️❤️❤️</span><span id="raceSkin">🚙 기본 버기</span></div>'+
-        '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+
+        '<div class="race-progress"><span id="raceRival">가상 라이벌: 요셉</span><i><b id="raceProgress"></b></i></div>'+\n        '<div class="race-guide"><strong>🎮 플레이 방법</strong><span>◀ ▶ 좌우 이동 · ✨ 만나를 모아 점수 획득</span><span>🪨 바위·🔥 불길·🚙 차량은 피하기</span><span>🛡 보호막은 충돌 방어 · ⚡ 부스터는 게이지 35 이상일 때 사용</span></div>'+
         '<canvas class="race-canvas" id="raceCanvas" aria-label="캐릭터 광야 레이싱"></canvas>'+
         '<div class="race-power"><span>⚡ 부스터</span><i><b id="raceBoost"></b></i><span id="raceCombo">콤보 0</span></div>'+
-        '<div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀</button><button type="button" id="raceBoostBtn">⚡ 부스터</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">▶</button></div>'+
-        '<div class="race-actions"><button type="button" id="raceStart">출발 / 다시 도전</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">출발해 만나를 모으세요. 부스터로 위험 구간을 돌파하세요!</p></div>';
+        '<div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀ 왼쪽</button><button type="button" id="raceBoostBtn">⚡ 부스터</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">오른쪽 ▶</button></div>'+
+        '<div class="race-actions"><button type="button" id="raceStart">🚦 출발하기 / 다시 도전</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">출발해 만나를 모으세요. 부스터로 위험 구간을 돌파하세요!</p></div>';
       var cv=document.getElementById('raceCanvas'),ctx=cv.getContext('2d');cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
       var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),livesEl=document.getElementById('raceLives'),skinEl=document.getElementById('raceSkin'),
         msg=document.getElementById('raceMsg'),leftBtn=document.getElementById('raceLeft'),rightBtn=document.getElementById('raceRight'),
@@ -1325,7 +1319,7 @@ var VIDEOS = {
             else {lives--;combo=0;invuln=1.15;shake=10;msg.textContent='앗! 부딪혔어요. 하트를 확인하고 다시 피하세요.';livesEl.textContent='❤️'.repeat(lives)+'♡'.repeat(3-lives);if(lives<=0){end();return false;}}
             return false;
           }
-          if(Math.abs(lanes[o.lane]-px)<29&&o.y>H-145&&o.y<H-116){near++;score+=3;combo++;msg.textContent='아슬아슬! 근접 회피 +3';}
+          if(!o.near&&Math.abs(lanes[o.lane]-px)<29&&o.y>H-145&&o.y<H-116){o.near=true;near++;score+=3;combo++;msg.textContent='아슬아슬! 근접 회피 +3';}
           return true;
         });
         items=items.filter(function(it){
@@ -1831,9 +1825,45 @@ var VIDEOS = {
   function blank() { return { wc: 0, gc: 0, tot: 0, wtot: 0, gtot: 0, own: [], eq: { ch: 'c0', hat: '', face: '', neck: '', theme: 'auto', font: 'default' }, wk: [], gr: [], stat: {}, ach: [] }; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pkey() { return 'prof:' + user; }
+  function mergeProfile(a, b) {
+    a = a || {}; b = b || {};
+    var out = Object.assign(blank(), a), cloudOwn = Array.isArray(b.own) ? b.own : [];
+    ['wc','gc','tot','wtot','gtot'].forEach(function(k) {
+      var av = Number(out[k] || 0), bv = Number(b[k] != null ? b[k] : (k === 'gc' ? b.coins : 0)) || 0;
+      out[k] = Math.max(av, bv);
+    });
+    ['own','wk','gr','ach'].forEach(function(k) {
+      var aa = Array.isArray(out[k]) ? out[k] : [], bb = Array.isArray(b[k]) ? b[k] : [];
+      out[k] = aa.concat(bb.filter(function(v) { return aa.indexOf(v) < 0; }));
+    });
+    if (out.own.length && !cloudOwn.length) out.eq = Object.assign({}, out.eq || {});
+    else out.eq = Object.assign({}, out.eq || {}, b.eq || {});
+    var stat = Object.assign({}, out.stat || {}, b.stat || {});
+    Object.keys(out.stat || {}).forEach(function(k) {
+      var av = out.stat[k], bv = (b.stat || {})[k];
+      if (typeof av === 'number' && typeof bv === 'number') stat[k] = Math.max(av, bv);
+    });
+    if ((out.stat || {}).last && (b.stat || {}).last && out.stat.last > b.stat.last) {
+      stat.last = out.stat.last; stat.streak = out.stat.streak; stat.best = Math.max(out.stat.best || 0, (b.stat || {}).best || 0);
+    }
+    out.stat = stat;
+    if (a.eq && out.own.length && !cloudOwn.length) out.eq = Object.assign({}, a.eq);
+    return out;
+  }
   function loadLocal() {
-    var o = null; try { o = JSON.parse(lsGet(pkey(), 'null')); } catch (e) {}
-    P = Object.assign(blank(), o || {}); normEq();
+    var merged = blank(), found = false, target = String(user || '').replace(/\\s+/g, '').toLowerCase();
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || key.indexOf('prof:') !== 0) continue;
+        var owner = key.slice(5).replace(/\\s+/g, '').toLowerCase();
+        if (owner !== target) continue;
+        var item = null; try { item = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) {}
+        if (item) { merged = mergeProfile(merged, item); found = true; }
+      }
+    } catch (e) {}
+    if (!found) { try { merged = mergeProfile(blank(), JSON.parse(lsGet(pkey(), 'null')) || {}); } catch (e) {} }
+    P = merged; normEq();
   }
   function saveLocal() { lsSet(pkey(), JSON.stringify(P)); }
   function uid(n) { return n.replace(/[\/\\.#$\[\]\s]+/g, '_').slice(0, 20); }
@@ -1851,11 +1881,10 @@ var VIDEOS = {
     ref.get().then(function (s) {
       if (s.exists) {
         var d = s.data();
-        P.wc = d.wc || 0; P.gc = d.gc != null ? d.gc : (d.coins || 0); P.tot = d.tot || P.gc;
-        P.wtot = d.wtot != null ? d.wtot : P.wc; P.gtot = d.gtot != null ? d.gtot : P.gc;
-        P.own = d.own || []; P.eq = d.eq || {}; P.wk = d.wk || []; P.gr = d.gr || []; P.stat = d.stat || P.stat || {}; P.ach = d.ach || P.ach || []; normEq();
-        if (d.gc == null || d.wtot == null || d.gtot == null) ref.set({ wc: P.wc, gc: P.gc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr }, { merge: true }).catch(function () {});
+        if (d.gc == null && d.coins != null) d.gc = d.coins;
+        P = mergeProfile(P, d); normEq();
         saveLocal();
+        ref.set({ name: user, wc: P.wc, gc: P.gc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr, stat: P.stat, ach: P.ach }, { merge: true }).catch(function () {});
       } else {
         ref.set(Object.assign({ name: user }, P)).catch(function () {}); welcome();
       }
@@ -2068,9 +2097,10 @@ var VIDEOS = {
   }
 
   // ---- 장신구 그리기 / 내 캐릭터 ----
-  function drawAcc(ctx, x, y, w, h, eq) {
+  function drawAcc(ctx, x, y, w, h, eq, ch) {
     if (!eq) return;
-    var cx = x + w / 2, ey = y + h / 2 - 4, sp = Math.max(6, Math.min(w * 0.22, 16)), s = Math.min(w * 0.2, 15), i;
+    var frogEyes = !!(ch && (ch.id === 'c7' || ch.k === 7));
+    var cx = x + w / 2, ey = frogEyes ? y + 3 : y + h / 2 - 4, sp = frogEyes ? Math.max(6, Math.min(w * 0.285, 19)) : Math.max(6, Math.min(w * 0.22, 16)), s = Math.min(w * 0.2, 15), i;
     ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     if (eq.face === 'glasses') {
       ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 2;
@@ -2416,10 +2446,10 @@ var VIDEOS = {
     }
   }
   function drawChar(ctx, x, y, w, h, ch, mood, look) { if (ch.h) drawPerson(ctx, x, y, w, h, ch.h, mood, look); else drawAnimal(ctx, x, y, w, h, ch.k, mood, look); }
-  function drawHero(ctx, x, y, w, h, mood, look) { drawChar(ctx, x, y, w, h, heroChar(), mood, look); drawAcc(ctx, x, y, w, h, P.eq); }
+  function drawHero(ctx, x, y, w, h, mood, look) { var ch = heroChar(); drawChar(ctx, x, y, w, h, ch, mood, look); drawAcc(ctx, x, y, w, h, P.eq, ch); }
   function previewEl(ch, eq) {
     var c = document.createElement('canvas'), d = 2; c.width = 100 * d; c.height = 96 * d; c.style.width = '88px'; c.style.height = '84px';
-    var x = c.getContext('2d'); x.scale(d, d); drawChar(x, 18, 30, 64, 44, ch, 'smile', 0); drawAcc(x, 18, 30, 64, 44, eq); return c;
+    var x = c.getContext('2d'); x.scale(d, d); drawChar(x, 18, 30, 64, 44, ch, 'smile', 0); drawAcc(x, 18, 30, 64, 44, eq, ch); return c;
   }
 
   // ---- 꾸미기 상점 (나무 상점 팝업) ----

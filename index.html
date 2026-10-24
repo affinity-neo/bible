@@ -308,6 +308,32 @@
   .arow .xpbar { background:rgba(90,59,34,.18); height:6px; margin:6px 0 0; box-shadow:none; }
   .arow .ar { flex:none; font-size:.72rem; font-weight:800; color:#a5502c; text-align:right; line-height:1.4; }
   .sgrid[hidden], #sboard[hidden] { display:none; }
+
+  /* Responsive layout and reliable touch controls */
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  button,input{font:inherit}button{touch-action:manipulation}
+  .player .row{display:grid;grid-template-columns:44px 50px 44px minmax(40px,1fr);align-items:center;justify-content:center;gap:8px;width:100%}
+  .player .row #time{grid-column:1/-1;justify-self:center;min-width:0;text-align:center;margin-top:2px}
+  .player .row button{display:grid;place-items:center;padding:0;margin:0}
+  .player .row #play{justify-self:center}
+  .player .row #seek{width:100%;min-width:0;margin:0}
+  .game .go,.game button,.ibtn{-webkit-appearance:none;appearance:none}
+  .game .go{min-height:46px;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+  .game .stage,#gameArea{width:100%;min-width:0}
+  .game canvas.gcv{width:100%;height:auto;max-width:420px;aspect-ratio:360/520;touch-action:none;user-select:none;-webkit-user-select:none}
+  #gameBox,#gameArea{min-width:0}
+  .game .bread{max-width:72vw;max-height:72vw}
+  .race-wrap{max-width:420px;margin:0 auto}
+  .race-hud{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-weight:700;color:var(--accent)}
+  .race-canvas{display:block;width:100%;height:auto;aspect-ratio:360/520;border-radius:16px;border:1px solid var(--line);background:#d9e7c6;touch-action:none}
+  .race-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .race-controls button{min-height:58px;border:1px solid var(--line);border-radius:16px;background:var(--hl);color:var(--fg);font-size:1.1rem;font-weight:800;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  .race-controls button:active{transform:scale(.97);background:var(--accent);color:var(--bg)}
+  .race-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .race-actions button{min-height:44px;padding:9px 18px;border:0;border-radius:999px;background:var(--accent);color:var(--bg);font-weight:700}
+  @media(max-width:480px){main{padding:16px 12px calc(100px + env(safe-area-inset-bottom))}h1{font-size:1.55rem}.player{padding:9px 0}.player .row{grid-template-columns:42px 48px 42px minmax(30px,1fr);gap:6px}.player .row button{width:40px;height:40px}.player .row #play{width:46px;height:46px}.verse{padding:.35em .45em;font-size:1rem}.game{margin-top:28px}.game .bread{width:min(170px,62vw);height:min(170px,62vw)}.game .mgrid{gap:6px}.game .crowd{min-height:100px}.chnav{gap:6px}.chnav a{padding:10px 12px;font-size:.85rem}.race-controls button{min-height:64px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -598,7 +624,7 @@ var VIDEOS = {
   // ======== 미니 게임 모음: 장 번호에 따라 매일 다른 게임이 열립니다 ========
   // 1장=방주 쌓기, 2장=만나 받기, 3장=오병이어, 4장=요나, 5장=짝 맞추기, 6장=홍해, 7장=다니엘, 8장=여리고, 9장=다시 방주 쌓기 ...
   var QUIZ_DAYS = [10, 24];   // 한 달에 두 번: 이 날짜의 장에서는 말씀 퀴즈가 열립니다
-  var GAME_ORDER = ['stack', 'manna', 'loaves', 'jonah', 'match', 'redsea', 'daniel', 'jericho'];
+  var GAME_ORDER = ['stack', 'manna', 'loaves', 'jonah', 'match', 'redsea', 'daniel', 'jericho', 'racing'];
   var GAMES = {};
   var gameCleanup = null, curGame = null;
 
@@ -1088,12 +1114,12 @@ var VIDEOS = {
         var now = performance.now();
         if (!started) { started = true; startAt = now; timer = setInterval(tick, 50); }
         combo = (now - lastTap < 350) ? combo + 1 : 1; lastTap = now;
-        var mult = Math.min(4, 1 + Math.floor(combo / 7));
-        fed += 15 * mult; N.textContent = fed.toLocaleString() + '명';
+        var mult = Math.min(3, 1 + Math.floor(combo / 12));
+        fed += 5 * mult; N.textContent = fed.toLocaleString() + '명';
         if (crowd.children.length < 90) { var f = faceEl(Math.floor(Math.random() * KINDS.length), 30, 'happy'); f.className = 'pop'; crowd.appendChild(f); }
         if (mult > 1) M.textContent = '연타 x' + mult + '!';
         else if (!M.dataset.m) M.textContent = '더 빨리!';
-        [[1000, '천 명 돌파! 빵이 모자라지는 않을까요?'], [3500, '아직도 빵이 남아 있습니다. 신기하네요.'], [GOAL, '오천 명 달성! 열두 광주리가 남았습니다.']].forEach(function (m) {
+        [[1000, '천 명 돌파! 연속으로 눌러 콤보를 이어 가세요.'], [3000, '삼천 명 돌파! 마지막까지 집중하세요.'], [GOAL, '오천 명 달성! 열두 광주리가 남았습니다.']].forEach(function (m) {
           if (fed >= m[0] && !ms[m[0]]) { ms[m[0]] = 1; M.textContent = m[1]; }
         });
       });
@@ -1157,6 +1183,34 @@ var VIDEOS = {
       return function () { clearInterval(timer); tos.forEach(clearTimeout); };
     }
   };
+
+
+  // Desert racing game: keyboard and touch controls, personal best stored locally.
+  GAMES.racing={name:'광야 레이싱',desc:'자동차를 좌우로 움직여 바위와 다른 차를 피하세요. 만나를 모으면 점수가 올라갑니다. 시간이 지날수록 속도가 빨라져요. PC는 ← → 또는 A/D, 휴대폰은 아래 좌우 버튼으로 조작합니다.',init:function(area,finish){
+    var W=360,H=520,dpr=Math.min(window.devicePixelRatio||1,2);
+    area.innerHTML='<div class="race-wrap"><div class="race-hud"><span id="raceScore">점수 0</span><span id="raceDist">거리 0m</span><span id="raceBest">최고 0</span></div><canvas class="race-canvas" id="raceCanvas" aria-label="레이싱 게임 화면"></canvas><div class="race-controls"><button type="button" id="raceLeft" aria-label="왼쪽으로 이동">◀ 왼쪽</button><button type="button" id="raceRight" aria-label="오른쪽으로 이동">오른쪽 ▶</button></div><div class="race-actions"><button type="button" id="raceStart">시작 / 다시 시작</button><button type="button" id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg" aria-live="polite">시작을 누르거나 좌우 버튼을 눌러 출발하세요.</p></div>';
+    var cv=document.getElementById('raceCanvas'),ctx=cv.getContext('2d');cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    var scoreEl=document.getElementById('raceScore'),distEl=document.getElementById('raceDist'),bestEl=document.getElementById('raceBest'),msg=document.getElementById('raceMsg'),leftBtn=document.getElementById('raceLeft'),rightBtn=document.getElementById('raceRight'),startBtn=document.getElementById('raceStart'),pauseBtn=document.getElementById('racePause');
+    var lanes=[112,180,248],lane=1,obstacles=[],treats=[],road=0,score=0,dist=0,speed=190,spawn=.5,treatSpawn=1,last=0,raf=0,running=false,over=false,paused=false,best=parseInt(lsGet('raceBest','0'),10)||0;bestEl.textContent='최고 '+best;
+    function move(d){if(!running||paused||over)return;lane=Math.max(0,Math.min(2,lane+d))}
+    function rr(x,y,w,h,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.fill()}
+    function car(x,y,c,player){rr(x-16,y-25,32,48,8,c);rr(x-11,y-18,22,14,5,player?'#d9f2ff':'#e9ecef');ctx.fillStyle='#20252b';ctx.fillRect(x-20,y-17,5,13);ctx.fillRect(x+15,y-17,5,13);ctx.fillRect(x-20,y+10,5,13);ctx.fillRect(x+15,y+10,5,13);if(player){ctx.fillStyle='#fff4ad';ctx.fillRect(x-11,y-23,6,4);ctx.fillRect(x+5,y-23,6,4)}}
+    function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#b9d5a4';ctx.fillRect(0,0,W,H);ctx.fillStyle='#6d7768';ctx.fillRect(48,0,264,H);ctx.fillStyle='#4d5550';ctx.fillRect(60,0,240,H);ctx.fillStyle='#f7f0c7';for(var y=-40+road%60;y<H;y+=60){ctx.fillRect(137,y,4,30);ctx.fillRect(219,y,4,30)}ctx.fillStyle='#fff';ctx.fillRect(55,0,4,H);ctx.fillRect(301,0,4,H);
+      treats.forEach(function(t){ctx.fillStyle='#fff1ad';ctx.beginPath();ctx.arc(lanes[t.lane],t.y,10,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d6a73a';ctx.stroke();ctx.fillStyle='#9a7220';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('✦',lanes[t.lane],t.y+4)});
+      obstacles.forEach(function(o){if(o.type==='rock'){ctx.fillStyle='#8c887e';ctx.beginPath();ctx.moveTo(lanes[o.lane]-17,o.y+14);ctx.lineTo(lanes[o.lane]-10,o.y-12);ctx.lineTo(lanes[o.lane]+8,o.y-16);ctx.lineTo(lanes[o.lane]+18,o.y+10);ctx.closePath();ctx.fill()}else car(lanes[o.lane],o.y,'#d77c55',false)});car(lanes[lane],H-82,'#347bb7',true);
+      if(!running||paused||over){ctx.fillStyle='rgba(20,30,25,.55)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 25px sans-serif';ctx.fillText(over?'레이스 종료':paused?'일시 정지':'광야 레이싱',W/2,H/2-8);ctx.font='15px sans-serif';ctx.fillText(over?'시작을 눌러 다시 도전하세요':'시작 버튼을 눌러 출발하세요',W/2,H/2+22)}}
+    function reset(){if(raf)cancelAnimationFrame(raf);score=0;dist=0;speed=190;spawn=.5;treatSpawn=1;obstacles=[];treats=[];lane=1;road=0;over=false;paused=false;running=true;last=0;msg.textContent='달려요! 만나를 모으고 장애물을 피하세요.';scoreEl.textContent='점수 0';distEl.textContent='거리 0m';raf=requestAnimationFrame(frame)}
+    function end(){if(over)return;over=true;running=false;paused=false;if(raf)cancelAnimationFrame(raf);best=Math.max(best,Math.floor(score));lsSet('raceBest',String(best));bestEl.textContent='최고 '+best;msg.textContent='이번 기록: '+Math.floor(score)+'점 · '+Math.floor(dist)+'m';draw();finish(score>=250?'광야 레이싱 고수':score>=100?'숙련된 드라이버':'레이싱 도전자','거리 '+Math.floor(dist)+'m, 만나 '+Math.floor(score)+'점을 모았습니다. 최고 기록은 '+best+'점입니다.',Math.floor(score/10))}
+    function frame(ts){if(!running)return;if(!last)last=ts;var dt=Math.min((ts-last)/1000,.045);last=ts;dist+=speed*dt/10;score+=dt*.7;speed=Math.min(390,190+dist*.55);road=(road+speed*dt)%60;spawn-=dt;treatSpawn-=dt;
+      if(spawn<=0){obstacles.push({lane:Math.floor(Math.random()*3),y:-30,type:Math.random()<.5?'rock':'car'});spawn=Math.max(.42,1.05-dist/5000)*(.75+Math.random()*.55)}if(treatSpawn<=0){treats.push({lane:Math.floor(Math.random()*3),y:-15});treatSpawn=.8+Math.random()*1.1}
+      obstacles=obstacles.filter(function(o){o.y+=speed*dt;if(o.y>H+30)return false;if(o.lane===lane&&o.y>H-111&&o.y<H-48){end();return false}return true});
+      treats=treats.filter(function(t){t.y+=speed*dt;if(t.lane===lane&&t.y>H-112&&t.y<H-48){score+=25;return false}return t.y<H+20});
+      scoreEl.textContent='점수 '+Math.floor(score);distEl.textContent='거리 '+Math.floor(dist)+'m';draw();if(running)raf=requestAnimationFrame(frame)}
+    function key(e){if(['ArrowLeft','ArrowRight','KeyA','KeyD'].indexOf(e.code)>=0){e.preventDefault();if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);else move(1)}}
+    leftBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(-1)});rightBtn.addEventListener('pointerdown',function(e){e.preventDefault();move(1)});window.addEventListener('keydown',key);startBtn.addEventListener('click',reset);
+    pauseBtn.addEventListener('click',function(){if(over)return;if(running){running=false;paused=true;if(raf)cancelAnimationFrame(raf);msg.textContent='일시 정지 중입니다.';draw()}else if(paused){paused=false;running=true;last=0;raf=requestAnimationFrame(frame)}});
+    draw();return function(){running=false;if(raf)cancelAnimationFrame(raf);window.removeEventListener('keydown',key)}
+  }};
 
   // ---- 공용 도우미 ----
   function loop(upd) {

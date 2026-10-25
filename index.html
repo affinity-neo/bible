@@ -1843,7 +1843,9 @@ var VIDEOS = {
       if (s.exists) {
         var d = s.data();
         if (d.gc == null && d.coins != null) d.gc = d.coins;
+        var localEq = P && P.eq ? Object.assign({}, P.eq) : null;
         P = mergeProfile(P, d); normEq();
+        if (localEq && localEq.ch && localEq.ch !== 'c0') P.eq.ch = localEq.ch;
         restoreRequestedProfile();
         saveLocal();
         ref.set({ name: user, wc: P.wc, gc: P.gc, sc: P.sc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, stot: P.stot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr, stat: P.stat, ach: P.ach }, { merge: true }).catch(function () {});

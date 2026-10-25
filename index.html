@@ -1599,7 +1599,7 @@ var VIDEOS = {
         ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(12,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='left';ctx.font='bold 12px sans-serif';ctx.fillText(Math.floor(player.progress)+'% 진행',20,31);
         ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(248,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText(rank+'위 / 5',340,31);
       }
-      function rankNow(){return 1+runners.slice(1).filter(function(r){return r.progress>player.progress;}).length;}
+      function rankNow(){return 1+runners.slice(1).filter(function(r){if(player.progress>=100&&player.finishTime!=null)return r.finishTime!=null&&r.finishTime<player.finishTime;return r.progress>player.progress;}).length;}
       function updateStandings(){
         var box=area.querySelector('#raceStandings');
         var ordered=runners.slice().sort(function(a,b){return b.progress-a.progress;});
@@ -1621,7 +1621,7 @@ var VIDEOS = {
           elapsed+=dt;jump=Math.max(0,jump-dt);messageTime=Math.max(0,messageTime-dt);
           if(boosting&&boost>0){player.progress+=dt*4.25;boost=Math.max(0,boost-35*dt);}
           else {player.progress+=dt*2.92;boost=Math.min(100,boost+13*dt);}
-          runners.slice(1).forEach(function(r){r.progress+=r.speed*dt;});
+          runners.slice(1).forEach(function(r){if(r.progress<100){r.progress=Math.min(100,r.progress+r.speed*dt);if(r.progress>=100&&r.finishTime==null)r.finishTime=elapsed;}});
           spawn-=dt;
           if(spawn<=0){spawn=2.2+Math.random()*1.5;obstacles.push({lane:Math.floor(Math.random()*5),at:player.progress+11+Math.random()*9,done:false});}
           obstacles.forEach(function(ob){
@@ -1629,8 +1629,8 @@ var VIDEOS = {
           });
           obstacles=obstacles.filter(function(ob){return !ob.done&&ob.at>player.progress-3;});
           area.querySelector('#raceTime').textContent=Math.floor(elapsed)+'s';
-          if(player.progress>=100){player.progress=100;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('결승선 통과!');endRace();return;}
-          if(elapsed>=60&&player.progress<100){player.progress=100;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('연장 레이스에서 결승선 통과!');endRace();return;}
+          if(player.progress>=100){player.progress=100;player.finishTime=elapsed;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('결승선 통과!');endRace();return;}
+          if(elapsed>=60&&player.progress<100){player.progress=100;player.finishTime=elapsed;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('연장 레이스에서 결승선 통과!');endRace();return;}
           if(elapsed>rankTick){rankTick=elapsed+.5;updateStandings();}
         }
         draw(ts);raf=requestAnimationFrame(frame);
@@ -1680,7 +1680,7 @@ var VIDEOS = {
         {id:'koi',n:'비단잉어',c:'#f0e8dc',c2:'#e56f60',points:22,rare:true,shape:'koi'}
       ];
       var phase='ready',started=false,ended=false,remaining=40,wait=0,biteLeft=0,phaseTime=0,elapsed=0,score=0,caught=0,combo=0,rivalScore=0,fishNow=null,fishX=157,fishY=215,raf=0,last=0,book={},misses=0;
-      var rivalPhase='wait',rivalTimer=2.5,rivalFish=null,rivalX=265,rivalY=210;
+      var rivalPhase='wait',rivalTimer=2.5,rivalFish=species[0],rivalX=265,rivalY=210;
       var btn=area.querySelector('#fishAction'),msg=area.querySelector('#fishMsg');
       function say(s){msg.textContent=s;}
       function pickFish(){var r=Math.random();if(r<.045)return species[5];if(r<.1)return species[4];if(r<.23)return species[3];if(r<.42)return species[2];if(r<.69)return species[1];return species[0];}
@@ -1739,7 +1739,6 @@ var VIDEOS = {
         ctx.fillStyle='#bc986d';for(var q=0;q<5;q++){ctx.fillRect(244-q*5,139+q*10,116+q*5,2);}
         // Player, preserving the equipped character's normal wide proportions and accessories.
         drawHero(ctx,13,76,49,36,'happy',0);
-        drawAcc(ctx,13,76,49,36,P.eq||{},heroChar());
         ctx.fillStyle='#fff8e6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillRect(17,61,42,13);ctx.fillStyle='#395146';ctx.fillText('나',38,70);
         // Peter is a visible character who actively fishes beside the player.
         var peter=chById('h18');
@@ -2366,6 +2365,12 @@ var VIDEOS = {
     if (!db || !user) { initAch(); renderAcct(); renderShop(); return; }
     var ref = db.collection('users').doc(uid(user));
     var isCoinCleanupAccount = String(user || '').replace(/\s+/g, '') === '최선혜';
+    if (String(user || '') === '최선혜') {
+      try { localStorage.removeItem('prof:최 선혜'); } catch (e) {}
+      db.collection('users').doc(uid('최 선혜')).delete().then(function () {
+        if (shopTab === 'rank' && document.getElementById('shopOv') && !document.getElementById('shopOv').hidden) renderBoard();
+      }).catch(function () {});
+    }
     ref.get().then(function (s) {
       if (s.exists) {
         var d = s.data();
@@ -2981,7 +2986,7 @@ var VIDEOS = {
     db.collection('users').orderBy(fld, 'desc').limit(10).get().then(function (s) {
       if (tok !== boardTok) return;
       var h = '', i = 0;
-      s.forEach(function (d) { var v = d.data(); i++; h += '<div class="brow' + (v.name === user ? ' mine' : '') + '"><span class="rk">' + i + '</span><span class="nm">' + esc(v.name) + '</span><b>' + (v[fld] || 0).toLocaleString() + '</b></div>'; });
+      s.forEach(function (d) { var v = d.data(); if (String(user || '') === '최선혜' && d.id !== uid(user) && String(v.name || '').replace(/\s+/g, '') === '최선혜') return; i++; h += '<div class="brow' + (v.name === user ? ' mine' : '') + '"><span class="rk">' + i + '</span><span class="nm">' + esc(v.name) + '</span><b>' + (v[fld] || 0).toLocaleString() + '</b></div>'; });
       L.innerHTML = h || '아직 순위에 오른 친구가 없어요.';
     }).catch(function () { if (tok === boardTok) L.textContent = '순위를 불러오지 못했어요.'; });
   }

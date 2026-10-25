@@ -2036,7 +2036,7 @@ var VIDEOS = {
   var loginOpen = false;
   function renderAcct() {
     var a = document.getElementById('shopAcct'); if (!a || !P) return;
-    var h = profHtml() + '<div class="acrow"><span class="chip">' + IC.book + '말씀 <b>' + P.wc.toLocaleString() + '</b></span><span class="chip">' + IC.game + '게임 <b>' + P.gc.toLocaleString() + '</b></span><span class="chip"><span data-ic="trophy"></span>성공 <b>' + (P.sc || 0).toLocaleString() + '</b></span><span class="grow"></span>';
+    var h = profHtml() + '<div class="acrow"><span class="chip">' + IC.book + '말씀 <b>' + P.wc.toLocaleString() + '</b></span><span class="chip">' + IC.game + '게임 <b>' + P.gc.toLocaleString() + '</b></span><span class="chip">' + IC.trophy + '성공 <b>' + (P.sc || 0).toLocaleString() + '</b></span><span class="grow"></span>';
     if (user) h += '<span class="chip">' + IC.user + esc(user) + '님</span><button class="lnk" id="acOut">로그아웃</button>';
     else if (!loginOpen) h += '<button class="lnk" id="acIn">로그인 · 회원가입</button>';
     h += '</div>';

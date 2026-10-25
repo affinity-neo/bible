@@ -1577,7 +1577,7 @@ var VIDEOS = {
       var sceneIndex=0,theme=themes[0],prevTheme=themes[0],themeFade=1,themeTimer=0;
       var started=false,paused=false,ended=false,last=0,raf=0,elapsed=0,distance=0,targetDistance=600;
       var lane=1,jump=0,slide=0,invuln=0,hitFlash=0,lives=5,gold=0,score=0,combo=0,bestCombo=0;
-      var guideLane=1,guideX=180,playerX=180,guideTurn=2.6,worldScroll=0,spawnTimer=.85,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0,pendingTrailLane=1;
+      var guideLane=1,guideX=180,playerX=180,guideTurn=2.6,worldScroll=0,spawnTimer=1.1,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0,pendingTrailLane=-1;
       var message='예수님이 달리는 길을 따라가세요!',messageTimer=0,touchX=null,touchY=null;
       var JUMP_TIME=1.22,SLIDE_TIME=1.22,MAX_LIVES=5;
       area.innerHTML='<div class="goldrun-shell">'+
@@ -1628,7 +1628,6 @@ var VIDEOS = {
         if(Math.random()<.20)entities.push({type:'magnet',lane:trailLane,z:.40,done:false});
       }
       function spawnRow(){
-        if(trailActive)return;
         var safeLane=guideLane;
         var other=[0,1,2].filter(function(l){return l!==safeLane;});
         var first=other[Math.floor(Math.random()*other.length)];
@@ -1639,10 +1638,7 @@ var VIDEOS = {
         }
         // Overhead branches must be ducked under; low bars must be jumped over.
         if(Math.random()<.42)entities.push({type:Math.random()<.48?'hurdle':'branch',lane:safeLane,z:1.09,done:false,row:trailSerial+1});
-        var dropLane=pendingTrailLane>=0?pendingTrailLane:guideLane;
-        pendingTrailLane=-1;
-        addGoldTrail(dropLane);
-      }
+remove gold spawning from obstacle rows      }
       function pickObstacle(){var r=Math.random();return r<.28?'crate':r<.55?'hurdle':'branch';}
       function actor(x,groundY,scale,kind,ts,mode){
         var isJesus=kind==='jesus',timer=isJesus?guideHop:jump;
@@ -1918,13 +1914,14 @@ var VIDEOS = {
             var departedLane=guideLane;
             var nextLane=[0,1,2].filter(function(l){return l!==guideLane;});
             guideLane=nextLane[Math.floor(Math.random()*nextLane.length)];
-            pendingTrailLane=departedLane;
+            pendingTrailLane=-1;
+            addGoldTrail(departedLane);
             if(Math.random()<.30)guideHop=.82;
           }
           var targetX=laneX(guideLane,158);guideX+=(targetX-guideX)*(1-Math.exp(-dt*7.5));
           playerX+=(laneX(lane,H-61)-playerX)*(1-Math.exp(-dt*15));
           spawnTimer-=dt;
-          if(spawnTimer<=0){spawnRow();spawnTimer=Math.max(.78,1.38-elapsed*.009)+Math.random()*.25;}
+          if(spawnTimer<=0){spawnRow();spawnTimer=Math.max(1.35,2.05-elapsed*.008)+Math.random()*.35;}
           entities.forEach(function(e){
             if(ended||e.done)return;
             e.z-=dt*(.29+Math.min(.18,elapsed*.0025));

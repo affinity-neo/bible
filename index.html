@@ -403,11 +403,11 @@
   .chase-hud small{font-size:.65rem;color:var(--muted)}.chase-hud b{font-size:.88rem;color:var(--accent)}
   .chase-progress{display:flex;flex-direction:column;gap:4px;font-size:.72rem;color:var(--muted)}
   .chase-progress>div{height:6px;border-radius:99px;background:var(--line);overflow:hidden}.chase-progress i{display:block;width:0;height:100%;background:#d4a03e;transition:width .18s}
-  .chase-themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-  .chase-themes button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:5px 2px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer}
-  .chase-themes button.on{border:2px solid var(--accent);background:var(--hl);padding:4px 1px}
-  .chase-themes i{width:12px;height:12px;flex:none;border-radius:50%;background:var(--theme-color);border:1px solid rgba(0,0,0,.15)}
-  .chase-themes small{font-size:.67rem;white-space:nowrap}
+  .chase-scene-indicator{display:flex;align-items:center;gap:7px;padding:5px 9px;border:1px solid var(--line);border-radius:9px;background:var(--card);font-size:.72rem}
+  .chase-scene-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--hl);color:var(--accent);font-size:.64rem;font-weight:900}
+  .chase-scene-indicator b{font-size:.74rem;color:var(--fg)}.chase-scene-indicator>span:last-of-type{margin-left:auto;color:var(--muted);font-size:.64rem}
+  .chase-scene-indicator i{font-style:normal;color:var(--muted);font-size:.58rem}
+
   .chase-track{overflow:hidden;border:1px solid #9c9a7b;border-radius:15px;background:#e8d3a3;box-shadow:0 4px 12px rgba(33,44,34,.09)}
   .chase-track canvas.gcv{width:100%;max-width:100%;aspect-ratio:360/470;border:0;border-radius:0;background:var(--bg);touch-action:none}
   .chase-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -1515,27 +1515,29 @@ var VIDEOS = {
   };
 
 
-  // ================= 예수님 따라 달리기: 1인 추격 러너 =================
+  // ================= 예수  // ================= 예수님 따라 달리기: 1인 추격 러너 =================
   GAMES.racing = {
     name:'예수님 따라 달리기',short:'추격',
     desc:'예수님께서 앞서 달리십니다. 좌우로 길을 바꾸고, 낮은 장애물은 점프하고, 높은 가지 아래는 슬라이드하세요. 금빛 코인을 모아 예수님과의 거리를 좁히세요. 광야·갈릴리·올리브 숲·여리고 테마를 바꿀 수 있어요.',
     init:function(area,finish){
       var W=360,H=470,o,cv,ctx;
       var themes=[
-        {id:'desert',n:'광야',color:'#d9ad68',sky1:'#f8d8a0',sky2:'#f6ebcc',ground:'#d4b779',road:'#776d5b',edge:'#d6c29c',hill:'#d6ad70',accent:'#bb7e3e'},
-        {id:'galilee',n:'갈릴리',color:'#5bb5cc',sky1:'#a9e1ed',sky2:'#e2f3e7',ground:'#72b8ba',road:'#777d78',edge:'#e7d5a5',hill:'#5eaa8d',accent:'#2784a0'},
-        {id:'olive',n:'올리브 숲',color:'#76a568',sky1:'#c6e7b7',sky2:'#f1edc8',ground:'#8caf68',road:'#6d7563',edge:'#c8b98d',hill:'#4b8757',accent:'#376e44'},
-        {id:'jericho',n:'여리고',color:'#d79b62',sky1:'#f3cf9f',sky2:'#f6ead3',ground:'#caa477',road:'#766f67',edge:'#e1c9a6',hill:'#b7865c',accent:'#99603a'}
+        {id:'desert',n:'광야',color:'#d9ad68',sky1:'#f5d49a',sky2:'#fbefd1',ground:'#d4b779',road:'#776d5b',edge:'#e6d5a8',hill:'#d6ad70',accent:'#bd813d'},
+        {id:'city',n:'도시의 길',color:'#7196b8',sky1:'#91c7e8',sky2:'#e7f0f4',ground:'#6f9475',road:'#505965',edge:'#c1c1b5',hill:'#87999d',accent:'#e5b558'},
+        {id:'night',n:'별빛 밤길',color:'#8b85bd',sky1:'#17213f',sky2:'#3d5276',ground:'#253d3b',road:'#343944',edge:'#a6a4bd',hill:'#293958',accent:'#e9ce7c'},
+        {id:'summer',n:'눈부신 여름',color:'#39b6d7',sky1:'#21b8eb',sky2:'#d6f8ff',ground:'#56aa58',road:'#626b62',edge:'#f4df9f',hill:'#2fa05d',accent:'#ffcf43'},
+        {id:'galilee',n:'갈릴리 물가',color:'#5bb5cc',sky1:'#a9e1ed',sky2:'#e2f3e7',ground:'#72b8ba',road:'#777d78',edge:'#e7d5a5',hill:'#5eaa8d',accent:'#2784a0'},
+        {id:'olive',n:'올리브 숲',color:'#76a568',sky1:'#c6e7b7',sky2:'#f1edc8',ground:'#8caf68',road:'#6d7563',edge:'#c8b98d',hill:'#4b8757',accent:'#376e44'}
       ];
-      var initialGap=25,theme=themes[0],elapsed=0,gap=initialGap,coins=0,score=0,lives=4,combo=0,bestCombo=0,started=false,ended=false;
-      var lane=1,jump=0,slide=0,hit=0,invuln=0,spawnIn=.8,entities=[],last=0,raf=0,themeTick=8,jesusLane=1,jesusX=180,worldScroll=0,showMsg=0,msg='예수님을 따라가세요!',touchX=null,touchY=null;
+      var initialGap=25,theme=themes[0],previousTheme=themes[0],sceneIndex=0,themeFade=1,elapsed=0,gap=initialGap,coins=0,score=0,lives=4,combo=0,bestCombo=0,started=false,ended=false;
+      var lane=1,jump=0,slide=0,jesusHop=0,hit=0,invuln=0,spawnIn=1.05,entities=[],last=0,raf=0,themeTick=9,jesusTurn=4.8,jesusLane=1,jesusX=180,worldScroll=0,showMsg=0,msg='예수님을 따라가세요!',touchX=null,touchY=null;
       area.innerHTML='<div class="chase-shell">'+
         '<div class="chase-hud">'+
-          '<div><small>예수님과 거리</small><b id="chaseGap">35m</b></div>'+
+          '<div><small>예수님과 거리</small><b id="chaseGap">25m</b></div>'+
           '<div><small>금빛 코인</small><b id="chaseCoins">0</b></div>'+
           '<div><small>남은 생명</small><b id="chaseLives">4 / 4</b></div></div>'+
         '<div class="chase-progress"><span id="chaseMsg">예수님을 따라가세요!</span><div><i id="chaseBar"></i></div></div>'+
-        '<div class="chase-themes" id="chaseThemes"></div>'+
+        '<div class="chase-scene-indicator"><span class="chase-scene-mark" id="chaseSceneMark">01</span><b id="chaseSceneName">광야</b><span id="chaseSceneStep">여정 1 / 6</span><i>풍경이 계속 바뀝니다</i></div>'+
         '<div class="chase-track" id="chaseTrack"></div>'+
         '<div class="chase-controls">'+
           '<button type="button" id="chaseLeft" aria-label="왼쪽으로 이동"><span class="chase-arrow">←</span><small>왼쪽</small></button>'+
@@ -1554,75 +1556,108 @@ var VIDEOS = {
         $('chaseGap').textContent=Math.max(0,Math.ceil(gap))+'m';$('chaseCoins').textContent=coins;$('chaseLives').textContent=lives+' / 4';
         $('chaseBar').style.width=(Math.max(0,Math.min(100,(initialGap-gap)/initialGap*100)))+'%';
       }
-      function selectTheme(id){
-        var found=themes.find(function(t){return t.id===id;});if(!found)return;theme=found;
-        Array.prototype.forEach.call($('chaseThemes').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-theme')===id);});
-        setMsg(theme.n+' 길로 바꿨어요. 계속 예수님을 따라가세요!');
+      function updateSceneLabel(){
+        $('chaseSceneMark').textContent=String(sceneIndex+1).padStart(2,'0');
+        $('chaseSceneName').textContent=theme.n;
+        $('chaseSceneStep').textContent='여정 '+(sceneIndex+1)+' / '+themes.length;
       }
-      $('chaseThemes').innerHTML=themes.map(function(t){return '<button type="button" data-theme="'+t.id+'" class="'+(t.id===theme.id?'on':'')+'"><i style="--theme-color:'+t.color+'"></i><small>'+t.n+'</small></button>';}).join('');
-      Array.prototype.forEach.call($('chaseThemes').querySelectorAll('button'),function(b){b.onclick=function(){selectTheme(b.getAttribute('data-theme'));};});
+      updateSceneLabel();
       function addCoinLine(){
-        var l=Math.floor(Math.random()*3);
-        for(var i=0;i<3;i++)entities.push({type:'coin',lane:l,z:.99-i*.105,done:false,tw:i*.6});
+        // Gold coins trace the lane Jesus is running through.
+        var l=jesusLane;
+        for(var i=0;i<6;i++)entities.push({type:'coin',lane:l,z:.99-i*.105,done:false,tw:i*.6});
       }
       function addObstacle(){
         var roll=Math.random(),type=roll<.38?'rock':roll<.7?'hurdle':'branch';
         entities.push({type:type,lane:Math.floor(Math.random()*3),z:1,done:false});
       }
-      function spawnPattern(){if(Math.random()<.52)addCoinLine();else addObstacle();if(elapsed>17&&Math.random()<.12)addObstacle();}
+      function spawnPattern(){if(Math.random()<.64)addCoinLine();else addObstacle();if(elapsed>17&&Math.random()<.10)addObstacle();}
       function actor(x,groundY,s,kind,ts,action){
-        var isJesus=kind==='jesus',bob=action==='run'?Math.sin(ts*.018+(isJesus?1:0))*2.2*s:0;
-        var air=action==='jump'?Math.sin(Math.max(0,Math.min(1,jump/.7))*Math.PI)*39*s:0;
-        ctx.save();ctx.fillStyle='rgba(36,43,34,.18)';ctx.beginPath();ctx.ellipse(x,groundY+4*s,17*s*(action==='slide'?1.4:1),4*s,0,0,Math.PI*2);ctx.fill();
-        ctx.translate(x,groundY-air+bob);if(action==='hit')ctx.rotate(-.22);
-        if(action==='slide'){
-          ctx.strokeStyle=isJesus?'#dfcfb5':'#855d3c';ctx.lineWidth=7*s;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-5*s,7*s);ctx.lineTo(-18*s,14*s);ctx.moveTo(5*s,7*s);ctx.lineTo(18*s,13*s);ctx.stroke();
-          ctx.fillStyle=isJesus?'#f4e6cf':'#d95d4b';rrect(ctx,-21*s,-7*s,42*s,13*s,6*s);ctx.fill();
-          if(isJesus)drawChar(ctx,-18*s,-32*s,34*s,34*s,Jesus,'smile',0);else drawHero(ctx,-18*s,-32*s,34*s,34*s,'smile',0);
-        }else{
-          var phase=ts*.024+(isJesus?1.4:0),swing=Math.sin(phase)*10*s;
-          ctx.strokeStyle=isJesus?'#c9b79a':'#8e6545';ctx.lineWidth=7*s;ctx.lineCap='round';ctx.beginPath();
-          if(action==='jump'){ctx.moveTo(-5*s,14*s);ctx.lineTo(-13*s,23*s);ctx.moveTo(5*s,14*s);ctx.lineTo(14*s,23*s);}
-          else{ctx.moveTo(-4*s,11*s);ctx.lineTo(-8*s+swing,25*s);ctx.moveTo(4*s,11*s);ctx.lineTo(8*s-swing,25*s);}
-          ctx.stroke();ctx.fillStyle='#45392f';ctx.beginPath();ctx.ellipse(-8*s+swing,26*s,5*s,2.3*s,-.15,0,Math.PI*2);ctx.ellipse(8*s-swing,26*s,5*s,2.3*s,.15,0,Math.PI*2);ctx.fill();
-          var pch=heroChar(),outfit='#d95d4b';if(pch&&pch.h){if(/^#[0-9a-f]{3,8}$/i.test(pch.h.robe||''))outfit=pch.h.robe;else if(/^#[0-9a-f]{3,8}$/i.test(pch.h.cloth||''))outfit=pch.h.cloth;}
-          ctx.fillStyle=isJesus?'#efe0c5':outfit;rrect(ctx,-10*s,-13*s,20*s,27*s,7*s);ctx.fill();
-          ctx.fillStyle=isJesus?'#dfd0b4':'rgba(255,255,255,.32)';ctx.fillRect(-1*s,-9*s,2*s,17*s);
-          ctx.strokeStyle=isJesus?'#c9b79a':'#efbd91';ctx.lineWidth=6*s;
-          var armWave=isJesus&&Math.floor(elapsed/3)%3===1?-14*s:0;
-          ctx.beginPath();ctx.moveTo(-8*s,-8*s);ctx.lineTo(-15*s+swing*.45,-1*s);ctx.lineTo(-12*s+swing*.5,6*s);
-          ctx.moveTo(8*s,-8*s);ctx.lineTo(15*s-swing*.45,armWave);ctx.lineTo(13*s-swing*.5,5*s);ctx.stroke();
-          if(isJesus)drawChar(ctx,-18*s,-52*s,36*s,39*s,Jesus,'smile',0);else drawHero(ctx,-19*s,-52*s,38*s,39*s,'smile',0);
-        }
-        if(isJesus&&Math.floor(elapsed/3)%3===1&&action==='run'){
-          ctx.fillStyle='#fff5dc';rrect(ctx,-29*s,-60*s,58*s,12*s,5*s);ctx.fill();ctx.fillStyle='#70533a';ctx.font='bold '+Math.max(7,8*s)+'px sans-serif';ctx.textAlign='center';ctx.fillText('이 길을 따라오렴',0,-52*s);
+        var isJesus=kind==='jesus';
+        var currentHop=isJesus?jesusHop:jump;
+        var bob=action==='run'?Math.sin(ts*.018+(isJesus?1.1:0))*2.0*s:0;
+        var air=action==='jump'?Math.sin((1-Math.max(0,Math.min(1,currentHop/1.1)))*Math.PI)*43*s:0;
+        var swing=Math.sin(ts*.024+(isJesus?1.3:0))*5*s;
+        ctx.save();
+        ctx.fillStyle='rgba(36,43,34,.20)';ctx.beginPath();ctx.ellipse(x,groundY+4*s,16*s,4*s,0,0,Math.PI*2);ctx.fill();
+        ctx.translate(x,groundY-air+bob+(action==='slide'?8*s:0));
+        // Animate tiny feet behind the original character sprite; never squash the face/body.
+        ctx.strokeStyle=isJesus?'#c4b49a':'#6f4f39';ctx.lineWidth=3.5*s;ctx.lineCap='round';
+        ctx.beginPath();
+        ctx.moveTo(-5*s,16*s);ctx.lineTo(-7*s+swing,23*s);
+        ctx.moveTo(5*s,16*s);ctx.lineTo(7*s-swing,23*s);
+        ctx.stroke();
+        ctx.fillStyle='#43372d';
+        ctx.beginPath();ctx.ellipse(-7*s+swing,24*s,4.3*s,2*s,-.1,0,Math.PI*2);ctx.ellipse(7*s-swing,24*s,4.3*s,2*s,.1,0,Math.PI*2);ctx.fill();
+        if(action==='slide')ctx.rotate(-.22);else if(action==='hit')ctx.rotate(-.16);
+        // drawHero/drawChar already draw a complete character: use a square viewport to preserve its original proportions.
+        if(isJesus)drawChar(ctx,-22*s,-22*s,44*s,44*s,Jesus,Math.floor(elapsed/4)%3===1?'happy':'smile',0);
+        else drawHero(ctx,-22*s,-22*s,44*s,44*s,'smile',0);
+        if(isJesus&&Math.floor(elapsed/5)%3===1&&action==='run'){
+          ctx.fillStyle='#fff5dc';rrect(ctx,-31*s,-37*s,62*s,12*s,5*s);ctx.fill();
+          ctx.fillStyle='#70533a';ctx.font='bold '+Math.max(7,8*s)+'px sans-serif';ctx.textAlign='center';ctx.fillText('이 길을 따라오렴',0,-29*s);
         }
         ctx.restore();
       }
+      function mixColor(a,b,t){
+        var ah=a.replace('#',''),bh=b.replace('#',''),ar=parseInt(ah.slice(0,2),16),ag=parseInt(ah.slice(2,4),16),ab=parseInt(ah.slice(4,6),16);
+        var br=parseInt(bh.slice(0,2),16),bg=parseInt(bh.slice(2,4),16),bb=parseInt(bh.slice(4,6),16);
+        return 'rgb('+Math.round(ar+(br-ar)*t)+','+Math.round(ag+(bg-ag)*t)+','+Math.round(ab+(bb-ab)*t)+')';
+      }
       function background(ts){
-        ctx.clearRect(0,0,W,H);var sky=ctx.createLinearGradient(0,0,0,140);sky.addColorStop(0,theme.sky1);sky.addColorStop(1,theme.sky2);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-        ctx.fillStyle=theme.accent;ctx.globalAlpha=.72;ctx.beginPath();ctx.arc(294,42,15,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-        ctx.fillStyle=theme.hill;ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(34,80);ctx.lineTo(65,108);ctx.lineTo(108,66);ctx.lineTo(147,111);ctx.lineTo(206,82);ctx.lineTo(248,111);ctx.lineTo(308,71);ctx.lineTo(360,109);ctx.lineTo(360,160);ctx.lineTo(0,160);ctx.closePath();ctx.fill();
-        ctx.fillStyle=theme.ground;ctx.fillRect(0,126,W,H-126);
+        ctx.clearRect(0,0,W,H);
+        var f=Math.max(0,Math.min(1,themeFade)),col=function(key){return mixColor(previousTheme[key],theme[key],f);};
+        var sky=ctx.createLinearGradient(0,0,0,145);sky.addColorStop(0,col('sky1'));sky.addColorStop(1,col('sky2'));ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+        if(theme.id==='night'){
+          ctx.fillStyle='rgba(255,246,210,'+(.35+.65*f)+')';
+          [[28,25],[72,51],[132,31],[188,47],[237,20],[327,55],[300,83],[91,84],[264,101]].forEach(function(p,i){ctx.beginPath();ctx.arc(p[0],p[1],i%3===0?1.8:1.1,0,Math.PI*2);ctx.fill();});
+          ctx.fillStyle='#f5e5af';ctx.beginPath();ctx.arc(294,42,13,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#c2b48c';ctx.beginPath();ctx.arc(299,37,11,0,Math.PI*2);ctx.fill();
+        }else{
+          ctx.fillStyle=col('accent');ctx.beginPath();ctx.arc(294,42,theme.id==='summer'?18:15,0,Math.PI*2);ctx.fill();
+          if(theme.id==='summer'){ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=2;for(var sr=0;sr<8;sr++){var ang=sr*Math.PI/4;ctx.beginPath();ctx.moveTo(294+Math.cos(ang)*22,42+Math.sin(ang)*22);ctx.lineTo(294+Math.cos(ang)*28,42+Math.sin(ang)*28);ctx.stroke();}}
+        }
+        ctx.fillStyle=col('hill');
+        ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(34,80);ctx.lineTo(65,108);ctx.lineTo(108,66);ctx.lineTo(147,111);ctx.lineTo(206,82);ctx.lineTo(248,111);ctx.lineTo(308,71);ctx.lineTo(360,109);ctx.lineTo(360,160);ctx.lineTo(0,160);ctx.closePath();ctx.fill();
+        if(theme.id==='city'||theme.id==='night'){
+          var buildings=[{x:3,w:27,h:45},{x:28,w:25,h:66},{x:55,w:29,h:37},{x:282,w:24,h:49},{x:305,w:29,h:69},{x:334,w:26,h:42}];
+          buildings.forEach(function(b,i){
+            ctx.fillStyle=theme.id==='night'?'#202b43':'#8a9ba5';ctx.fillRect(b.x,126-b.h,b.w,b.h);
+            ctx.fillStyle=theme.id==='night'?'#e7cb75':'#e5d8b0';
+            for(var wy=0;wy<Math.floor(b.h/12);wy++)for(var wx=0;wx<2;wx++)ctx.fillRect(b.x+5+wx*10,132-b.h+wy*12,4,5);
+          });
+        }
+        ctx.fillStyle=col('ground');ctx.fillRect(0,126,W,H-126);
         for(var i=0;i<6;i++){
           var yy=118+((i*77+worldScroll)%330),t=Math.max(.12,(yy-74)/(H-74)),s=.3+t*.95;
-          ctx.save();ctx.translate(i%2===0?Math.max(8,24+Math.floor(i/2)*5):Math.min(W-8,336-Math.floor(i/2)*5),yy);ctx.scale(s,s);
+          var sx=i%2===0?Math.max(8,24+Math.floor(i/2)*5):Math.min(W-8,336-Math.floor(i/2)*5);
+          ctx.save();ctx.translate(sx,yy);ctx.scale(s,s);
           if(theme.id==='desert'){
             ctx.fillStyle='#b88752';ctx.beginPath();ctx.ellipse(0,0,17,8,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4c8b5b';rrect(ctx,-3,-28,6,28,3);ctx.fill();rrect(ctx,-13,-20,11,5,2);ctx.fill();rrect(ctx,3,-14,11,5,2);ctx.fill();
           }else if(theme.id==='galilee'){
             ctx.strokeStyle='#e5f6ed';ctx.lineWidth=2;for(var wv=0;wv<3;wv++){ctx.beginPath();ctx.moveTo(-17,wv*7);ctx.quadraticCurveTo(-6,wv*7-4,4,wv*7);ctx.lineTo(17,wv*7);ctx.stroke();}
             ctx.fillStyle='#b88f60';ctx.beginPath();ctx.moveTo(-20,-10);ctx.lineTo(14,-10);ctx.lineTo(8,-3);ctx.lineTo(-16,-3);ctx.closePath();ctx.fill();
-          }else if(theme.id==='olive'){
-            ctx.strokeStyle='#6d5437';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-25);ctx.stroke();ctx.fillStyle=i%2?'#4e8752':'#67965b';ctx.beginPath();ctx.ellipse(-7,-26,13,10,-.4,0,Math.PI*2);ctx.ellipse(7,-32,13,11,.4,0,Math.PI*2);ctx.ellipse(0,-41,12,11,0,0,Math.PI*2);ctx.fill();
+          }else if(theme.id==='olive'||theme.id==='summer'){
+            ctx.strokeStyle='#6d5437';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-25);ctx.stroke();
+            ctx.fillStyle=theme.id==='summer'?(i%2?'#1c9958':'#32b86c'):(i%2?'#4e8752':'#67965b');
+            ctx.beginPath();ctx.ellipse(-7,-26,13,10,-.4,0,Math.PI*2);ctx.ellipse(7,-32,13,11,.4,0,Math.PI*2);ctx.ellipse(0,-41,12,11,0,0,Math.PI*2);ctx.fill();
+          }else if(theme.id==='city'||theme.id==='night'){
+            ctx.fillStyle=theme.id==='night'?'#202b43':'#899ba5';ctx.fillRect(-17,-38,34,38);
+            ctx.fillStyle=theme.id==='night'?'#e8ca6a':'#e6d9b6';for(var wy2=0;wy2<3;wy2++)for(var wx2=0;wx2<2;wx2++)ctx.fillRect(-12+wx2*13,-32+wy2*10,5,5);
+            ctx.fillStyle=theme.id==='night'?'#9e8d65':'#b7c9bd';ctx.fillRect(-4,-20,8,20);
           }else{
             ctx.fillStyle='#c99b72';ctx.fillRect(-17,-38,34,38);ctx.fillStyle='#986d4e';for(var br=0;br<3;br++)for(var bc=0;bc<3;bc++)ctx.fillRect(-14+bc*11,-34+br*12,7,7);ctx.fillStyle='#e4c19a';ctx.fillRect(-4,-20,8,20);
-          }ctx.restore();
+          }
+          ctx.restore();
         }
-        var ty=74,tw=50,bottom=H-8,bw=355;ctx.fillStyle=theme.edge;ctx.beginPath();ctx.moveTo(W/2-tw/2,ty);ctx.lineTo(W/2+tw/2,ty);ctx.lineTo(W/2+bw/2,bottom);ctx.lineTo(W/2-bw/2,bottom);ctx.closePath();ctx.fill();
-        ctx.fillStyle=theme.road;ctx.beginPath();ctx.moveTo(W/2-tw/2+4,ty);ctx.lineTo(W/2+tw/2-4,ty);ctx.lineTo(W/2+bw/2-5,bottom);ctx.lineTo(W/2-bw/2+5,bottom);ctx.closePath();ctx.fill();
-        ctx.strokeStyle='rgba(255,246,220,.75)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(W/2-tw/2+2,ty);ctx.lineTo(W/2-bw/2+3,bottom);ctx.moveTo(W/2+tw/2-2,ty);ctx.lineTo(W/2+bw/2-3,bottom);ctx.stroke();
-        for(var ln=1;ln<3;ln++){var x1=W/2+(ln-1.5)*tw/3,x2=W/2+(ln-1.5)*bw/3;ctx.strokeStyle='rgba(255,248,224,.58)';ctx.lineWidth=1.6;ctx.setLineDash([14,14]);ctx.lineDashOffset=-(worldScroll*1.8)%28;ctx.beginPath();ctx.moveTo(x1,ty);ctx.lineTo(x2,bottom);ctx.stroke();ctx.setLineDash([]);}
-        for(var fp=0;fp<5;fp++){var fy=135+((fp*66+worldScroll*1.7)%280),ft=(fy-74)/(H-74),fx=W/2+Math.sin(fp*2+elapsed*.3)*10;ctx.fillStyle='rgba(255,245,218,.34)';ctx.beginPath();ctx.ellipse(fx-4,fy,2.2+ft*1.5,4+ft*2,-.3,0,Math.PI*2);ctx.ellipse(fx+4,fy+7,2.2+ft*1.5,4+ft*2,.3,0,Math.PI*2);ctx.fill();}
+        var ty=74,tw=50,bottom=H-8,bw=355;
+        ctx.fillStyle=col('edge');ctx.beginPath();ctx.moveTo(W/2-tw/2,ty);ctx.lineTo(W/2+tw/2,ty);ctx.lineTo(W/2+bw/2,bottom);ctx.lineTo(W/2-bw/2,bottom);ctx.closePath();ctx.fill();
+        ctx.fillStyle=col('road');ctx.beginPath();ctx.moveTo(W/2-tw/2+4,ty);ctx.lineTo(W/2+tw/2-4,ty);ctx.lineTo(W/2+bw/2-5,bottom);ctx.lineTo(W/2-bw/2+5,bottom);ctx.closePath();ctx.fill();
+        ctx.strokeStyle=theme.id==='night'?'rgba(231,224,255,.65)':'rgba(255,246,220,.75)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(W/2-tw/2+2,ty);ctx.lineTo(W/2-bw/2+3,bottom);ctx.moveTo(W/2+tw/2-2,ty);ctx.lineTo(W/2+bw/2-3,bottom);ctx.stroke();
+        for(var ln=1;ln<3;ln++){var x1=W/2+(ln-1.5)*tw/3,x2=W/2+(ln-1.5)*bw/3;ctx.strokeStyle=theme.id==='night'?'rgba(223,223,255,.48)':'rgba(255,248,224,.58)';ctx.lineWidth=1.6;ctx.setLineDash([14,14]);ctx.lineDashOffset=-(worldScroll*1.8)%28;ctx.beginPath();ctx.moveTo(x1,ty);ctx.lineTo(x2,bottom);ctx.stroke();ctx.setLineDash([]);}
+        // Footprints and drifting scenery make the path feel like a journey, not a static track.
+        for(var fp=0;fp<5;fp++){var fy=135+((fp*66+worldScroll*1.7)%280),ft=(fy-74)/(H-74),fx=W/2+Math.sin(fp*2+elapsed*.3)*10;ctx.fillStyle=theme.id==='night'?'rgba(235,226,255,.25)':'rgba(255,245,218,.34)';ctx.beginPath();ctx.ellipse(fx-4,fy,2.2+ft*1.5,4+ft*2,-.3,0,Math.PI*2);ctx.ellipse(fx+4,fy+7,2.2+ft*1.5,4+ft*2,.3,0,Math.PI*2);ctx.fill();}
+        if(themeFade<1){ctx.fillStyle=theme.id==='night'?'rgba(20,28,54,'+((1-themeFade)*.23)+')':'rgba(255,239,203,'+((1-themeFade)*.13)+')';ctx.fillRect(0,0,W,H);}
       }
       function drawCoin(x,y,s){
         ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle='#f2c54f';ctx.strokeStyle='#976e2d';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,7,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -1643,7 +1678,7 @@ var VIDEOS = {
       }
       function draw(ts){
         background(ts);entities.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(e){if(e.z<1.03&&e.z>-.04)drawEntity(e,ts);});
-        var jY=176+Math.max(0,initialGap-gap)*3.0,jScale=.72+Math.max(0,initialGap-gap)*.010;actor(jesusX,jY,jScale,'jesus',ts,'run');
+        var jY=176+Math.max(0,initialGap-gap)*3.0,jScale=.72+Math.max(0,initialGap-gap)*.010;actor(jesusX,jY,jScale,'jesus',ts,jesusHop>0?'jump':'run');
         var playerX=laneX(lane,H-61),action=jump>0?'jump':slide>0?'slide':'run',py=H-46;if(hit>0)action='hit';actor(playerX,py,1.0,'player',ts,action);
         if(!started){ctx.fillStyle='rgba(40,48,37,.76)';rrect(ctx,31,206,298,70,12);ctx.fill();ctx.fillStyle='#fff6e4';ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('예수님을 따라가세요',180,233);ctx.font='11px sans-serif';ctx.fillText('금빛 코인으로 거리를 좁히고 장애물을 피하세요',180,254);}
         if(showMsg>0&&started){ctx.fillStyle='rgba(255,249,229,.94)';rrect(ctx,64,100,232,25,7);ctx.fill();ctx.fillStyle='#57482e';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(msg,180,116);}
@@ -1668,8 +1703,8 @@ var VIDEOS = {
           if(lives<=0){endGame(false);}
         }
       }
-      function actionJump(){if(!started||ended||slide>0)return;jump=.72;setMsg('점프! 낮은 장애물을 넘어요.');}
-      function actionSlide(){if(!started||ended||jump>0)return;slide=.68;setMsg('슬라이드! 낮은 가지 아래로 지나가요.');}
+      function actionJump(){if(!started||ended||slide>0)return;jump=1.1;setMsg('점프! 낮은 장애물을 넘어요.');}
+      function actionSlide(){if(!started||ended||jump>0)return;slide=1.1;setMsg('슬라이드! 낮은 가지 아래로 지나가요.');}
       function moveLane(d){if(!started||ended)return;lane=Math.max(0,Math.min(2,lane+d));}
       function start(){if(ended||started)return;started=true;$('chaseStart').hidden=true;cv.focus();setMsg('출발! 금빛 코인을 모아 예수님을 따라가세요.');}
       $('chaseStart').onclick=start;$('chaseLeft').onclick=function(){moveLane(-1);};$('chaseRight').onclick=function(){moveLane(1);};$('chaseJump').onclick=actionJump;$('chaseSlide').onclick=actionSlide;
@@ -1686,8 +1721,9 @@ var VIDEOS = {
         if(ended)return;var dt=Math.min(.05,((ts-last)/1000)||0);last=ts;if(showMsg>0)showMsg=Math.max(0,showMsg-dt);
         if(started){
           elapsed+=dt;worldScroll+=dt*(50+Math.min(40,elapsed)*.8);jump=Math.max(0,jump-dt);slide=Math.max(0,slide-dt);hit=Math.max(0,hit-dt);invuln=Math.max(0,invuln-dt);
-          spawnIn-=dt;themeTick-=dt;
-          if(themeTick<=0){themeTick=7+Math.random()*3;jesusLane=(jesusLane+1+Math.floor(Math.random()*2))%3;setMsg('예수님께서 앞서 길을 이끄세요.');}
+          spawnIn-=dt;themeTick-=dt;jesusTurn-=dt;themeFade=Math.min(1,themeFade+dt/1.8);jesusHop=Math.max(0,jesusHop-dt);
+          if(themeTick<=0){previousTheme=theme;sceneIndex=(sceneIndex+1)%themes.length;theme=themes[sceneIndex];themeFade=0;themeTick=9;updateSceneLabel();setMsg('새로운 풍경 — '+theme.n);}
+          if(jesusTurn<=0){jesusTurn=5+Math.random()*2.5;jesusLane=(jesusLane+1+Math.floor(Math.random()*2))%3;if(Math.random()<.38)jesusHop=.9;setMsg('예수님께서 앞서 길을 이끄세요.')}
           jesusX+=(laneX(jesusLane,176)-jesusX)*Math.min(1,dt*1.5);
           if(spawnIn<=0){spawnPattern();spawnIn=Math.max(.90,1.22-elapsed*.003)+Math.random()*.22;}
           entities.forEach(function(e){
@@ -1709,7 +1745,7 @@ var VIDEOS = {
     }
   };
 
-  // ================= 갈릴리 낚시: 나와 베드로의 대결 =================
+리 낚시: 나와 베드로의 대결 =================
   GAMES.fishing = {
     name:'갈릴리 낚시',short:'낚시',
     desc:'내 캐릭터와 베드로가 나란히 낚시합니다. 낚싯줄을 던지고 찌가 빨갛게 흔들리며 입질 표시가 뜨면 즉시 당기세요. 베드로도 눈앞에서 물고기를 낚습니다.',

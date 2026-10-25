@@ -1759,7 +1759,8 @@ var VIDEOS = {
           jesusX+=(laneX(jesusLane,176)-jesusX)*Math.min(1,dt*1.5);
           if(spawnIn<=0){spawnPattern();spawnIn=Math.max(.90,1.22-elapsed*.003)+Math.random()*.22;}
           entities.forEach(function(e){
-            e.z-=dt*(.235+Math.min(.07,elapsed*.0012));if(ended||e.done)return;
+            if(ended||e.done||gap<=0)return;
+            e.z-=dt*(.235+Math.min(.07,elapsed*.0012));
             if(e.type==='coin'&&e.z<=.09){
               e.done=true;if(e.lane===lane)collision(e);
               if(e.trail&&coinTrailActive){trailCoinsRemaining=Math.max(0,trailCoinsRemaining-1);if(trailCoinsRemaining===0){coinTrailActive=false;trailLane=-1;jesusTurn=Math.min(jesusTurn,.55);}}

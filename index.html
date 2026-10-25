@@ -1133,21 +1133,19 @@ var VIDEOS = {
 
   // ================= 오병이어: 음식 조합 버전 =================
   GAMES.feastmix = {
-    name: '오병이어 음식 조합',
-    desc: '빵과 물고기를 골라 사람들에게 나누어 주세요. 목표 조합을 맞히면 점수를 얻고, 연속 성공하면 보너스가 붙어요.',
-    init: function(area, finish) {
-      var recipes=[{name:'든든한 한 끼',need:{bread:2,fish:1},points:8},{name:'어부의 도시락',need:{bread:1,fish:2},points:10},{name:'함께 나누는 식사',need:{bread:3,fish:2},points:15}];
-      var bread=0,fish=0,score=0,combo=0,round=0,ended=false,target=null;
-      area.innerHTML='<div class="stage"><div class="dm-top"><span id="fmRound">조합 1 / 8</span><span id="fmScore">점수 0</span><span id="fmCombo">연속 0</span></div><div class="dm-msg" id="fmMsg">빵과 물고기를 골라 목표 조합을 완성하세요.</div><div class="shared-mission"><strong id="fmTarget"></strong><p id="fmPicked">빵 0개 · 물고기 0마리</p></div><div class="race-controls" style="grid-template-columns:1fr 1fr"><button id="fmBread" type="button">🍞 빵 추가</button><button id="fmFish" type="button">🐟 물고기 추가</button></div><div class="race-actions"><button id="fmServe" type="button">🍽️ 음식 나누기</button><button id="fmClear" type="button">다시 담기</button></div></div>';
-      var $=function(id){return area.querySelector('#'+id)},msg=$('fmMsg');
-      function next(){target=recipes[Math.floor(Math.random()*recipes.length)];bread=0;fish=0;$('fmTarget').textContent='목표: '+target.name+' — 빵 '+target.need.bread+'개, 물고기 '+target.need.fish+'마리';render();}
-      function render(){$('fmPicked').textContent='빵 '+bread+'개 · 물고기 '+fish+'마리';$('fmRound').textContent='조합 '+Math.min(round+1,8)+' / 8';$('fmScore').textContent='점수 '+score;$('fmCombo').textContent='연속 '+combo;}
-      $('fmBread').addEventListener('click',function(){if(ended)return;if(bread<5)bread++;render();});
-      $('fmFish').addEventListener('click',function(){if(ended)return;if(fish<5)fish++;render();});
-      $('fmClear').addEventListener('click',function(){if(ended)return;bread=0;fish=0;render();msg.textContent='다시 골라 보세요.';});
-      $('fmServe').addEventListener('click',function(){if(ended)return;round++;if(bread===target.need.bread&&fish===target.need.fish){combo++;score+=target.points+Math.min(5,combo-1)*2;msg.textContent='잘 나누었어요! +'+(target.points+Math.min(5,combo-1)*2)+'점';}else{combo=0;msg.textContent='조합이 달라요. 다음 음식은 더 정확히 골라 보세요.';}if(round>=8){ended=true;$('fmBread').disabled=$('fmFish').disabled=$('fmServe').disabled=$('fmClear').disabled=true;finish('나눔의 식탁','음식 조합 '+score+'점 · 성공 '+(score>0? '도전 완료':'다음엔 더 잘할 수 있어요'),Math.max(1,Math.floor(score/8)),score>=50?1:0);return;}next();});
-      next();
-      return function(){ended=true;};
+    name:'주문대로 만들기', short:'음식 조합',
+    desc:'손님의 주문서를 확인하고 재료를 골라 음식을 완성한 뒤 서빙하세요. 연속 성공과 제한 시간으로 높은 점수를 노리세요.',
+    init:function(area,finish){
+      var recipes=[{n:'치즈 피자',b:1,f:0,c:1,tip:5},{n:'바다 피자',b:1,f:2,c:1,tip:7},{n:'나눔 피자',b:2,f:1,c:2,tip:8},{n:'가족 피자',b:2,f:2,c:2,tip:10}],round=0,score=0,served=0,combo=0,best=0,time=18,p={b:0,f:0,c:0},order,ended=false,timer;
+      area.innerHTML='<div class="stage" style="gap:10px"><div class="dm-top"><span id="fmRound">주문 1 / 8</span><span id="fmScore">매출 0</span><span id="fmCombo">콤보 0</span></div><div style="height:7px;background:var(--line);border-radius:8px;overflow:hidden"><div id="fmBar" style="height:100%;width:100%;background:var(--accent)"></div></div><div style="display:grid;grid-template-columns:minmax(95px,.7fr) 1.3fr;gap:10px"><div style="background:#f3d3c8;border:2px solid #bb8574;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;color:#563b35;min-height:145px"><div style="width:58px;height:64px;border-radius:45%;background:#e9b58d;border:2px solid #a46e58;position:relative"><i style="position:absolute;width:5px;height:5px;border-radius:50%;background:#51352f;left:14px;top:25px;box-shadow:22px 0 #51352f"></i><i style="position:absolute;width:14px;height:7px;border-bottom:2px solid #a24e4e;border-radius:50%;left:21px;top:37px"></i></div><b id="fmGuest">손님</b><small>주문 기다리는 중</small></div><div style="background:#fff2d6;border:2px solid #c68f69;border-radius:14px;padding:10px;text-align:center;color:#513d31"><small>주문서</small><h3 id="fmTarget" style="margin:4px 0">치즈 피자</h3><p id="fmRecipe" style="margin:4px 0;font-size:.9rem"></p><div style="width:104px;height:104px;border-radius:50%;background:#f2d88b;border:7px solid #ce9560;box-shadow:inset 0 0 0 3px #fff0c9;margin:8px auto;position:relative"><span style="position:absolute;inset:8px;background:radial-gradient(circle at 20% 25%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 65% 20%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 45% 55%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 75% 70%,#bd4b40 0 5px,transparent 6px);border-radius:50%"></span></div></div></div><div id="fmMsg" class="dm-msg">주문서를 확인하고 재료를 담으세요.</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px"><button type="button" id="fmB" style="min-height:68px">도우<br><b id="fmBc">0개</b></button><button type="button" id="fmF" style="min-height:68px">물고기 토핑<br><b id="fmFc">0개</b></button><button type="button" id="fmC" style="min-height:68px">치즈<br><b id="fmCc">0개</b></button></div><div id="fmPicked" style="text-align:center;font-size:.9rem">담은 재료: 도우 0 · 물고기 0 · 치즈 0</div><div style="display:flex;gap:8px"><button type="button" id="fmReset" style="flex:1">다시 만들기</button><button type="button" id="fmServe" style="flex:2;font-weight:800">완성하고 서빙</button></div></div>';
+      var $=function(id){return area.querySelector('#'+id);};
+      function render(){$('fmRound').textContent='주문 '+Math.min(round+1,8)+' / 8';$('fmScore').textContent='매출 '+score;$('fmCombo').textContent='콤보 '+combo;$('fmBc').textContent=p.b+'개';$('fmFc').textContent=p.f+'개';$('fmCc').textContent=p.c+'개';$('fmPicked').textContent='담은 재료: 도우 '+p.b+' · 물고기 '+p.f+' · 치즈 '+p.c;$('fmBar').style.width=(time/18*100)+'%';}
+      function reset(){p={b:0,f:0,c:0};render();}
+      function next(){if(ended)return;if(round>=8){ended=true;clearInterval(timer);['fmB','fmF','fmC','fmReset','fmServe'].forEach(function(id){$(id).disabled=true;});$('fmMsg').textContent='영업 종료! '+served+'/8 주문 성공 · 최고 콤보 '+best;finish('오늘의 인기 식당','주문 '+served+'/8 · 매출 '+score+' · 최고 콤보 '+best,Math.max(1,Math.min(5,Math.floor(score/20))),served>=6);return;}order=recipes[Math.floor(Math.random()*recipes.length)];time=18;reset();$('fmGuest').textContent=['단골 손님','배고픈 여행자','가족 손님','바쁜 직장인'][round%4];$('fmTarget').textContent=order.n;$('fmRecipe').textContent='도우 '+order.b+' · 물고기 '+order.f+' · 치즈 '+order.c;$('fmMsg').textContent='제한 시간 안에 정확히 만들어 서빙하세요.';render();}
+      function serve(){if(ended)return;round++;if(p.b===order.b&&p.f===order.f&&p.c===order.c){combo++;best=Math.max(best,combo);served++;var earned=order.tip+Math.min(combo*2,8)+Math.ceil(time/5);score+=earned;$('fmMsg').textContent='정확해요! 팁 +'+earned+' · 콤보 '+combo;}else{combo=0;$('fmMsg').textContent='주문과 달라요. 다음 손님을 준비하세요.';}render();setTimeout(next,550);}
+      [['fmB','b',3],['fmF','f',4],['fmC','c',4]].forEach(function(a){$(a[0]).onclick=function(){if(!ended&&p[a[1]]<a[2])p[a[1]]++;render();};});$('fmReset').onclick=function(){if(!ended)reset();};$('fmServe').onclick=serve;
+      timer=setInterval(function(){if(ended)return;time=Math.max(0,time-.2);render();if(time<=0)serve();},200);next();
+      return function(){ended=true;if(timer)clearInterval(timer);};
     }
   };
 
@@ -1289,6 +1287,7 @@ var VIDEOS = {
     }
   };
 
+  GAMES.fishing = {name:'갈릴리 낚시',short:'낚시',desc:'물 위를 눌러 낚싯줄을 던지고, 입질이 오면 다시 눌러 물고기를 낚아 올리세요. 희귀 물고기는 점수가 높지만 타이밍을 놓치면 도망가요.',init:function(area,finish){var W=360,H=520,o=mkCanvas(area,W,H),cv=o.cv,ctx=o.ctx,ended=false,started=false,t=35,score=0,caught=0,rare=0,fish=null,bite=0,combo=0,raf=0,last=0;cv.style.touchAction='manipulation';area.insertAdjacentHTML('afterbegin','<div class="dm-top"><span id="fishTime">시간 35</span><span id="fishScore">점수 0</span><span id="fishCombo">연속 0</span></div><div id="fishMsg" class="dm-msg">물 위를 눌러 낚싯줄을 던지세요. 입질이 오면 다시 눌러 낚으세요.</div>');function el(id){return area.querySelector('#'+id);}function tap(){if(ended)return;if(!started){started=true;return;}if(fish&&bite>0){var r=fish.r>.82;score+=r?12:4;caught++;if(r)rare++;combo++;el('fishMsg').textContent=(r?'희귀 물고기':'물고기')+'를 잡았어요. 점수 +'+(r?12:4);fish=null;bite=0;}else if(!fish){fish={r:Math.random(),x:50+Math.random()*250,y:180+Math.random()*140};bite=1+Math.random()*1.5;el('fishMsg').textContent='찌를 지켜보세요. 움직일 때 낚아 올리세요.';}else{combo=0;el('fishMsg').textContent='너무 일찍 당겼어요. 물고기가 도망갔어요.';fish=null;bite=0;}}cv.addEventListener('pointerdown',function(e){e.preventDefault();tap();});function frame(ts){if(ended)return;var dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(started){t-=dt;if(fish){bite-=dt;if(bite<=0){fish=null;combo=0;el('fishMsg').textContent='물고기가 도망갔어요.';}}if(t<=0){ended=true;finish('갈릴리 낚시','잡은 물고기 '+caught+'마리 · 희귀 '+rare+'마리 · 점수 '+score,Math.max(1,Math.min(5,Math.floor(score/15))),rare>0);return;}}ctx.clearRect(0,0,W,H);ctx.fillStyle='#f5e5c7';ctx.fillRect(0,0,W,H);ctx.fillStyle='#76b7d0';ctx.fillRect(0,112,W,H-112);for(var i=0;i<5;i++){ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo((i*73+ts/28)%W,145+i*55);ctx.quadraticCurveTo((i*73+ts/28)%W+25,135+i*55,(i*73+ts/28)%W+55,145+i*55);ctx.stroke();}ctx.fillStyle='#a8784e';ctx.fillRect(0,92,W,22);ctx.strokeStyle='#594739';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(180,95);ctx.lineTo(225,145);ctx.lineTo(225,fish?fish.y:245);ctx.stroke();ctx.fillStyle='#e65d59';ctx.fillRect(218,fish?fish.y:240,15,22);if(fish){ctx.fillStyle=fish.r>.82?'#e6bd54':'#6f9fc5';ctx.beginPath();ctx.ellipse(fish.x,fish.y,17,9,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(fish.x-15,fish.y);ctx.lineTo(fish.x-25,fish.y-7);ctx.lineTo(fish.x-25,fish.y+7);ctx.fill();if(bite<.7){ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.fillText('당겨!',fish.x,fish.y-20);}}el('fishTime').textContent='시간 '+Math.ceil(t);el('fishScore').textContent='점수 '+score;el('fishCombo').textContent='연속 '+combo;raf=requestAnimationFrame(frame);}raf=requestAnimationFrame(frame);return function(){ended=true;cancelAnimationFrame(raf);};}};
   GAMES.manna = {
     name: '광야 생존 챌린지',
     desc: '내 캐릭터를 움직여 만나와 메추라기를 모으세요. 황금 만나와 보호막을 챙기고, 썩은 만나를 피하세요. 메추라기 떼가 몰려오는 러시 구간에는 콤보 보너스가 커집니다.',
@@ -2460,20 +2459,22 @@ var VIDEOS = {
     else list = [{ id: '', v: '', n: '없음', p: 0 }].concat(ITEMS.filter(function (i) { return i.s === shopTab; }));
     list.forEach(function (it) {
       var owned = it.p === 0 || P.own.indexOf(it.id) >= 0, rk = rarity(it, cur);
+      var successPrice = shopTab === 'ch' && it.id === 'h6' ? 3 : shopTab === 'ch' && it.id === 'h19' ? 2 : 0;
+      var payType = successPrice ? 'sc' : cur, payPrice = successPrice || it.p;
       var on = shopTab === 'ch' ? P.eq.ch === it.id : shopTab === 'theme' ? (P.eq.theme || 'auto') === it.t : shopTab === 'font' ? (P.eq.font || 'default') === it.f : P.eq[shopTab] === it.v;
       var card = document.createElement('div'); card.className = 'sc' + (on ? ' on' : '') + (owned && it.p > 0 ? ' owned' : '') + (rk ? ' r-' + rk : '');
       card.appendChild(pvNode(it, shopTab));
       if (rk) card.insertAdjacentHTML('afterbegin', '<span class="rb">' + RLAB[rk] + '</span>');
       card.insertAdjacentHTML('beforeend', '<div class="sn">' + it.n + '</div>');
       var b = document.createElement('button');
-      b.innerHTML = on ? '사용 중' : owned ? '사용하기' : (pend && pend === it.id ? '한 번 더!' : it.p + (cur === 'gc' ? IC.game : IC.book)); b.disabled = on;
+      b.innerHTML = on ? '사용 중' : owned ? '사용하기' : (pend && pend === it.id ? '한 번 더!' : payPrice + (payType === 'sc' ? IC.trophy + '성공' : payType === 'gc' ? IC.game : IC.book)); b.disabled = on;
       b.className = (pend && pend === it.id) ? 'conf' : (owned && it.p > 0 ? 'own' : '');
       b.onclick = function () {
         var bought = false;
         if (!owned) {
-          if (P[cur] < it.p) { meMsg('코인이 ' + (it.p - P[cur]) + '개 모자라요. ' + (cur === 'gc' ? '게임을 하면 게임 코인이 쌓여요.' : '말씀을 끝까지 들으면 말씀 코인이 쌓여요.')); return; }
+          if (P[payType] < payPrice) { meMsg((payType === 'sc' ? '성공 코인' : '코인') + '이 ' + (payPrice - P[payType]) + '개 모자라요.'); return; }
           if (pend !== it.id) { pend = it.id; meMsg(it.n + ' - 한 번 더 누르면 구매해요.'); renderShop(); return; }
-          pend = ''; P[cur] -= it.p; P.own.push(it.id); var f = { own: union(it.id) }; f[cur] = inc(-it.p); cloud(f);
+          pend = ''; P[payType] -= payPrice; P.own.push(it.id); var f = { own: union(it.id) }; f[payType] = inc(-payPrice); cloud(f);
           meMsg(it.n + ' 구매 완료!'); bought = true;
         }
         if (shopTab === 'ch') P.eq.ch = it.id; else if (shopTab === 'theme') P.eq.theme = it.t; else if (shopTab === 'font') P.eq.font = it.f; else P.eq[shopTab] = it.v;

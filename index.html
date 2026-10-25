@@ -1896,7 +1896,9 @@ var VIDEOS = {
                 if(e.lane===lane){magnetTime=5;say('골드 자석! 잠시 동안 금빛 골드를 끌어당겨요.');}
               }
             }else if(e.z<=.13){
-              e.done=true;takeHit(e);
+              e.done=true;
+              if(e.lane===lane)takeHit(e);
+              else{score+=3;}
             }
           });
           entities=entities.filter(function(e){return !e.done&&e.z>-.08;});

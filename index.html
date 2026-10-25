@@ -1419,7 +1419,7 @@ var VIDEOS = {
         if(ended)return;ended=true;if(timer)clearInterval(timer);
         $('fmServe').disabled=true;$('fmServe').textContent='영업 종료';
         $('fmMsg').textContent='영업 종료 · '+served+'/6 주문 성공 · 최고 콤보 '+bestCombo;
-        finish('피자 주문 마스터',served+'/8 주문 성공 · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
+        finish('피자 주문 마스터',served+'/6 주문 성공 · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
       }
       buildChoices();$('fmServe').onclick=serve;nextOrder();
       timer=setInterval(function(){if(ended)return;time=Math.max(0,time-1);render();if(time<=0)finishGame();},1000);
@@ -1850,7 +1850,8 @@ var VIDEOS = {
         ctx.fillStyle='#9e7951';ctx.beginPath();ctx.moveTo(242,132);ctx.lineTo(360,132);ctx.lineTo(360,194);ctx.lineTo(208,194);ctx.closePath();ctx.fill();
         ctx.fillStyle='#bc986d';for(var q=0;q<5;q++){ctx.fillRect(244-q*5,139+q*10,116+q*5,2);}
         // Player, preserving the equipped character's normal wide proportions and accessories.
-        drawHero(ctx,16,70,42,42,'happy',0);
+        var reelPose=phase==='caught'?pullProgress:0;
+        ctx.save();ctx.translate(37,91);ctx.rotate(-.12*reelPose);drawHero(ctx,-21,-21-reelPose*4,42,42,'happy',0);ctx.restore();
         ctx.fillStyle='#fff8e6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillRect(17,61,42,13);ctx.fillStyle='#395146';ctx.fillText('나',38,70);
         if(phase==='bite'){
           var hintBob=Math.sin(ts*.025)*2;

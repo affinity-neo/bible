@@ -393,6 +393,44 @@
   .dm-msg.fm-ok{color:#2d7a43;font-weight:700}.dm-msg.fm-no{color:#b64234;font-weight:700}
   @media(max-width:390px){.fm-card{padding:8px 5px}.fm-pizza{min-height:104px}.fm-pizza-svg{width:min(100%,120px)}.fm-card-head b{font-size:.78rem}.fm-card-head small{font-size:.61rem}.fm-toppings{grid-template-columns:repeat(2,minmax(0,1fr))}.fm-sauce{font-size:.61rem}}
 
+
+  .race-shell,.fish-shell{max-width:460px;margin:0 auto;font-family:var(--ui)}
+  .race-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:0 0 9px}
+  .race-top>div{padding:8px;border:1px solid var(--line);border-radius:11px;background:var(--card);display:flex;flex-direction:column;gap:2px;min-width:0}
+  .race-top small{font-size:.67rem;color:var(--muted)}.race-top b{font-size:.9rem;color:var(--accent)}
+  .race-track-wrap{max-width:420px;margin:0 auto;overflow:hidden;border-radius:17px;border:1px solid #89977c;background:#afd0a0;box-shadow:0 6px 18px rgba(35,52,40,.12)}
+  .race-track-wrap canvas.gcv{border:0;border-radius:0;max-width:100%;background:#add29b}
+  .race-standings{margin:9px 0;display:grid;gap:4px}
+  .race-rank-row{display:grid;grid-template-columns:20px 10px 58px minmax(36px,1fr) 32px;gap:6px;align-items:center;font-size:.72rem;padding:4px 7px;border-radius:8px;background:var(--card);border:1px solid var(--line)}
+  .race-rank-row.mine{border-color:var(--accent);background:var(--hl);font-weight:800}
+  .race-pos{text-align:center;color:var(--muted)}.race-dot{width:9px;height:9px;border-radius:50%;background:var(--runner-color);border:1px solid rgba(0,0,0,.15)}
+  .race-runner-name{white-space:nowrap}.race-mini-bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden}.race-mini-bar i{display:block;height:100%;border-radius:999px}
+  .race-rank-row>small{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .race-guidance{min-height:42px;margin:8px 0;padding:9px 11px;border-radius:11px;background:var(--hl);font-size:.78rem;line-height:1.45}
+  .race-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
+  .race-controls button{min-width:0;min-height:58px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer;touch-action:manipulation;user-select:none}
+  .race-controls button span{font-size:1.2rem;font-weight:900;color:var(--accent);line-height:1.1}.race-controls button small{font-size:.63rem;line-height:1.1}
+  .race-controls button:active{background:var(--hl);transform:scale(.97)}
+  .race-start{margin-top:8px;width:100%;min-height:47px;border:0;border-radius:12px;background:var(--accent);color:var(--bg);font:inherit;font-weight:800;cursor:pointer}
+  .race-start[hidden]{display:none}.race-help{text-align:center;font-size:.68rem;line-height:1.6;color:var(--muted);margin:7px 0}
+  .fish-shell{display:flex;flex-direction:column;gap:8px}
+  .fish-scene{border:1px solid #87b5c5;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(37,86,103,.12)}
+  .fish-scene canvas.gcv{border:0;border-radius:0;max-width:100%;background:#9ed8f2}
+  .fish-duel{display:grid;grid-template-columns:1fr 38px 1fr;align-items:center;text-align:center;padding:9px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+  .fish-duel>div:not(.fish-vs){display:flex;flex-direction:column;gap:2px}.fish-duel small{color:var(--muted);font-size:.7rem}.fish-duel b{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
+  .fish-vs{font-size:.7rem;font-weight:900;color:#d58e4d}
+  .fish-codex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .fish-book-item{display:grid;grid-template-columns:18px minmax(0,1fr) 15px;gap:4px;align-items:center;border-radius:8px;padding:6px 5px;background:var(--card);border:1px solid var(--line);font-size:.65rem;min-width:0;color:var(--muted)}
+  .fish-book-item.caught{background:var(--hl);border-color:#8bbba0;color:var(--fg)}
+  .fish-book-item b{text-align:right;font-variant-numeric:tabular-nums}
+  .fish-mini{width:17px;height:9px;background:var(--fish-color);border-radius:70% 55% 55% 70%;position:relative;display:block}
+  .fish-mini:before{content:"";position:absolute;left:-5px;top:1px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-right:6px solid var(--fish-color)}
+  .fish-mini:after{content:"";position:absolute;right:3px;top:2px;width:3px;height:3px;border-radius:50%;background:var(--fish-mark)}
+  .fish-action{width:100%;min-height:49px;border:0;border-radius:12px;background:#287d9e;color:#fff;font:inherit;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 3px 0 #195d78}
+  .fish-action:disabled{opacity:.75;box-shadow:none}
+  .fish-help{text-align:center;font-size:.7rem;line-height:1.5;color:var(--muted)}
+  @media(max-width:390px){.race-top>div{padding:6px}.race-rank-row{grid-template-columns:18px 9px 53px minmax(24px,1fr) 29px;gap:4px}.race-controls button{min-height:54px}.fish-codex{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -1468,42 +1506,309 @@ var VIDEOS = {
   };
 
 
-  // Desert racing game: keyboard and touch controls, personal best stored locally.
-  // Top-down desert survival RPG: roam, gather manna, evade creatures, level up.
+  // ================= 캐릭터 러닝 레이스 =================
   GAMES.racing = {
-    name: '광야 레이스', short: '레이싱',
-    desc: '나를 포함한 참가자 5명이 결승선을 향해 달려요. 좌우 버튼이나 방향키로 차선을 바꾸고, 부스터를 적절히 사용해 라이벌을 추월하세요. 화면에 나오는 참가자는 경기 내내 같은 다섯 명으로 유지돼요.',
+    name: '광야 캐릭터 레이스', short: '레이싱',
+    desc: '직접 꾸민 캐릭터가 트랙을 달립니다. 5명의 고정 참가자와 경쟁하며 차선을 바꾸고, 장애물을 뛰어넘고, 스태미나를 모아 스퍼트하세요.',
     init: function(area, finish) {
-      var W=360,H=520, o=mkCanvas(area,W,H), cv=o.cv, ctx=o.ctx, ended=false, running=false, t=0, playerLane=1, boost=100, distance=0, score=0, last=0, raf=0;
-      cv.style.touchAction='none'; cv.setAttribute('tabindex','0');
-      var names=['나','요셉','다윗','에스더','여호수아'], cols=['#e8573f','#3f8fe8','#37a86b','#8a56d8','#e8a93f'];
-      var cars=names.map(function(n,i){return {name:n,col:cols[i],lane:i===0?1:(i%3),dist:i===0?0:-90-i*38,speed:i===0?1.0:0.82+i*0.055,idx:i};});
-      var obstacles=[], spawn=0, left=0,right=0,boosting=false;
-      var ctl=document.createElement('div');ctl.className='race-controls';ctl.innerHTML='<button type="button" aria-label="왼쪽">◀ 왼쪽</button><button type="button">부스터</button><button type="button" aria-label="오른쪽">오른쪽 ▶</button>';area.appendChild(ctl);
-      function change(d){playerLane=Math.max(0,Math.min(2,playerLane+d));}
-      function bindHold(b,k){b.addEventListener('pointerdown',function(e){e.preventDefault();if(k==='L')left=1;else if(k==='R')right=1;else boosting=true;cv.focus();running=true;});['pointerup','pointerleave','pointercancel'].forEach(function(ev){b.addEventListener(ev,function(){if(k==='L')left=0;else if(k==='R')right=0;else boosting=false;});});}
-      var bs=ctl.querySelectorAll('button');bindHold(bs[0],'L');bindHold(bs[1],'N');bindHold(bs[2],'R');
-      cv.addEventListener('pointerdown',function(e){e.preventDefault();running=true;cv.focus();var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;if(x<.34)change(-1);else if(x>.66)change(1);});
-      function kd(e){if(['ArrowLeft','KeyA'].includes(e.code)){left=1;e.preventDefault();running=true;}if(['ArrowRight','KeyD'].includes(e.code)){right=1;e.preventDefault();running=true;}if(['Space','ArrowUp','KeyW'].includes(e.code)){boosting=true;e.preventDefault();running=true;}}
-      function ku(e){if(['ArrowLeft','KeyA'].includes(e.code))left=0;if(['ArrowRight','KeyD'].includes(e.code))right=0;if(['Space','ArrowUp','KeyW'].includes(e.code))boosting=false;}
-      window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);
-      function rounded(x,y,w,h,r,col){ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
-      function drawCar(x,y,col,name,isMe,scale){scale=Math.max(.82,Math.min(1.15,scale));var w=28*scale,h=43*scale;rounded(x-w/2,y-h/2,w,h,7,col);rounded(x-w*.34,y-h*.2,w*.68,h*.27,4,'#d9edf2');ctx.fillStyle='#252a32';ctx.fillRect(x-w*.55,y-h*.25,4*scale,10*scale);ctx.fillRect(x+w*.4,y-h*.25,4*scale,10*scale);ctx.fillStyle='#fff2b8';ctx.fillRect(x-w*.35,y+h*.31,5*scale,3*scale);ctx.fillRect(x+w*.18,y+h*.31,5*scale,3*scale);ctx.fillStyle='#17212b';ctx.font=(isMe?'bold ':'')+'10px sans-serif';ctx.textAlign='center';ctx.fillText(name,x,y-h/2-7);if(isMe){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x-w/2-2,y-h/2-2,w+4,h+4);}}
-      function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#8ebc77';ctx.fillRect(0,0,W,H);ctx.fillStyle='#555a61';ctx.fillRect(38,0,W-76,H);ctx.strokeStyle='#f5f1d9';ctx.lineWidth=3;ctx.setLineDash([22,18]);ctx.lineDashOffset=-(distance%40);ctx.beginPath();ctx.moveTo(W/2-48,0);ctx.lineTo(W/2-48,H);ctx.moveTo(W/2+48,0);ctx.lineTo(W/2+48,H);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillRect(38,16,W-76,4);
-        var sorted=cars.slice().sort(function(a,b){return a.dist-b.dist;});sorted.forEach(function(car){var relative=car.dist-cars[0].dist;if(car.idx===0){car.lane=playerLane;drawCar(86+playerLane*94,H-92,car.col,car.name,true,1.08);}else{var y=H-145-relative*.58; if(y>-30&&y<H+30){var scale=Math.max(.82,1-Math.max(0,Math.abs(relative)-80)/800);drawCar(86+car.lane*94,y,car.col,car.name,false,scale);}}});
-        ctx.fillStyle='#17212b';ctx.font='bold 13px sans-serif';ctx.textAlign='left';ctx.fillText('결승까지 '+Math.max(0,100-distance).toFixed(0)+'%',12,22);ctx.fillStyle='#e6e8ed';ctx.fillRect(12,32,100,7);ctx.fillStyle='#e9b84c';ctx.fillRect(12,32,Math.min(100,distance),7);ctx.fillStyle='#17212b';ctx.fillText('부스터',W-68,22);ctx.fillStyle='#e6e8ed';ctx.fillRect(W-68,32,56,7);ctx.fillStyle='#55b8df';ctx.fillRect(W-68,32,56*boost/100,7);
-        var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.textAlign='right';ctx.fillText(rank+'위 / 5',W-12,H-18);
+      var W=360,H=520,o,cv,ctx,art;
+      area.innerHTML='<div class="race-shell">'+
+        '<div class="race-top"><div><small>광야 경기장</small><b id="raceTime">출발 준비</b></div><div><small>결승선까지</small><b id="raceDist">0%</b></div><div><small>현재 순위</small><b id="raceRank">3 / 5</b></div></div>'+
+        '<div class="race-track-wrap" id="raceTrack"></div>'+
+        '<div class="race-standings" id="raceStandings"></div>'+
+        '<div class="race-guidance" id="raceGuide">내 캐릭터로 5인 레이스에 도전하세요. 장애물 앞에서 점프하고 스퍼트를 활용하세요.</div>'+
+        '<div class="race-controls">'+
+          '<button type="button" id="raceLeft"><span>←</span><small>왼쪽 차선</small></button>'+
+          '<button type="button" id="raceJump"><span>↗</span><small>점프</small></button>'+
+          '<button type="button" id="raceBoost"><span>스퍼트</span><small>길게 누르기</small></button>'+
+          '<button type="button" id="raceRight"><span>→</span><small>오른쪽 차선</small></button>'+
+        '</div>'+
+        '<button type="button" id="raceStart" class="race-start">출발선에 서기</button>'+
+        '<div class="race-help">PC: ← → 이동 · Space 스퍼트 · ↑ 점프<br>모바일: 아래 버튼을 눌러 조작하세요.</div></div>';
+      art=area.querySelector('#raceTrack');o=mkCanvas(art,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='none';cv.setAttribute('tabindex','0');
+      var runners=[
+        {name:'나',player:true,ch:null,lane:2,progress:0,speed:2.94,col:'#e58b46',eq:null},
+        {name:'요셉',ch:chById('h16'),lane:1,progress:-1.4,speed:2.73,col:'#478dcb',eq:{ch:'',hat:'',face:'',neck:'n_scarf'}},
+        {name:'다윗',ch:chById('h0'),lane:0,progress:-.6,speed:2.82,col:'#5a9c63',eq:{hat:'h_crown',face:'',neck:''}},
+        {name:'에스더',ch:chById('h1'),lane:3,progress:-1.8,speed:2.76,col:'#ad78c8',eq:{hat:'h_ribbon',face:'',neck:'n_flower'}},
+        {name:'여호수아',ch:chById('h4'),lane:4,progress:-2.2,speed:2.86,col:'#d66e68',eq:{hat:'',face:'',neck:'n_medal'}}
+      ];
+      var player=runners[0],started=false,ended=false,elapsed=0,boost=100,boosting=false,jump=0,score=0,spawn=2.4,obstacles=[],last=0,raf=0,rankTick=0,message='',messageTime=0;
+      runners.forEach(function(r){if(!r.eq)r.eq={hat:'',face:'',neck:''};});
+      function setMessage(s){message=s;messageTime=2.4;var g=area.querySelector('#raceGuide');if(g)g.textContent=s;}
+      function laneX(lane,y){var f=Math.max(0,Math.min(1,(y-90)/(H-90))),left=65-42*f,right=295+42*f;return left+(right-left)*(lane+.5)/5;}
+      function roadAt(y){var f=Math.max(0,Math.min(1,(y-90)/(H-90)));return {l:65-42*f,r:295+42*f};}
+      function drawPersonRunner(r,y,scale,ts){
+        var x=laneX(r.lane,y),w=42*scale,h=58*scale,bob=Math.sin(ts*.012+runners.indexOf(r)*1.4)*2.2;
+        if(r.player&&jump>0)bob-=Math.sin((.72-jump)/.72*Math.PI)*17;
+        ctx.save();
+        ctx.fillStyle='rgba(38,47,39,.2)';ctx.beginPath();ctx.ellipse(x,y+h*.38,15*scale,4*scale,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=r.col;ctx.beginPath();ctx.ellipse(x,y+h*.39,8*scale,4*scale,0,0,Math.PI*2);ctx.fill();
+        if(r.player){
+          drawHero(ctx,x-w/2,y-h/2+bob,w,h,'happy',0);
+        } else {
+          drawChar(ctx,x-w/2,y-h/2+bob,w,h,r.ch,'smile',0);
+          drawAcc(ctx,x-w/2,y-h/2+bob,w,h,r.eq,r.ch);
+        }
+        ctx.font='bold '+Math.max(8,10*scale)+'px sans-serif';ctx.textAlign='center';
+        var label=r.name,tw=ctx.measureText(label).width;
+        ctx.fillStyle=r.player?'#fff2c9':'rgba(255,255,255,.92)';
+        ctx.fillRect(x-tw/2-4,y-h/2+bob-18*scale,tw+8,13*scale);
+        ctx.fillStyle='#24332c';ctx.fillText(label,x,y-h/2+bob-8*scale);
+        if(r.player){ctx.strokeStyle='#fff2b3';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y+5,21*scale,32*scale,0,0,Math.PI*2);ctx.stroke();}
+        ctx.restore();
       }
-      function frame(ts){if(ended)return;var dt=Math.min(.04,(ts-last)/1000||0);last=ts;if(running){t+=dt;if(left){change(-1);left=0;}if(right){change(1);right=0;}var v=boosting&&boost>0?1.8:1;distance+=dt*3.3*v;cars[0].dist=distance;boost=Math.max(0,Math.min(100,boost+(boosting?-32:8)*dt));cars.slice(1).forEach(function(car){car.dist+=dt*3.3*car.speed*(Math.random()<.04?1.08:1);});spawn-=dt;if(spawn<=0){spawn=1.2+Math.random()*1.3;obstacles.push({lane:Math.floor(Math.random()*3),dist:distance+20});}obstacles=obstacles.filter(function(o){if(o.dist<distance+2&&o.dist>distance-2&&o.lane===playerLane){distance=Math.max(0,distance-2);score=Math.max(0,score-1);}return o.dist>distance-3;});if(distance>=100){ended=true;var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;finish(rank===1?'광야 레이스 우승':'레이스 완주',rank+'위 / 5명 · 수집 점수 '+score,Math.max(1,Math.min(4,Math.floor(distance/30))),rank===1);return;}}
-        draw();raf=requestAnimationFrame(frame);}
-      // collect points by clean driving and passing rivals; fixed cast of five, no random character traffic
-      var prevRank=5;var rankTimer=setInterval(function(){if(ended||!running)return;var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;if(rank<prevRank)score+=2;prevRank=rank;},800);
-      draw();raf=requestAnimationFrame(frame);
-      return function(){ended=true;cancelAnimationFrame(raf);clearInterval(rankTimer);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku);};
+      function drawHurdle(ob,y,ts){
+        var x=laneX(ob.lane,y),rb=roadAt(y),w=(rb.r-rb.l)/5*.58,h=Math.max(9,14*(.6+y/H));
+        ctx.save();ctx.translate(x,y);
+        ctx.fillStyle='rgba(25,35,31,.22)';ctx.beginPath();ctx.ellipse(0,h*.5,w*.7,4,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#f3e7c9';ctx.fillRect(-w/2,-h/2,w,h);
+        ctx.fillStyle='#d95148';for(var i=0;i<4;i++)ctx.fillRect(-w/2+i*w/4,-h/2,w/8,h);
+        ctx.fillStyle='#76533b';ctx.fillRect(-w/2+2,h/2-1,3,h*.8);ctx.fillRect(w/2-5,h/2-1,3,h*.8);
+        ctx.restore();
+      }
+      function draw(ts){
+        ctx.clearRect(0,0,W,H);
+        var sky=ctx.createLinearGradient(0,0,0,175);sky.addColorStop(0,'#bfe8fa');sky.addColorStop(1,'#f5efd7');
+        ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#f4ce76';ctx.beginPath();ctx.arc(292,48,18,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#8ab77b';ctx.beginPath();ctx.moveTo(0,139);ctx.lineTo(38,92);ctx.lineTo(73,127);ctx.lineTo(115,83);ctx.lineTo(151,129);ctx.lineTo(220,91);ctx.lineTo(267,127);ctx.lineTo(320,93);ctx.lineTo(360,132);ctx.lineTo(360,210);ctx.lineTo(0,210);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#d8c9aa';ctx.fillRect(0,118,360,62);
+        for(var side=0;side<2;side++){
+          var sx=side===0?0:302;
+          ctx.fillStyle='#bd8b66';ctx.fillRect(sx,126,58,50);ctx.fillStyle='#e6bc8e';ctx.fillRect(sx,126,58,7);
+          for(var rr=0;rr<3;rr++)for(var cc=0;cc<5;cc++){ctx.fillStyle=['#d95e53','#4b8ec7','#e5c15a','#5f9b67','#956fba'][(rr+cc*2)%5];ctx.beginPath();ctx.arc(sx+7+cc*11,140+rr*12,3.5,0,Math.PI*2);ctx.fill();}
+        }
+        ctx.fillStyle='#7aaa6d';ctx.fillRect(0,175,360,345);
+        var rtop=roadAt(90),rbot=roadAt(H);
+        ctx.beginPath();ctx.moveTo(rtop.l,90);ctx.lineTo(rtop.r,90);ctx.lineTo(rbot.r,H);ctx.lineTo(rbot.l,H);ctx.closePath();
+        var road=ctx.createLinearGradient(0,100,0,H);road.addColorStop(0,'#c7b8a3');road.addColorStop(.5,'#9d9183');road.addColorStop(1,'#746c64');ctx.fillStyle=road;ctx.fill();
+        ctx.strokeStyle='#fff3d5';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(rtop.l,90);ctx.lineTo(rbot.l,H);ctx.moveTo(rtop.r,90);ctx.lineTo(rbot.r,H);ctx.stroke();
+        for(var ln=1;ln<5;ln++){
+          ctx.strokeStyle='rgba(255,247,222,.7)';ctx.lineWidth=1.5;ctx.setLineDash([18,14]);
+          var xt=rtop.l+(rtop.r-rtop.l)*ln/5,xb=rbot.l+(rbot.r-rbot.l)*ln/5;
+          ctx.lineDashOffset=-(elapsed*40)%32;ctx.beginPath();ctx.moveTo(xt,90);ctx.lineTo(xb,H);ctx.stroke();ctx.setLineDash([]);
+        }
+        // Running track speed marks
+        for(var mark=0;mark<8;mark++){
+          var y=205+((mark*45+elapsed*85)%310),bb=roadAt(y);
+          ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bb.l+4,y);ctx.lineTo(bb.r-4,y);ctx.stroke();
+        }
+        // Finish arch
+        ctx.fillStyle='#5e4f40';ctx.fillRect(106,85,7,53);ctx.fillRect(247,85,7,53);
+        ctx.fillStyle='#f8f0d7';ctx.fillRect(106,85,148,15);
+        for(var fl=0;fl<12;fl++){ctx.fillStyle=(fl%2?'#f2e7cf':'#343a35');ctx.fillRect(106+fl*12.3,85,12.3,15);}
+        ctx.fillStyle='#fff7dc';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText('FINISH',180,77);
+        obstacles.forEach(function(ob){var gap=ob.at-player.progress;if(gap>-3&&gap<34){var yy=365-gap*6.2;if(yy>150&&yy<480)drawHurdle(ob,yy,ts);}});
+        var sorted=runners.slice().sort(function(a,b){return b.progress-a.progress;});
+        sorted.forEach(function(r){
+          var rel=r.progress-player.progress,y=r.player?366:366-rel*2.2;
+          y=Math.max(170,Math.min(418,y));var sc=.58+Math.max(0,Math.min(1,(y-170)/248))*.48;
+          drawPersonRunner(r,y,sc,ts);
+        });
+        if(!started){
+          ctx.fillStyle='rgba(28,47,39,.74)';ctx.fillRect(26,202,308,80);
+          ctx.fillStyle='#fff8e8';ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('5인 캐릭터 레이스',180,231);
+          ctx.font='12px sans-serif';ctx.fillText('내가 꾸민 캐릭터로 결승선을 향해!',180,254);
+        }
+        if(boosting&&boost>0){ctx.fillStyle='rgba(245,196,83,.14)';ctx.fillRect(0,0,W,H);}
+        if(messageTime>0){ctx.fillStyle='rgba(255,250,230,.92)';ctx.fillRect(55,55,250,25);ctx.fillStyle='#4a3e2d';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(message,180,72);}
+        var rank=1+runners.slice(1).filter(function(r){return r.progress>player.progress;}).length;
+        ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(12,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='left';ctx.font='bold 12px sans-serif';ctx.fillText(Math.floor(player.progress)+'% 진행',20,31);
+        ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(248,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText(rank+'위 / 5',340,31);
+      }
+      function rankNow(){return 1+runners.slice(1).filter(function(r){return r.progress>player.progress;}).length;}
+      function updateStandings(){
+        var box=area.querySelector('#raceStandings');
+        var ordered=runners.slice().sort(function(a,b){return b.progress-a.progress;});
+        box.innerHTML=ordered.map(function(r,i){return '<div class="race-rank-row '+(r.player?'mine':'')+'"><b class="race-pos">'+(i+1)+'</b><span class="race-dot" style="--runner-color:'+r.col+'"></span><span class="race-runner-name">'+r.name+'</span><span class="race-mini-bar"><i style="width:'+Math.max(0,Math.min(100,r.progress))+'%;background:'+r.col+'"></i></span><small>'+Math.floor(r.progress)+'%</small></div>';}).join('');
+        area.querySelector('#raceRank').textContent=rankNow()+' / 5';
+        area.querySelector('#raceDist').textContent=Math.floor(player.progress)+'%';
+      }
+      function endRace(){
+        if(ended)return;ended=true;boosting=false;
+        var rank=rankNow(),sorted=runners.slice().sort(function(a,b){return b.progress-a.progress;}),winner=sorted[0].name;
+        area.querySelector('#raceStart').hidden=false;area.querySelector('#raceStart').textContent='다시 달리기';
+        area.querySelector('#raceStart').onclick=function(){finish('레이스 기록 저장','이번 판 '+rank+'위 / 5명 · 점수 '+score+' · '+Math.floor(player.progress)+'%',Math.min(5,Math.floor(score/8)),rank===1);};
+        setMessage((rank===1?'우승!':'레이스 완주')+' · '+rank+'위 / 5명 · 선두 '+winner);
+        finish(rank===1?'광야 레이스 우승':'레이스 완주',rank+'위 / 5명 · 수집 점수 '+score+' · 진행 '+Math.floor(player.progress)+'%',Math.min(5,Math.floor(score/8)),rank===1);
+      }
+      function frame(ts){
+        if(ended)return;
+        var dt=Math.min(.045,((ts-last)/1000)||0);last=ts;
+        if(started){
+          elapsed+=dt;jump=Math.max(0,jump-dt);messageTime=Math.max(0,messageTime-dt);
+          if(boosting&&boost>0){player.progress+=dt*4.25;boost=Math.max(0,boost-35*dt);}
+          else {player.progress+=dt*2.92;boost=Math.min(100,boost+13*dt);}
+          runners.slice(1).forEach(function(r){r.progress=Math.min(100,r.progress+r.speed*dt);});
+          spawn-=dt;
+          if(spawn<=0){spawn=2.2+Math.random()*1.5;obstacles.push({lane:Math.floor(Math.random()*5),at:player.progress+11+Math.random()*9,done:false});}
+          obstacles.forEach(function(ob){
+            if(!ob.done&&player.progress>=ob.at){ob.done=true;if(ob.lane===player.lane){if(jump>.02){score+=4;setMessage('장애물을 멋지게 넘었어요! +4');}else{player.progress=Math.max(0,player.progress-2.2);boost=Math.max(0,boost-15);setMessage('장애물에 걸렸어요. 다음엔 점프하세요.');}}else score+=1;}
+          });
+          obstacles=obstacles.filter(function(ob){return !ob.done&&ob.at>player.progress-3;});
+          if(elapsed>=40||player.progress>=100){endRace();return;}
+          if(elapsed>rankTick){rankTick=elapsed+.5;updateStandings();}
+        }
+        draw(ts);raf=requestAnimationFrame(frame);
+      }
+      function moveLane(d){if(!started||ended)return;player.lane=Math.max(0,Math.min(4,player.lane+d));}
+      area.querySelector('#raceStart').onclick=function(){if(ended){location.reload();return;}started=true;area.querySelector('#raceStart').hidden=true;cv.focus();setMessage('출발! 장애물 앞에서 점프하고 스퍼트를 조절하세요.');};
+      area.querySelector('#raceLeft').onclick=function(){moveLane(-1);};
+      area.querySelector('#raceRight').onclick=function(){moveLane(1);};
+      area.querySelector('#raceJump').onclick=function(){if(started&&!ended)jump=.72;};
+      var boostBtn=area.querySelector('#raceBoost');
+      boostBtn.addEventListener('pointerdown',function(e){e.preventDefault();boosting=true;});
+      ['pointerup','pointerleave','pointercancel'].forEach(function(ev){boostBtn.addEventListener(ev,function(){boosting=false;});});
+      function kd(e){
+        if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();moveLane(-1);}
+        if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();moveLane(1);}
+        if(e.code==='ArrowUp'||e.code==='KeyW'){e.preventDefault();if(started)jump=.72;}
+        if(e.code==='Space'){e.preventDefault();if(started)boosting=true;}
+        if((e.code==='Enter')&&!started){started=true;area.querySelector('#raceStart').hidden=true;}
+      }
+      function ku(e){if(e.code==='Space')boosting=false;}
+      window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);
+      updateStandings();draw(0);raf=requestAnimationFrame(frame);
+      return function(){ended=true;boosting=false;cancelAnimationFrame(raf);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku);};
     }
   };
 
-  GAMES.fishing = {name:'갈릴리 낚시',short:'낚시',desc:'물 위를 눌러 낚싯줄을 던지고, 입질이 오면 다시 눌러 물고기를 낚아 올리세요. 희귀 물고기는 점수가 높지만 타이밍을 놓치면 도망가요.',init:function(area,finish){var W=360,H=520,o=mkCanvas(area,W,H),cv=o.cv,ctx=o.ctx,ended=false,started=false,t=35,score=0,caught=0,rare=0,fish=null,bite=0,combo=0,raf=0,last=0;cv.style.touchAction='manipulation';area.insertAdjacentHTML('afterbegin','<div class="dm-top"><span id="fishTime">시간 35</span><span id="fishScore">점수 0</span><span id="fishCombo">연속 0</span></div><div id="fishMsg" class="dm-msg">물 위를 눌러 낚싯줄을 던지세요. 입질이 오면 다시 눌러 낚으세요.</div>');function el(id){return area.querySelector('#'+id);}function tap(){if(ended)return;if(!started){started=true;return;}if(fish&&bite>0){var r=fish.r>.82;score+=r?12:4;caught++;if(r)rare++;combo++;el('fishMsg').textContent=(r?'희귀 물고기':'물고기')+'를 잡았어요. 점수 +'+(r?12:4);fish=null;bite=0;}else if(!fish){fish={r:Math.random(),x:50+Math.random()*250,y:180+Math.random()*140};bite=1+Math.random()*1.5;el('fishMsg').textContent='찌를 지켜보세요. 움직일 때 낚아 올리세요.';}else{combo=0;el('fishMsg').textContent='너무 일찍 당겼어요. 물고기가 도망갔어요.';fish=null;bite=0;}}cv.addEventListener('pointerdown',function(e){e.preventDefault();tap();});function frame(ts){if(ended)return;var dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(started){t-=dt;if(fish){bite-=dt;if(bite<=0){fish=null;combo=0;el('fishMsg').textContent='물고기가 도망갔어요.';}}if(t<=0){ended=true;finish('갈릴리 낚시','잡은 물고기 '+caught+'마리 · 희귀 '+rare+'마리 · 점수 '+score,Math.max(1,Math.min(5,Math.floor(score/15))),rare>0);return;}}ctx.clearRect(0,0,W,H);ctx.fillStyle='#f5e5c7';ctx.fillRect(0,0,W,H);ctx.fillStyle='#76b7d0';ctx.fillRect(0,112,W,H-112);for(var i=0;i<5;i++){ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo((i*73+ts/28)%W,145+i*55);ctx.quadraticCurveTo((i*73+ts/28)%W+25,135+i*55,(i*73+ts/28)%W+55,145+i*55);ctx.stroke();}ctx.fillStyle='#a8784e';ctx.fillRect(0,92,W,22);ctx.strokeStyle='#594739';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(180,95);ctx.lineTo(225,145);ctx.lineTo(225,fish?fish.y:245);ctx.stroke();ctx.fillStyle='#e65d59';ctx.fillRect(218,fish?fish.y:240,15,22);if(fish){ctx.fillStyle=fish.r>.82?'#e6bd54':'#6f9fc5';ctx.beginPath();ctx.ellipse(fish.x,fish.y,17,9,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(fish.x-15,fish.y);ctx.lineTo(fish.x-25,fish.y-7);ctx.lineTo(fish.x-25,fish.y+7);ctx.fill();if(bite<.7){ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.fillText('당겨!',fish.x,fish.y-20);}}el('fishTime').textContent='시간 '+Math.ceil(t);el('fishScore').textContent='점수 '+score;el('fishCombo').textContent='연속 '+combo;raf=requestAnimationFrame(frame);}raf=requestAnimationFrame(frame);return function(){ended=true;cancelAnimationFrame(raf);};}};
+  // ================= 갈릴리 낚시: 캐릭터와 타이밍 중심 =================
+  GAMES.fishing = {
+    name:'갈릴리 낚시', short:'낚시',
+    desc:'직접 꾸민 캐릭터가 나무 잔교에서 낚시합니다. 입질 표시가 켜지는 순간 당겨 올리고, 여섯 종류의 물고기를 모아 베드로와 점수 대결을 하세요.',
+    init:function(area,finish){
+      var W=360,H=500,o,cv,ctx;
+      area.innerHTML='<div class="fish-shell">'+
+        '<div class="dm-top"><span id="fishTime">남은 시간 45</span><span id="fishScore">내 점수 0</span><span id="fishCatch">어획 0</span></div>'+
+        '<div class="dm-bar"><i id="fishBar"></i></div>'+
+        '<div class="fish-scene" id="fishScene"></div>'+
+        '<div class="fish-duel"><div><small>내 어획 점수</small><b id="fishMyScore">0</b></div><div class="fish-vs">VS</div><div><small>베드로의 점수</small><b id="fishRivalScore">0</b></div></div>'+
+        '<div class="fish-codex" id="fishCodex"></div>'+
+        '<button type="button" id="fishAction" class="fish-action">낚싯줄 던지기</button>'+
+        '<div id="fishMsg" class="dm-msg" aria-live="polite">낚싯줄을 던지고 찌를 지켜보세요. 물고기가 물 때 버튼을 눌러 당기세요.</div>'+
+        '<div class="fish-help">입질 타이밍을 놓치면 물고기가 도망갑니다. 희귀 물고기는 점수가 높아요.</div></div>';
+      var scene=area.querySelector('#fishScene');o=mkCanvas(scene,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='manipulation';
+      var species=[
+        {id:'minnow',n:'피라미',c:'#8bbac0',c2:'#e5f0dc',points:3,rare:false,shape:'slim'},
+        {id:'perch',n:'줄무늬 농어',c:'#77a9c6',c2:'#f3d28b',points:5,rare:false,shape:'stripe'},
+        {id:'carp',n:'잉어',c:'#bb9061',c2:'#f1d9a2',points:7,rare:false,shape:'round'},
+        {id:'bass',n:'큰입배스',c:'#69946a',c2:'#c5dba0',points:9,rare:false,shape:'bass'},
+        {id:'golden',n:'황금 잉어',c:'#e5b943',c2:'#fff1a3',points:18,rare:true,shape:'round'},
+        {id:'koi',n:'은빛 비단잉어',c:'#f0e8dc',c2:'#e56f60',points:22,rare:true,shape:'koi'}
+      ];
+      var phase='ready',started=false,ended=false,remaining=45,wait=0,biteLeft=0,elapsed=0,score=0,caught=0,combo=0,rivalScore=0,fishNow=null,fishX=230,fishY=268,raf=0,last=0,book={},misses=0;
+      var btn=area.querySelector('#fishAction'),msg=area.querySelector('#fishMsg');
+      function say(s){msg.textContent=s;}
+      function pickFish(){
+        var r=Math.random();
+        if(r<.04)return species[5];
+        if(r<.09)return species[4];
+        if(r<.22)return species[3];
+        if(r<.40)return species[2];
+        if(r<.68)return species[1];
+        return species[0];
+      }
+      function updateUI(){
+        area.querySelector('#fishTime').textContent='남은 시간 '+Math.ceil(remaining);
+        area.querySelector('#fishScore').textContent='내 점수 '+score;
+        area.querySelector('#fishCatch').textContent='어획 '+caught;
+        area.querySelector('#fishMyScore').textContent=score;
+        area.querySelector('#fishRivalScore').textContent=rivalScore;
+        area.querySelector('#fishBar').style.width=(remaining/45*100)+'%';
+        area.querySelector('#fishBar').style.background=remaining<10?'#d75b4b':'#57a9cc';
+        area.querySelector('#fishCodex').innerHTML=species.map(function(sp){var n=book[sp.id]||0;return '<div class="fish-book-item '+(n?'caught':'')+'"><span class="fish-mini" style="--fish-color:'+sp.c+';--fish-mark:'+sp.c2+'"></span><span>'+sp.n+'</span><b>'+n+'</b></div>';}).join('');
+      }
+      function buttonState(){
+        if(phase==='ready'){btn.disabled=false;btn.textContent=started?'다시 낚싯줄 던지기':'낚싯줄 던지기';}
+        else if(phase==='waiting'){btn.disabled=true;btn.textContent='입질을 기다리는 중';}
+        else if(phase==='bite'){btn.disabled=false;btn.textContent='지금 당겨 올리기!';}
+        else {btn.disabled=true;btn.textContent='물고기 확인 중';}
+      }
+      function startCast(){
+        if(ended)return;
+        if(phase==='ready'){
+          started=true;phase='waiting';wait=1.8+Math.random()*2.8;fishNow=pickFish();fishX=214+Math.random()*90;fishY=253+Math.random()*75;buttonState();
+          say('미끼가 물에 들어갔어요. 찌에 변화가 생길 때까지 기다리세요.');
+        }else if(phase==='bite'){
+          phase='caught';caught++;combo++;score+=fishNow.points+(combo>=3?2:0);book[fishNow.id]=(book[fishNow.id]||0)+1;
+          say(fishNow.n+'를 낚았어요! +'+fishNow.points+'점'+(combo>=3?' · 3연속 보너스 +2':'')+(fishNow.rare?' · 희귀 어종':''));
+          updateUI();buttonState();setTimeout(function(){if(ended)return;phase='ready';fishNow=null;buttonState();},650);
+        }
+      }
+      btn.onclick=startCast;
+      function drawFish(x,y,sp,size,ts){
+        var w=size*(sp.shape==='slim'?1.3:1),h=size*.55;
+        ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(27,48,53,.16)';ctx.beginPath();ctx.ellipse(0,h+5,w*.8,3,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=sp.c;ctx.strokeStyle='rgba(34,58,62,.55)';ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.ellipse(0,0,w,h,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+        ctx.beginPath();ctx.moveTo(-w*.72,0);ctx.lineTo(-w*1.2,-h*.7);ctx.lineTo(-w*1.12,h*.7);ctx.closePath();ctx.fill();ctx.stroke();
+        ctx.fillStyle=sp.c2;
+        if(sp.shape==='stripe'){for(var i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(i*w*.32,-1,w*.08,h*.8,0,0,Math.PI*2);ctx.fill();}}
+        else if(sp.shape==='koi'){ctx.beginPath();ctx.ellipse(w*.18,-h*.15,w*.3,h*.5,-.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(-w*.25,h*.2,w*.2,h*.25,.4,0,Math.PI*2);ctx.fill();}
+        else if(sp.shape==='bass'){ctx.beginPath();ctx.moveTo(-w*.5,0);ctx.lineTo(-w*.15,-h*.3);ctx.lineTo(w*.25,0);ctx.lineTo(-w*.1,h*.3);ctx.closePath();ctx.fill();}
+        else {ctx.beginPath();ctx.ellipse(-w*.05,0,w*.42,h*.22,0,0,Math.PI*2);ctx.fill();}
+        ctx.fillStyle='#26342f';ctx.beginPath();ctx.arc(w*.52,-h*.12,Math.max(1.4,size*.055),0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(w*.54,-h*.18,Math.max(.7,size*.022),0,Math.PI*2);ctx.fill();
+        if(sp.rare){ctx.strokeStyle='#fff0a4';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,w+4,-.7,.8);ctx.stroke();}
+        ctx.restore();
+      }
+      function draw(ts){
+        ctx.clearRect(0,0,W,H);
+        var sky=ctx.createLinearGradient(0,0,0,175);sky.addColorStop(0,'#9ed8f2');sky.addColorStop(1,'#eaf4d9');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#f4d27a';ctx.beginPath();ctx.arc(300,47,19,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#79a878';ctx.beginPath();ctx.moveTo(0,162);ctx.lineTo(38,116);ctx.lineTo(72,146);ctx.lineTo(120,101);ctx.lineTo(177,155);ctx.lineTo(222,121);ctx.lineTo(278,151);ctx.lineTo(328,112);ctx.lineTo(360,141);ctx.lineTo(360,205);ctx.lineTo(0,205);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#5f9eb4';ctx.fillRect(0,170,W,H-170);
+        var water=ctx.createLinearGradient(0,170,0,H);water.addColorStop(0,'#75c0d6');water.addColorStop(.5,'#478fae');water.addColorStop(1,'#245d7b');ctx.fillStyle=water;ctx.fillRect(0,170,W,H-170);
+        for(var i=0;i<14;i++){var yy=186+i*23,xx=(i*57+ts*.025)%420-30;ctx.strokeStyle='rgba(230,250,248,'+(0.16+(i%3)*.07)+')';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+13,yy-4,xx+29,yy);ctx.lineTo(xx+43,yy);ctx.stroke();}
+        // distant boat and shoreline
+        ctx.fillStyle='#bb9a68';ctx.beginPath();ctx.moveTo(255,170);ctx.lineTo(321,170);ctx.lineTo(309,181);ctx.lineTo(266,181);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='#7b5b38';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(286,142);ctx.lineTo(286,171);ctx.stroke();ctx.fillStyle='#f7e9c8';ctx.beginPath();ctx.moveTo(287,145);ctx.lineTo(310,164);ctx.lineTo(287,163);ctx.closePath();ctx.fill();
+        // dock planks
+        ctx.fillStyle='#886746';ctx.beginPath();ctx.moveTo(0,171);ctx.lineTo(125,171);ctx.lineTo(177,242);ctx.lineTo(0,242);ctx.closePath();ctx.fill();
+        for(var pl=0;pl<5;pl++){ctx.strokeStyle='#bd976b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,178+pl*13);ctx.lineTo(136+pl*7,178+pl*13);ctx.stroke();}
+        ctx.strokeStyle='#5e4632';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,170);ctx.lineTo(124,170);ctx.stroke();
+        // Personalized fisherman with equipped character / hat / accessories
+        ctx.save();ctx.translate(0,Math.sin(ts*.006)*1.2);drawHero(ctx,18,67,52,72,'happy',0);ctx.restore();
+        ctx.strokeStyle='#63452c';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(58,116);ctx.lineTo(88,88);ctx.lineTo(125,146);ctx.stroke();
+        ctx.strokeStyle='#e5dac5';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(125,146);if(phase!=='ready')ctx.lineTo(fishX,phase==='bite'?fishY+13:fishY+Math.sin(ts*.008)*4);else ctx.lineTo(153,201);ctx.stroke();
+        if(phase!=='ready'){
+          var fy=fishY+Math.sin(ts*.008)*3+(phase==='bite'?10:0);
+          ctx.fillStyle='#f5f0dc';ctx.strokeStyle='#d64e47';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(fishX,fy,5,8,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+          ctx.fillStyle='#d64e47';ctx.beginPath();ctx.arc(fishX,fy-4,4,Math.PI,0);ctx.fill();
+          ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(fishX,fy+10,10+Math.sin(ts*.02)*3,4,0,0,Math.PI*2);ctx.stroke();
+          if(phase==='waiting'){drawFish(fishX+Math.sin(ts*.003)*23,fy+41,fishNow,20,ts);}
+          if(phase==='bite'){
+            ctx.fillStyle='#fff2b5';ctx.strokeStyle='#d15b45';ctx.lineWidth=2;ctx.beginPath();ctx.arc(fishX,fy-24,16,0,Math.PI*2);ctx.fill();ctx.stroke();
+            ctx.fillStyle='#7d392f';ctx.font='bold 17px sans-serif';ctx.textAlign='center';ctx.fillText('!',fishX,fy-18);
+          }
+        } else {
+          ctx.fillStyle='#fff0bd';ctx.beginPath();ctx.ellipse(153,201,5,8,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d64e47';ctx.lineWidth=2;ctx.stroke();
+        }
+        if(phase==='ready'){ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(172,344,168,42);ctx.fillStyle='#284b58';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(started?'미끼를 던져 보세요':'베드로와 낚시 대결',256,361);ctx.font='10px sans-serif';ctx.fillText('6종의 물고기를 수집하세요',256,377);}
+        if(phase==='bite'){ctx.fillStyle='rgba(255,250,214,.95)';ctx.fillRect(170,333,172,44);ctx.fillStyle='#a2382d';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('입질! 지금 당기세요',256,359);ctx.fillRect(183,366,146,4);ctx.fillStyle='#d85d4b';ctx.fillRect(183,366,146*Math.max(0,biteLeft/1.15),4);}
+        if(phase==='caught'&&fishNow)drawFish(fishX,fishY,fishNow,27,ts);
+      }
+      function finishGame(){
+        if(ended)return;ended=true;btn.disabled=true;btn.textContent='낚시 종료';
+        say((score>rivalScore?'베드로에게 승리했어요!':'오늘의 낚시 종료')+' · '+caught+'마리 · 내 점수 '+score+' / 베드로 '+rivalScore);
+        finish(score>rivalScore&&caught>=3?'갈릴리 낚시 대결 우승':'갈릴리 낚시 완료',caught+'마리 · 희귀 어종 '+species.filter(function(sp){return sp.rare&&(book[sp.id]||0)>0;}).length+'종 · 내 점수 '+score+' / 베드로 '+rivalScore,Math.min(5,Math.floor(score/12)),score>rivalScore&&caught>=3);
+      }
+      function frame(ts){
+        if(ended)return;var dt=Math.min(.05,((ts-last)/1000)||0);last=ts;
+        if(started){
+          elapsed+=dt;remaining=Math.max(0,45-elapsed);rivalScore=Math.min(34,Math.floor(elapsed/7)*4);
+          if(phase==='waiting'){wait-=dt;if(wait<=0){phase='bite';biteLeft=1.15;buttonState();say('입질! 지금 당겨 올리세요!');}}
+          else if(phase==='bite'){biteLeft-=dt;if(biteLeft<=0){phase='ready';misses++;combo=0;fishNow=null;buttonState();say('아깝네요. 입질을 놓쳤어요. 다시 던져 보세요.');}}
+          updateUI();if(remaining<=0){finishGame();return;}
+        }
+        draw(ts);raf=requestAnimationFrame(frame);
+      }
+      buttonState();updateUI();draw(0);raf=requestAnimationFrame(frame);
+      return function(){ended=true;cancelAnimationFrame(raf);};
+    }
+  };
+
   GAMES.manna = {
     name: '광야 생존 챌린지',
     desc: '내 캐릭터를 움직여 만나와 메추라기를 모으세요. 황금 만나와 보호막을 챙기고, 썩은 만나를 피하세요. 메추라기 떼가 몰려오는 러시 구간에는 콤보 보너스가 커집니다.',

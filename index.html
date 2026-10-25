@@ -1529,10 +1529,10 @@ var VIDEOS = {
       art=area.querySelector('#raceTrack');o=mkCanvas(art,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='none';cv.setAttribute('tabindex','0');
       var runners=[
         {name:'나',player:true,ch:null,lane:2,progress:0,speed:2.94,col:'#e58b46',eq:null},
-        {name:'요셉',ch:chById('h16'),lane:1,progress:-1.4,speed:2.73,col:'#478dcb',eq:{ch:'',hat:'',face:'',neck:'n_scarf'}},
-        {name:'다윗',ch:chById('h0'),lane:0,progress:-.6,speed:2.82,col:'#5a9c63',eq:{hat:'h_crown',face:'',neck:''}},
-        {name:'에스더',ch:chById('h1'),lane:3,progress:-1.8,speed:2.76,col:'#ad78c8',eq:{hat:'h_ribbon',face:'',neck:'n_flower'}},
-        {name:'여호수아',ch:chById('h4'),lane:4,progress:-2.2,speed:2.86,col:'#d66e68',eq:{hat:'',face:'',neck:'n_medal'}}
+        {name:'요셉',ch:chById('h16'),lane:1,progress:-1.4,speed:2.73,col:'#478dcb',eq:{ch:'',hat:'',face:'',neck:'scarf'}},
+        {name:'다윗',ch:chById('h0'),lane:0,progress:-.6,speed:2.82,col:'#5a9c63',eq:{hat:'crown',face:'',neck:''}},
+        {name:'에스더',ch:chById('h1'),lane:3,progress:-1.8,speed:2.76,col:'#ad78c8',eq:{hat:'ribbon',face:'',neck:'flower'}},
+        {name:'여호수아',ch:chById('h4'),lane:4,progress:-2.2,speed:2.86,col:'#d66e68',eq:{hat:'',face:'',neck:'medal'}}
       ];
       var player=runners[0],started=false,ended=false,elapsed=0,boost=100,boosting=false,jump=0,score=0,spawn=2.4,obstacles=[],last=0,raf=0,rankTick=0,message='',messageTime=0;
       runners.forEach(function(r){if(!r.eq)r.eq={hat:'',face:'',neck:''};});
@@ -1665,7 +1665,7 @@ var VIDEOS = {
         if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();moveLane(1);}
         if(e.code==='ArrowUp'||e.code==='KeyW'){e.preventDefault();if(started)jump=.72;}
         if(e.code==='Space'){e.preventDefault();if(started)boosting=true;}
-        if((e.code==='Enter')&&!started){started=true;area.querySelector('#raceStart').hidden=true;}
+        if((e.code==='Enter')&&!started){started=true;area.querySelector('#raceStart').hidden=true;setMessage('출발! 장애물 앞에서 점프하고 스퍼트를 조절하세요.');}
       }
       function ku(e){if(e.code==='Space')boosting=false;}
       window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);
@@ -1679,7 +1679,7 @@ var VIDEOS = {
     name:'갈릴리 낚시', short:'낚시',
     desc:'직접 꾸민 캐릭터가 나무 잔교에서 낚시합니다. 입질 표시가 켜지는 순간 당겨 올리고, 여섯 종류의 물고기를 모아 베드로와 점수 대결을 하세요.',
     init:function(area,finish){
-      var W=360,H=500,o,cv,ctx;
+      var W=360,H=520,o,cv,ctx;
       area.innerHTML='<div class="fish-shell">'+
         '<div class="dm-top"><span id="fishTime">남은 시간 45</span><span id="fishScore">내 점수 0</span><span id="fishCatch">어획 0</span></div>'+
         '<div class="dm-bar"><i id="fishBar"></i></div>'+

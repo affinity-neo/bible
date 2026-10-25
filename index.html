@@ -1579,7 +1579,7 @@ var VIDEOS = {
       var lane=1,jump=0,slide=0,invuln=0,hitFlash=0,lives=5,gold=0,score=0,combo=0,bestCombo=0;
       var guideLane=1,guideX=180,playerX=180,guideTurn=2.6,worldScroll=0,spawnTimer=.85,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0,pendingTrailLane=1;
       var message='예수님이 달리는 길을 따라가세요!',messageTimer=0,touchX=null,touchY=null;
-      var JUMP_TIME=1.08,SLIDE_TIME=1.12,MAX_LIVES=5;
+      var JUMP_TIME=1.22,SLIDE_TIME=1.22,MAX_LIVES=5;
       area.innerHTML='<div class="goldrun-shell">'+
         '<div class="goldrun-hud">'+
           '<div class="goldrun-stat"><small>거리</small><b><span id="grDistance">0</span><em> / 600m</em></b><div class="goldrun-progress"><i id="grProgress"></i></div></div>'+
@@ -1800,7 +1800,7 @@ var VIDEOS = {
         if(e.type==='gold'){drawGold(x,y+Math.sin(ts*.008+e.tw)*1.6*s,s,e.tw+ts*.004);return;}
         if(e.type==='magnet'){drawMagnet(x,y+Math.sin(ts*.006)*2*s,s);return;}
         drawObstacle(e,x,y,s);
-        if((e.type==='hurdle'||e.type==='branch')&&e.z<.43&&e.z>.13){
+        if((e.type==='hurdle'||e.type==='branch')&&e.z<.36&&e.z>.13){
           ctx.save();ctx.font='bold 9px sans-serif';ctx.textAlign='center';
           var cue=e.type==='hurdle'?'점프 ↑':'슬라이드 ↓',cw=ctx.measureText(cue).width+12,cy=y-48*s;
           ctx.fillStyle='rgba(255,249,230,.95)';rrect(ctx,x-cw/2,cy-9,cw,17,6);ctx.fill();

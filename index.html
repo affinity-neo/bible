@@ -1760,14 +1760,14 @@ var VIDEOS = {
         }else if(e.type==='branch'){
           // A high, low-clearance gate: the player must duck underneath, not jump over.
           ctx.fillStyle='rgba(38,35,28,.16)';ctx.beginPath();ctx.ellipse(0,7,25,5,0,0,Math.PI*2);ctx.fill();
-          ctx.fillStyle='#6c4a30';ctx.fillRect(-27,-19,6,26);ctx.fillRect(21,-19,6,26);
-          ctx.fillStyle='#8c5b34';ctx.fillRect(-31,-23,62,11);
-          ctx.fillStyle='#c9985c';ctx.fillRect(-29,-22,58,5);
+          ctx.fillStyle='#6c4a30';ctx.fillRect(-27,-13,6,20);ctx.fillRect(21,-13,6,20);
+          ctx.fillStyle='#8c5b34';ctx.fillRect(-31,-17,62,11);
+          ctx.fillStyle='#c9985c';ctx.fillRect(-29,-16,58,5);
           ctx.fillStyle='#6b8f45';ctx.beginPath();
           ctx.ellipse(-18,-26,9,5,-.25,0,Math.PI*2);ctx.ellipse(-5,-29,9,5,.2,0,Math.PI*2);
           ctx.ellipse(10,-28,10,5,-.2,0,Math.PI*2);ctx.ellipse(23,-25,8,5,.25,0,Math.PI*2);ctx.fill();
           ctx.strokeStyle='#f7e9b7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-23,-16);ctx.lineTo(-16,-12);ctx.moveTo(-16,-12);ctx.lineTo(-9,-16);ctx.moveTo(9,-16);ctx.lineTo(16,-12);ctx.moveTo(16,-12);ctx.lineTo(23,-16);ctx.stroke();
-          ctx.fillStyle='#fff1cb';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('↓',0,-13);
+          ctx.fillStyle='#fff1cb';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('↓',0,-8);
         }
         ctx.restore();
       }
@@ -1817,7 +1817,7 @@ var VIDEOS = {
       function resolveTrailCoin(e){
         if(e.trail&&trailActive&&e.trail===trailSerial){
           trailLeft=Math.max(0,trailLeft-1);
-          if(trailLeft===0){trailActive=false;trailLane=-1;guideTurn=.35;}
+          if(trailLeft===0){trailActive=false;trailLane=-1;guideTurn=0;}
         }
       }
       function collectGold(e){

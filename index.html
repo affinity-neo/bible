@@ -1142,7 +1142,7 @@ var VIDEOS = {
       if (successCoins && P) {
         P.stat = P.stat && typeof P.stat === 'object' ? P.stat : {};
         var successGameWins = Array.isArray(P.stat.successGameWins) ? P.stat.successGameWins.slice() : [];
-        var successGameKey = String((curGame && (curGame.name || curGame.short)) || title);
+        var successGameKey = String((curGame && (curGame.successKey || curGame.name || curGame.short)) || title);
         var alreadyCounted = successGameWins.indexOf(successGameKey) >= 0;
         if (!alreadyCounted) successGameWins.push(successGameKey);
         if (successGameWins.length >= 3) {
@@ -1562,7 +1562,7 @@ var VIDEOS = {
 
   // ================= 예수  // ================= 광야 골드런: 3차선 추격 러너 =================
   GAMES.racing = {
-    name:'광야 골드런',short:'골드런',
+    name:'광야 골드런',short:'골드런',successKey:'예수님 따라 달리기',
     desc:'예수님이 앞서 달리는 길을 따라가세요. 세 차선을 오가며 금빛 골드를 모으고, 장애물은 점프하거나 슬라이드하세요. 600m 완주가 목표입니다.',
     init:function(area,finish){
       var W=360,H=470,cv,ctx,canvasResult;

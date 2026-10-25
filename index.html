@@ -1723,7 +1723,7 @@ var VIDEOS = {
       }
       function collision(e){
         if(e.type==='coin'){
-          coins++;score++;combo++;bestCombo=Math.max(bestCombo,combo);gap=Math.max(0,gap-1.45);
+          coins++;score++;combo++;bestCombo=Math.max(bestCombo,combo);gap=Math.max(0,gap-.70);
           if(combo%5===0){score+=2;setMsg(combo+'연속 수집! 예수님과의 거리가 줄었어요.');}else setMsg('금빛 코인 +1 · '+Math.ceil(gap)+'m 남았어요.');
           return;
         }

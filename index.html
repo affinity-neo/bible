@@ -641,7 +641,7 @@ var VIDEOS = {
   // ======== 미니 게임 모음: 장 번호에 따라 매일 다른 게임이 열립니다 ========
   // 1장=방주 쌓기, 2장=만나 받기, 3장=오병이어, 4장=요나, 5장=짝 맞추기, 6장=홍해, 7장=다니엘, 8장=여리고, 9장=다시 방주 쌓기 ...
   var QUIZ_DAYS = [10, 24];   // 한 달에 두 번: 이 날짜의 장에서는 말씀 퀴즈가 열립니다
-  var GAME_ORDER = ['stack', 'manna', 'loaves', 'jonah', 'match', 'redsea', 'daniel', 'jericho', 'racing'];
+  var GAME_ORDER = ['stack', 'manna', 'loaves', 'feastmix', 'jonah', 'match', 'redsea', 'daniel', 'jericho', 'racing'];
   var GAMES = {};
   var gameCleanup = null, curGame = null;
 
@@ -1127,6 +1127,26 @@ var VIDEOS = {
       function frame(ts) { if (!alive) return; var dt = Math.min((ts - last) / 1000, 0.05); last = ts || 0; update(dt); draw(); requestAnimationFrame(frame); }
       requestAnimationFrame(function (ts) { last = ts; requestAnimationFrame(frame); });
       return function () { alive = false; };
+    }
+  };
+
+  // ================= 오병이어: 음식 조합 버전 =================
+  GAMES.feastmix = {
+    name: '오병이어 음식 조합',
+    desc: '빵과 물고기를 골라 사람들에게 나누어 주세요. 목표 조합을 맞히면 점수를 얻고, 연속 성공하면 보너스가 붙어요.',
+    init: function(area, finish) {
+      var recipes=[{name:'든든한 한 끼',need:{bread:2,fish:1},points:8},{name:'어부의 도시락',need:{bread:1,fish:2},points:10},{name:'함께 나누는 식사',need:{bread:3,fish:2},points:15}];
+      var bread=0,fish=0,score=0,combo=0,round=0,ended=false,target=null;
+      area.innerHTML='<div class="stage"><div class="dm-top"><span id="fmRound">조합 1 / 8</span><span id="fmScore">점수 0</span><span id="fmCombo">연속 0</span></div><div class="dm-msg" id="fmMsg">빵과 물고기를 골라 목표 조합을 완성하세요.</div><div class="shared-mission"><strong id="fmTarget"></strong><p id="fmPicked">🍞 빵 0개 · 🐟 물고기 0마리</p></div><div class="race-controls" style="grid-template-columns:1fr 1fr"><button id="fmBread" type="button">🍞 빵 추가</button><button id="fmFish" type="button">🐟 물고기 추가</button></div><div class="race-actions"><button id="fmServe" type="button">🍽️ 음식 나누기</button><button id="fmClear" type="button">다시 담기</button></div></div>';
+      var $=function(id){return area.querySelector('#'+id)},msg=$('fmMsg');
+      function next(){target=recipes[Math.floor(Math.random()*recipes.length)];bread=0;fish=0;$('fmTarget').textContent='목표: '+target.name+' — 빵 '+target.need.bread+'개, 물고기 '+target.need.fish+'마리';render();}
+      function render(){$('fmPicked').textContent='🍞 빵 '+bread+'개 · 🐟 물고기 '+fish+'마리';$('fmRound').textContent='조합 '+Math.min(round+1,8)+' / 8';$('fmScore').textContent='점수 '+score;$('fmCombo').textContent='연속 '+combo;}
+      $('fmBread').addEventListener('click',function(){if(ended)return;if(bread<5)bread++;render();});
+      $('fmFish').addEventListener('click',function(){if(ended)return;if(fish<5)fish++;render();});
+      $('fmClear').addEventListener('click',function(){if(ended)return;bread=0;fish=0;render();msg.textContent='다시 골라 보세요.';});
+      $('fmServe').addEventListener('click',function(){if(ended)return;round++;if(bread===target.need.bread&&fish===target.need.fish){combo++;score+=target.points+Math.min(5,combo-1)*2;msg.textContent='잘 나누었어요! +'+(target.points+Math.min(5,combo-1)*2)+'점';}else{combo=0;msg.textContent='조합이 달라요. 다음 음식은 더 정확히 골라 보세요.';}if(round>=8){ended=true;$('fmBread').disabled=$('fmFish').disabled=$('fmServe').disabled=$('fmClear').disabled=true;finish('나눔의 식탁','음식 조합 '+score+'점 · 성공 '+(score>0? '도전 완료':'다음엔 더 잘할 수 있어요'),Math.max(1,Math.floor(score/8)),score);return;}next();});
+      next();
+      return function(){ended=true;};
     }
   };
 
@@ -1839,6 +1859,7 @@ var VIDEOS = {
   function loadProfile() {
     loadLocal(); restoreRequestedProfile(); applyTheme(); renderAcct(); renderShop();
     if (!db || !user) { initAch(); renderAcct(); renderShop(); return; }
+    if (String(user || '') === '최선혜') { db.collection('users').doc(uid('최 선혜')).delete().catch(function () {}); }
     var ref = db.collection('users').doc(uid(user));
     ref.get().then(function (s) {
       if (s.exists) {

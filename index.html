@@ -1773,7 +1773,7 @@ var VIDEOS = {
         '<div class="fish-codex" id="fishCodex"></div>'+
         '<button type="button" id="fishAction" class="fish-action">낚싯줄 던지기</button>'+
         '<div id="fishMsg" class="dm-msg" aria-live="polite">낚싯줄은 버튼으로 던지고, 빨간 느낌표가 뜨면 캐릭터를 탭하거나 위로 쓸어 올려 낚아 올리세요.</div></div>';
-      var scene=area.querySelector('#fishScene');o=mkCanvas(scene,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='manipulation';
+      var scene=area.querySelector('#fishScene');o=mkCanvas(scene,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='none';
       var species=[
         {id:'minnow',n:'피라미',c:'#8bbac0',c2:'#e5f0dc',points:3,rare:false,shape:'slim'},
         {id:'perch',n:'농어',c:'#77a9c6',c2:'#f3d28b',points:5,rare:false,shape:'stripe'},

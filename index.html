@@ -1745,7 +1745,7 @@ var VIDEOS = {
     }
   };
 
-리 낚시: 나와 베드로의 대결 =================
+  // ================= 갈릴리 낚시: 나와 베드로의 대결 =================
   GAMES.fishing = {
     name:'갈릴리 낚시',short:'낚시',
     desc:'내 캐릭터와 베드로가 나란히 낚시합니다. 낚싯줄을 던지고 찌가 빨갛게 흔들리며 입질 표시가 뜨면 즉시 당기세요. 베드로도 눈앞에서 물고기를 낚습니다.',
@@ -1757,7 +1757,7 @@ var VIDEOS = {
         '<div class="fish-scene" id="fishScene"></div>'+
         '<div class="fish-codex" id="fishCodex"></div>'+
         '<button type="button" id="fishAction" class="fish-action">낚싯줄 던지기</button>'+
-        '<div id="fishMsg" class="dm-msg" aria-live="polite">낚싯줄을 던진 뒤 찌를 보세요. 빨간 입질 표시가 뜨면 ‘지금 당기기’를 누르세요.</div></div>';
+        '<div id="fishMsg" class="dm-msg" aria-live="polite">낚싯줄은 버튼으로 던지고, 빨간 느낌표가 뜨면 캐릭터를 탭하거나 위로 쓸어 올려 낚아 올리세요.</div></div>';
       var scene=area.querySelector('#fishScene');o=mkCanvas(scene,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='manipulation';
       var species=[
         {id:'minnow',n:'피라미',c:'#8bbac0',c2:'#e5f0dc',points:3,rare:false,shape:'slim'},
@@ -1767,7 +1767,7 @@ var VIDEOS = {
         {id:'golden',n:'황금 잉어',c:'#e5b943',c2:'#fff1a3',points:18,rare:true,shape:'round'},
         {id:'koi',n:'비단잉어',c:'#f0e8dc',c2:'#e56f60',points:22,rare:true,shape:'koi'}
       ];
-      var phase='ready',started=false,ended=false,remaining=40,wait=0,biteLeft=0,phaseTime=0,elapsed=0,score=0,caught=0,combo=0,rivalScore=0,fishNow=null,fishX=157,fishY=215,raf=0,last=0,book={},misses=0;
+      var phase='ready',started=false,ended=false,remaining=40,wait=0,biteLeft=0,phaseTime=0,pullProgress=0,elapsed=0,score=0,caught=0,combo=0,rivalScore=0,fishNow=null,fishX=157,fishY=215,raf=0,last=0,book={},misses=0,dragStart=null;
       var rivalPhase='wait',rivalTimer=2.5,rivalFish=species[0],rivalX=265,rivalY=210;
       var btn=area.querySelector('#fishAction'),msg=area.querySelector('#fishMsg');
       function say(s){msg.textContent=s;}
@@ -1783,22 +1783,31 @@ var VIDEOS = {
       function buttonState(){
         if(phase==='ready'){btn.disabled=false;btn.textContent=started?'다시 던지기':'낚싯줄 던지기';}
         else if(phase==='waiting'){btn.disabled=true;btn.textContent='찌를 지켜보세요…';}
-        else if(phase==='bite'){btn.disabled=false;btn.textContent='지금 당기기!';}
+        else if(phase==='bite'){btn.disabled=true;btn.textContent='캐릭터를 위로 쓸어 올리세요 ↑';}
         else{btn.disabled=true;btn.textContent='물고기 확인 중…';}
       }
+      function reelIn(){
+        if(ended||phase!=='bite')return;
+        phase='caught';phaseTime=.58;pullProgress=0;caught++;combo++;score+=fishNow.points+(combo>=3?2:0);book[fishNow.id]=(book[fishNow.id]||0)+1;
+        say(fishNow.n+'를 낚아 올렸어요! +'+fishNow.points+'점'+(combo>=3?' · 연속 낚시 보너스 +2':'')+(fishNow.rare?' · 희귀 어종':''));
+        updateUI();buttonState();
+      }
       function cast(){
-        if(ended)return;
-        if(phase==='ready'){
-          started=true;phase='waiting';wait=1.6+Math.random()*2.1;
-          fishNow=pickFish();fishX=132+Math.random()*62;fishY=198+Math.random()*37;
-          buttonState();say('좋아요. 찌를 지켜보다가 빨간 입질 표시가 뜨면 바로 당기세요.');
-        }else if(phase==='bite'){
-          phase='caught';phaseTime=.7;caught++;combo++;score+=fishNow.points+(combo>=3?2:0);book[fishNow.id]=(book[fishNow.id]||0)+1;
-          say(fishNow.n+'를 낚았어요! +'+fishNow.points+'점'+(combo>=3?' · 연속 낚시 보너스 +2':'')+(fishNow.rare?' · 희귀 어종':''));
-          updateUI();buttonState();
-        }
+        if(ended||phase!=='ready')return;
+        started=true;phase='waiting';wait=1.6+Math.random()*2.1;
+        fishNow=pickFish();fishX=132+Math.random()*62;fishY=198+Math.random()*37;
+        buttonState();say('찌를 지켜보세요. 입질 표시가 뜨면 캐릭터를 위로 쓸어 올리세요!');
       }
       btn.onclick=cast;
+      cv.addEventListener('pointerdown',function(e){dragStart={x:e.clientX,y:e.clientY};});
+      cv.addEventListener('pointerup',function(e){
+        var rect=cv.getBoundingClientRect?cv.getBoundingClientRect():{left:0,top:0,width:W,height:H};
+        var dy=dragStart?e.clientY-dragStart.y:0;
+        var startedOnCharacter=dragStart&&dragStart.x-rect.left<(rect.width||W)*.34&&dragStart.y-rect.top>(rect.height||H)*.14&&dragStart.y-rect.top<(rect.height||H)*.48;
+        if(phase==='bite'&&(dy<-12||startedOnCharacter)){if(e.preventDefault)e.preventDefault();reelIn();}
+        dragStart=null;
+      });
+
       function drawFish(x,y,sp,size,ts){
         var w=size*(sp.shape==='slim'?1.25:1),h=size*.52;
         ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(22,49,58,.15)';ctx.beginPath();ctx.ellipse(0,h+4,w*.8,2.5,0,0,Math.PI*2);ctx.fill();
@@ -1826,32 +1835,35 @@ var VIDEOS = {
         ctx.fillStyle='#9e7951';ctx.beginPath();ctx.moveTo(242,132);ctx.lineTo(360,132);ctx.lineTo(360,194);ctx.lineTo(208,194);ctx.closePath();ctx.fill();
         ctx.fillStyle='#bc986d';for(var q=0;q<5;q++){ctx.fillRect(244-q*5,139+q*10,116+q*5,2);}
         // Player, preserving the equipped character's normal wide proportions and accessories.
-        drawHero(ctx,13,76,49,36,'happy',0);
+        drawHero(ctx,16,70,42,42,'happy',0);
         ctx.fillStyle='#fff8e6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillRect(17,61,42,13);ctx.fillStyle='#395146';ctx.fillText('나',38,70);
         // Peter is a visible character who actively fishes beside the player.
         var peter=chById('h18');
-        drawChar(ctx,259,76,49,36,peter,'smile',0);
-        drawAcc(ctx,259,76,49,36,{hat:'',face:'',neck:'medal'},peter);
+        drawChar(ctx,258,70,42,42,peter,'smile',0);
+        drawAcc(ctx,258,70,42,42,{hat:'',face:'',neck:'medal'},peter);
         ctx.fillStyle='#fff8e6';ctx.fillRect(262,61,47,13);ctx.fillStyle='#395146';ctx.fillText('베드로',285,70);
         // Rods are separately drawn; each bob/fish sits on its own line.
         ctx.lineCap='round';ctx.strokeStyle='#76502e';ctx.lineWidth=3;
         ctx.beginPath();ctx.moveTo(49,101);ctx.lineTo(76,88);ctx.lineTo(116,145);ctx.stroke();
         ctx.beginPath();ctx.moveTo(292,102);ctx.lineTo(272,88);ctx.lineTo(248,145);ctx.stroke();
-        var ownBobY=phase==='bite'?fishY+8:fishY+Math.sin(ts*.008)*2;
-        ctx.strokeStyle='#f3e7d0';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(116,145);ctx.quadraticCurveTo(132,163,fishX,ownBobY);ctx.stroke();
+        var pull=phase==='caught'?Math.max(0,Math.min(1,pullProgress)):0;
+        var ownBobX=phase==='caught'?fishX+(74-fishX)*pull:fishX;
+        var ownBobY=phase==='caught'?fishY+8-(fishY+8-126)*pull:phase==='bite'?fishY+8:fishY+Math.sin(ts*.008)*2;
+        var rodLift=phase==='caught'?pull:0,rodX=116-16*rodLift,rodY=145-24*rodLift;
+        ctx.strokeStyle='#f3e7d0';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(rodX,rodY);ctx.quadraticCurveTo(132-8*rodLift,163-18*rodLift,ownBobX,ownBobY);ctx.stroke();
         var peterBobY=194+Math.sin(ts*.008+rivalTimer)*2;
         ctx.strokeStyle='#f3e7d0';ctx.beginPath();ctx.moveTo(248,145);ctx.quadraticCurveTo(244,166,rivalX,peterBobY);ctx.stroke();
         // Player's bobber and bite cue
-        ctx.fillStyle='#fff4dc';ctx.beginPath();ctx.ellipse(fishX,ownBobY,4,7,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d55248';ctx.lineWidth=1.5;ctx.stroke();
-        ctx.fillStyle='#d55248';ctx.beginPath();ctx.arc(fishX,ownBobY-4,3.4,Math.PI,Math.PI*2);ctx.fill();
-        if(phase==='waiting')drawFish(fishX,ownBobY+21,fishNow,13,ts);
+        ctx.fillStyle='#fff4dc';ctx.beginPath();ctx.ellipse(ownBobX,ownBobY,4,7,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d55248';ctx.lineWidth=1.5;ctx.stroke();
+        ctx.fillStyle='#d55248';ctx.beginPath();ctx.arc(ownBobX,ownBobY-4,3.4,Math.PI,Math.PI*2);ctx.fill();
+        if(phase==='waiting')drawFish(ownBobX,ownBobY+21,fishNow,13,ts);
         if(phase==='bite'){
-          var pulse=1+Math.sin(ts*.03)*.09;ctx.save();ctx.translate(fishX,ownBobY-20);ctx.scale(pulse,pulse);
+          var pulse=1+Math.sin(ts*.03)*.09;ctx.save();ctx.translate(ownBobX,ownBobY-20);ctx.scale(pulse,pulse);
           ctx.fillStyle='#fff5cd';ctx.strokeStyle='#d84f43';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();ctx.stroke();
           ctx.fillStyle='#a2352a';ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('!',0,5);ctx.restore();
-          ctx.fillStyle='#fff5de';ctx.fillRect(fishX-20,ownBobY-38,40,4);ctx.fillStyle='#d75045';ctx.fillRect(fishX-20,ownBobY-38,40*Math.max(0,biteLeft/1.1),4);
+          ctx.fillStyle='#fff5de';ctx.fillRect(ownBobX-20,ownBobY-38,40,4);ctx.fillStyle='#d75045';ctx.fillRect(ownBobX-20,ownBobY-38,40*Math.max(0,biteLeft/1.1),4);
         }
-        if(phase==='caught'&&fishNow)drawFish(fishX,ownBobY-22,fishNow,15,ts);
+        if(phase==='caught'&&fishNow)drawFish(ownBobX,ownBobY+Math.max(0,8-8*pull),fishNow,15,ts);
         // Peter's bobber visibly dips, and a caught fish rises next to his face.
         var rbY=rivalPhase==='bite'?peterBobY+5:peterBobY;
         ctx.fillStyle='#fff4dc';ctx.beginPath();ctx.ellipse(rivalX,rbY,4,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle=rivalPhase==='bite'?'#d55248':'#f6eee0';ctx.lineWidth=1.4;ctx.stroke();
@@ -1874,9 +1886,9 @@ var VIDEOS = {
         if(ended)return;var dt=Math.min(.05,((ts-last)/1000)||0);last=ts;
         if(started){
           elapsed+=dt;remaining=Math.max(0,40-elapsed);
-          if(phase==='waiting'){wait-=dt;if(wait<=0){phase='bite';biteLeft=1.1;buttonState();say('입질! 빨간 표시가 사라지기 전에 지금 당기세요!');}}
-          else if(phase==='bite'){biteLeft-=dt;if(biteLeft<=0){phase='ready';misses++;combo=0;fishNow=null;buttonState();say('앗, 놓쳤어요! 버튼을 눌러 다시 던지세요.');}}
-          else if(phase==='caught'){phaseTime-=dt;if(phaseTime<=0){phase='ready';fishNow=null;buttonState();}}
+          if(phase==='waiting'){wait-=dt;if(wait<=0){phase='bite';biteLeft=1.1;buttonState();say('입질! 캐릭터를 위로 쓸어 올려 낚싯대를 당기세요!');}}
+          else if(phase==='bite'){biteLeft-=dt;if(biteLeft<=0){phase='ready';misses++;combo=0;fishNow=null;buttonState();say('앗, 놓쳤어요! 낚싯줄 던지기로 다시 시작하세요.');}}
+          else if(phase==='caught'){phaseTime-=dt;pullProgress=Math.min(1,pullProgress+dt/.58);if(phaseTime<=0){phase='ready';fishNow=null;buttonState();}}
           rivalTimer-=dt;
           if(rivalTimer<=0){
             if(rivalPhase==='wait'){rivalPhase='bite';rivalTimer=.82;}

@@ -1449,7 +1449,7 @@ var VIDEOS = {
         if(ended)return;ended=true;if(timer)clearInterval(timer);
         $('fmServe').disabled=true;$('fmServe').textContent='영업 종료';
         $('fmMsg').textContent='영업 종료 · '+served+'/6 주문 성공 · 최고 콤보 '+bestCombo;
-        finish('피자 주문 마스터',served+'/6 주문 성공 · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
+        finish('피자 주문 마스터',served+'/6 주문 성공 · 점수 '+Math.floor(score)+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
       }
       buildChoices();$('fmServe').onclick=serve;nextOrder();
       timer=setInterval(function(){if(ended)return;time=Math.max(0,time-1);render();if(time<=0)finishGame();},1000);
@@ -1761,7 +1761,7 @@ var VIDEOS = {
         ctx.fillStyle='#f5d074';ctx.beginPath();ctx.arc(0,-2,3,0,Math.PI*2);ctx.fill();ctx.restore();
       }
       function drawEntity(e,ts){
-        var t=1-e.z,y=68+t*t*(H-82),x=laneX(e.lane,y),s=.28+t*1.22;
+        var t=1-e.z,y=68+t*t*(H-82)+t*40,x=laneX(e.lane,y),s=.28+t*1.22;
         if(e.type==='gold'){drawGold(x,y,s,e.tw+ts*.003);return;}
         if(e.type==='magnet'){drawMagnet(x,y,s);return;}
         drawObstacle(e,x,y,s);
@@ -1819,7 +1819,7 @@ var VIDEOS = {
           finish('광야 골드런 완주!',gold+'개 골드 수집 · '+Math.floor(distance)+'m · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/35)),true);
         }else{
           $('grStatus').textContent='달리기 종료';$('grStart').textContent='다시 도전';
-          finish('달리기 종료',gold+'개 골드 수집 · '+Math.floor(distance)+'m / '+targetDistance+'m · 점수 '+score,Math.min(5,Math.floor(score/35)),false);
+          finish('달리기 종료',gold+'개 골드 수집 · '+Math.floor(distance)+'m / '+targetDistance+'m · 점수 '+Math.floor(score),Math.min(5,Math.floor(score/35)),false);
         }
       }
       function moveLane(d){if(!started||paused||ended)return;lane=Math.max(0,Math.min(2,lane+d));}
@@ -1866,7 +1866,7 @@ var VIDEOS = {
         var dt=Math.min(.05,((ts-last)/1000)||0);last=ts;
         if(messageTimer>0)messageTimer=Math.max(0,messageTimer-dt);
         if(started&&!paused&&!ended){
-          elapsed+=dt;distance+=dt*(12+Math.min(7,elapsed*.12));score+=Math.floor(dt*3);
+          elapsed+=dt;distance+=dt*(12+Math.min(7,elapsed*.12));score+=dt*3;
           worldScroll+=dt*(62+Math.min(68,elapsed*1.8));
           jump=Math.max(0,jump-dt);slide=Math.max(0,slide-dt);invuln=Math.max(0,invuln-dt);hitFlash=Math.max(0,hitFlash-dt);
           themeTimer+=dt;guideTurn-=dt;themeFade=Math.min(1,themeFade+dt/1.4);guideHop=Math.max(0,guideHop-dt);
@@ -1894,7 +1894,7 @@ var VIDEOS = {
                 e.done=true;
                 if(e.lane===lane){magnetTime=5;say('골드 자석! 잠시 동안 금빛 골드를 끌어당겨요.');}
               }
-            }else if(e.z<=.075){
+            }else if(e.z<=.17){
               e.done=true;takeHit(e);
             }
           });

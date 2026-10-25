@@ -376,15 +376,15 @@
   .fm-shapes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
   .fm-shape-choice,.fm-sauce-choice,.fm-top-choice{min-width:0;cursor:pointer;font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 1px}
   .fm-shape-choice span{height:38px;display:grid;place-items:center}
-  .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.55rem;line-height:1.15;white-space:nowrap}
+  .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.59rem;line-height:1.15;white-space:nowrap}
   .fm-shape-choice.on,.fm-sauce-choice.on,.fm-top-choice.on{border:2px solid var(--accent);background:var(--hl);padding:2px 0}
   .fm-sauces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
   .fm-sauce-choice{padding:3px 1px;gap:3px}
   .fm-sauce-choice i{width:19px;height:19px;border-radius:50%;background:var(--sauce-color);border:3px solid #e3bd84;box-shadow:inset 0 0 0 2px rgba(255,255,255,.16)}
   .fm-toppings{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-  .fm-top-choice{min-height:44px;padding:3px 1px;gap:2px}
-  .fm-top-choice span{height:22px;width:22px;display:grid;place-items:center}
-  .fm-top-choice svg{width:100%;height:100%;display:block}
+  .fm-top-choice{min-height:49px;padding:3px 1px;gap:2px}
+  .fm-top-choice span{height:27px;width:27px;display:grid;place-items:center}
+  .fm-top-choice svg{width:100%;height:100%;display:block;overflow:visible}
   .fm-top-choice.on{box-shadow:inset 0 0 0 1px var(--accent)}
   .fm-msg{font-size:.68rem;line-height:1.3;min-height:18px;text-align:center;color:var(--muted);padding:2px 0}
   .fm-msg.good{color:#2d7a43;font-weight:700}.fm-msg.bad{color:#b64234;font-weight:700}
@@ -393,7 +393,7 @@
   @media(max-width:390px){
     .fm-shell{gap:4px}.fm-workbench{gap:5px}.fm-panel{padding:5px 3px}.fm-panel-title b{font-size:.69rem}.fm-panel-title small{font-size:.56rem}
     .fm-pizza{height:90px}.fm-pizza-svg{width:min(100%,94px)}.fm-shape-choice span{height:32px}.fm-shape-choice .fm-pizza-svg{width:31px}
-    .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.51rem}.fm-top-choice{min-height:40px}
+    .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.56rem}.fm-top-choice{min-height:45px}.fm-top-choice span{height:25px;width:25px}
   }
 
 
@@ -1263,7 +1263,7 @@ var VIDEOS = {
         {id:'beef',n:'불고기',c:'#89513d'},{id:'sweetpotato',n:'고구마',c:'#e8ad66'},
         {id:'pineapple',n:'파인애플',c:'#f2c94c'},{id:'ham',n:'햄',c:'#db8b91'},
         {id:'arugula',n:'루꼴라',c:'#4e8b46'},{id:'chicken',n:'치킨',c:'#b77946'},
-        {id:'bacon',n:'베이컨',c:'#ad5d50'},{id:'scallion',n:'쪽파',c:'#63a85c'}
+        {id:'bacon',n:'베이컨',c:'#ad5d50'},{id:'sausage',n:'소시지',c:'#a9563b'}
       ];
       var recipes=[
         {n:'마르게리타',shape:'round',sauce:'tomato',t:['cheese','tomato','basil'],pts:12},
@@ -1276,7 +1276,7 @@ var VIDEOS = {
         {n:'하와이안 네모 피자',shape:'square',sauce:'tomato',t:['cheese','ham','pineapple','pepper'],pts:15},
         {n:'딥디시 포 치즈',shape:'deep',sauce:'cream',t:['cheese','mushroom','olive','basil'],pts:17},
         {n:'핫치킨 별 피자',shape:'star',sauce:'spicy',t:['cheese','chicken','pepper','onion'],pts:17},
-        {n:'베이컨 포테이토',shape:'square',sauce:'cream',t:['cheese','bacon','sweetpotato','scallion'],pts:17},
+        {n:'베이컨 포테이토',shape:'square',sauce:'cream',t:['cheese','bacon','sweetpotato','sausage'],pts:17},
         {n:'토마토 바질 타원 피자',shape:'oval',sauce:'tomato',t:['cheese','tomato','basil','olive'],pts:16}
       ];
       var shapeMap={},sauceMap={},topMap={};
@@ -1303,18 +1303,19 @@ var VIDEOS = {
       var $=function(id){return area.querySelector('#'+id);};
       function toppingSVG(id,x,y,rot){
         var color=topMap[id].c, tr='translate('+x+' '+y+') rotate('+rot+')';
-        if(id==='pep'||id==='tomato')return '<g transform="'+tr+'"><circle r="5.4" fill="'+color+'" stroke="'+(id==='pep'?'#7c2c27':'#be4437')+'" stroke-width="1"/><circle cx="-1.2" cy="-1.4" r="1.4" fill="#ffddb4"/><circle cx="2" cy="1" r=".8" fill="#f6d8a9"/></g>';
+        if(id==='pep'||id==='tomato')return '<g transform="'+tr+'"><circle r="6.7" fill="'+color+'" stroke="'+(id==='pep'?'#7c2c27':'#be4437')+'" stroke-width="1.1"/><circle cx="-1.8" cy="-1.8" r="1.6" fill="#ffddb4"/><circle cx="2.2" cy="1.8" r="1" fill="#f6d8a9"/></g>';
         if(id==='cheese')return '<path d="M'+(x-5)+' '+(y-2)+' q-1 -5 4 -5 q5 -1 6 4 q2 4 -3 6 q-5 1 -7 -5Z" fill="#ffe9a6" stroke="#d8b75d" stroke-width=".8"/>';
-        if(id==='basil'||id==='arugula')return '<g transform="'+tr+'"><path d="M0 7 C-8 1 -6 -8 0 -9 C7 -6 8 1 0 7Z" fill="'+color+'" stroke="#27633b" stroke-width=".8"/><path d="M0 5 L0 -6" stroke="#cce2a8" stroke-width=".8"/></g>';
-        if(id==='mushroom')return '<g transform="'+tr+'"><path d="M-6 1 Q-5 -7 0 -7 Q6 -7 6 1Z" fill="'+color+'" stroke="#7d5b41" stroke-width="1"/><rect x="-2.2" y="0" width="4.4" height="5" rx="1" fill="#f5d7ac"/></g>';
-        if(id==='olive')return '<g transform="'+tr+'"><circle r="4.7" fill="#303a32" stroke="#59604c" stroke-width="1"/><circle r="1.8" fill="#eadba5"/></g>';
-        if(id==='corn')return '<g transform="'+tr+'"><ellipse rx="3.6" ry="4.7" fill="'+color+'" stroke="#d4a622" stroke-width=".8"/><path d="M-1 -3 L1 3" stroke="#fff0a5" stroke-width=".8"/></g>';
-        if(id==='pepper')return '<g transform="'+tr+'"><ellipse rx="5.5" ry="3.8" fill="none" stroke="'+color+'" stroke-width="2.8"/><ellipse rx="2" ry="1.4" fill="#f4d78d"/></g>';
-        if(id==='onion')return '<g transform="'+tr+'"><circle r="5.2" fill="none" stroke="'+color+'" stroke-width="2.3"/><circle r="2.5" fill="none" stroke="#e4b6d7" stroke-width="1.1"/></g>';
-        if(id==='shrimp')return '<g transform="'+tr+'"><path d="M-5 2 Q-8 -5 -2 -6 Q5 -6 5 1 Q2 7 -3 5" fill="'+color+'" stroke="#c9624c" stroke-width="1.4"/><path d="M-2 -4 L-1 3 M2 -3 L3 2" stroke="#ffd3b1" stroke-width="1"/></g>';
-        if(id==='beef'||id==='bacon'||id==='ham'||id==='chicken')return '<g transform="'+tr+'"><path d="M-6 -2 Q-5 -5 0 -4 L6 -2 Q7 2 3 4 L-4 4 Q-7 2 -6 -2Z" fill="'+color+'" stroke="#754334" stroke-width=".8"/><path d="M-3 -1 L3 1" stroke="#f2c7a1" stroke-width=".8"/></g>';
-        if(id==='sweetpotato')return '<g transform="'+tr+'"><path d="M-6 -2 L-3 -5 L4 -4 L6 1 L2 5 L-5 4Z" fill="'+color+'" stroke="#c17e42" stroke-width=".8"/><path d="M-3 -2 L3 2" stroke="#ffdf9e" stroke-width="1"/></g>';
-        if(id==='pineapple')return '<g transform="'+tr+'"><rect x="-4" y="-4" width="8" height="8" rx="1.5" fill="'+color+'" stroke="#d8a52c" stroke-width=".8"/></g>';
+        if(id==='basil'||id==='arugula')return '<g transform="'+tr+'"><path d="M0 8 C-9 1 -7 -9 0 -10 C8 -7 9 1 0 8Z" fill="'+color+'" stroke="#27633b" stroke-width="1"/><path d="M0 6 L0 -7" stroke="#cce2a8" stroke-width="1"/></g>';
+        if(id==='mushroom')return '<g transform="'+tr+'"><path d="M-7 2 Q-6 -8 0 -8 Q7 -8 7 2Z" fill="'+color+'" stroke="#7d5b41" stroke-width="1.1"/><rect x="-2.5" y="0" width="5" height="6" rx="1.2" fill="#f5d7ac"/></g>';
+        if(id==='olive')return '<g transform="'+tr+'"><circle r="5.3" fill="#303a32" stroke="#59604c" stroke-width="1.1"/><circle r="2.1" fill="#eadba5"/></g>';
+        if(id==='corn')return '<g transform="'+tr+'"><ellipse rx="4.1" ry="5.2" fill="'+color+'" stroke="#d4a622" stroke-width="1"/><path d="M-1 -3.5 L1 3.5" stroke="#fff0a5" stroke-width="1"/></g>';
+        if(id==='pepper')return '<g transform="'+tr+'"><path d="M-5 -2 Q-6 -6 -2 -6 Q0 -4 2 -6 Q7 -5 5 0 Q4 5 0 4 Q-5 5 -5 -2Z" fill="none" stroke="'+color+'" stroke-width="3.2"/><ellipse rx="2" ry="1.5" fill="#f4d78d"/></g>';
+        if(id==='onion')return '<g transform="'+tr+'"><circle r="5.8" fill="none" stroke="'+color+'" stroke-width="2.6"/><circle r="3.1" fill="none" stroke="#e4b6d7" stroke-width="1.4"/></g>';
+        if(id==='shrimp')return '<g transform="'+tr+'"><path d="M-6 2 Q-9 -5 -2 -7 Q6 -7 6 1 Q3 8 -4 5Z" fill="'+color+'" stroke="#c9624c" stroke-width="1.5"/><path d="M-3 -5 L-2 4 M1 -4 L2 3" stroke="#ffd3b1" stroke-width="1.2"/></g>';
+        if(id==='sausage')return '<g transform="'+tr+'"><ellipse rx="6.5" ry="5.2" fill="'+color+'" stroke="#7f3f2d" stroke-width="1.1"/><ellipse rx="3.4" ry="2.3" fill="#d88a62"/><circle cx="1" cy="-1" r="1" fill="#f1c5a0"/></g>';
+        if(id==='beef'||id==='bacon'||id==='ham'||id==='chicken')return '<g transform="'+tr+'"><path d="M-7 -2 Q-6 -6 0 -5 L7 -2 Q8 2 3 5 L-4 5 Q-8 2 -7 -2Z" fill="'+color+'" stroke="#754334" stroke-width="1"/><path d="M-3 -1 L3 1" stroke="#f2c7a1" stroke-width="1.2"/></g>';
+        if(id==='sweetpotato')return '<g transform="'+tr+'"><path d="M-7 -2 L-3 -6 L4 -5 L7 1 L2 6 L-6 5Z" fill="'+color+'" stroke="#c17e42" stroke-width="1"/><path d="M-3 -2 L3 2" stroke="#ffdf9e" stroke-width="1.2"/></g>';
+        if(id==='pineapple')return '<g transform="'+tr+'"><rect x="-4.8" y="-4.8" width="9.6" height="9.6" rx="1.7" fill="'+color+'" stroke="#d8a52c" stroke-width="1"/><path d="M-3 -1 L3 1 M-1 -3 L1 3" stroke="#ffe99b" stroke-width="1"/></g>';
         return '<g transform="'+tr+'"><path d="M-6 0 L-2 -3 L6 -1 L3 3Z" fill="'+color+'" stroke="#3c7b3e" stroke-width=".8"/></g>';
       }
       var positions=[[28,27],[48,23],[68,28],[22,44],[40,43],[59,42],[78,46],[29,61],[49,59],[68,62],[40,76],[59,77],[18,33],[81,31],[25,74],[75,75],[47,32],[76,57]];
@@ -1327,13 +1328,16 @@ var VIDEOS = {
         out+='<g clip-path="url(#'+clip+')">';
         var coords=positions.slice();
         if(items.indexOf('cheese')>=0){
-          [[34,33],[54,30],[70,43],[31,53],[51,59],[67,68],[42,75]].forEach(function(p){out+=toppingSVG('cheese',p[0],p[1],0);});
+          [[31,29],[49,28],[67,33],[29,45],[47,47],[64,51],[35,62],[55,67],[45,78]].forEach(function(p){out+='<g transform="translate('+p[0]+' '+p[1]+') scale(1.13) translate('+(-p[0])+' '+(-p[1])+')">'+toppingSVG('cheese',p[0],p[1],0)+'</g>';});
         }
-        items.filter(function(id){return id!=='cheese';}).forEach(function(id,idx){
-          var count=items.length>=5?3:items.length===4?4:5;
+        var visibleItems=items.filter(function(id){return id!=='cheese';});
+        var count=visibleItems.length>=4?3:visibleItems.length===3?4:5;
+        var totalPieces=visibleItems.length*count;
+        visibleItems.forEach(function(id,idx){
           for(var n=0;n<count;n++){
-            var pi=(idx*4+n*Math.max(1,Math.floor(positions.length/count))+idx*2)%positions.length;
-            var p=coords[pi];out+=toppingSVG(id,p[0],p[1],(idx*47+n*31)%360);
+            var pi=Math.floor((idx*count+n)*positions.length/Math.max(1,totalPieces));
+            var p=coords[pi],sc=id==='olive'?1.08:1.32;
+            out+='<g transform="translate('+p[0]+' '+p[1]+') scale('+sc+') translate('+(-p[0])+' '+(-p[1])+')">'+toppingSVG(id,p[0],p[1],(idx*47+n*31)%360)+'</g>';
           }
         });
         out+='</g>';
@@ -1342,7 +1346,7 @@ var VIDEOS = {
         return out;
       }
       function uidSafe(s){return String(s).replace(/[^a-zA-Z0-9_-]/g,'');}
-      function iconSVG(id){return '<svg viewBox="0 0 100 100" aria-hidden="true">'+toppingSVG(id,50,50,0)+'</svg>';}
+      function iconSVG(id){return '<svg viewBox="34 34 32 32" aria-hidden="true">'+toppingSVG(id,50,50,0)+'</svg>';}
       function pill(s,ok){return '<span class="fm-pill '+(ok?'ok':'no')+'">'+s+'</span>';}
       function compare(){
         var miss=order.t.filter(function(id){return chosen.tops.indexOf(id)<0;});
@@ -2258,7 +2262,7 @@ var VIDEOS = {
     { id: 'f_sqg', s: 'face', v: 'sqg', n: '사각 안경', p: 20 }, { id: 'f_goatee', s: 'face', v: 'goatee', n: '염소수염', p: 22 },
     { id: 'f_whisk', s: 'face', v: 'whisk', n: '고양이 수염', p: 22 }, { id: 'f_star', s: 'face', v: 'starf', n: '별 페이스페인트', p: 24 },
     { id: 'f_heartg', s: 'face', v: 'heartg', n: '하트 안경', p: 26 }, { id: 'f_3d', s: 'face', v: 'g3d', n: '3D 안경', p: 28 },
-    { id: 'f_patch', s: 'face', v: 'patch', n: '해적 안대', p: 32 }, { id: 'f_avi', s: 'face', v: 'avi', n: '에비에이터', p: 36 },
+    { id: 'f_avi', s: 'face', v: 'avi', n: '에비에이터', p: 36 },
     { id: 'f_fbeard', s: 'face', v: 'fbeard', n: '풍성한 수염', p: 42 },
     // --- 목 ---
     { id: 'n_lanyard', s: 'neck', v: 'lanyard', n: '명찰 목걸이', p: 20 }, { id: 'n_bandana', s: 'neck', v: 'bandana', n: '파랑 반다나', p: 22 },
@@ -2322,7 +2326,7 @@ var VIDEOS = {
     P.eq = Object.assign({ ch: 'c0', hat: '', face: '', neck: '', theme: 'auto', font: 'default' }, P.eq || {});
     if (typeof P.eq.ch === 'number') P.eq.ch = 'c' + P.eq.ch;
     P.stat = P.stat || {}; P.ach = P.ach || [];
-    if (P.eq.hat === 'laurel') P.eq.hat = ''; if (P.eq.neck === 'tie') P.eq.neck = ''; if (P.eq.face === 'beard') P.eq.face = '';
+    if (P.eq.hat === 'laurel') P.eq.hat = ''; if (P.eq.neck === 'tie') P.eq.neck = ''; if (P.eq.face === 'beard') P.eq.face = ''; if (P.eq.face === 'patch') P.eq.face = '';
   }
   function blank() { return { wc: 0, gc: 0, sc: 0, tot: 0, wtot: 0, gtot: 0, stot: 0, own: [], eq: { ch: 'c0', hat: '', face: '', neck: '', theme: 'auto', font: 'default' }, wk: [], gr: [], stat: {}, ach: [] }; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -2413,9 +2417,15 @@ var VIDEOS = {
     if (!db || !user) { initAch(); renderAcct(); renderShop(); return; }
     var ref = db.collection('users').doc(uid(user));
     var isCoinCleanupAccount = String(user || '').replace(/\s+/g, '') === '최선혜';
-    if (String(user || '') === '최선혜') {
+    if (String(user || '').replace(/\s+/g, '') === '최선혜') {
       try { localStorage.removeItem('prof:최 선혜'); } catch (e) {}
-      db.collection('users').doc(uid('최 선혜')).delete().then(function () {
+      // Delete duplicate profile documents by displayed name, regardless of their document IDs.
+      db.collection('users').where('name', '==', '최 선혜').get().then(function (snap) {
+        var batch = db.batch(), removed = 0;
+        snap.forEach(function (doc) { if (doc.id !== uid(user)) { batch.delete(doc.ref); removed++; } });
+        if (!removed) return null;
+        return batch.commit();
+      }).then(function () {
         if (shopTab === 'rank' && document.getElementById('shopOv') && !document.getElementById('shopOv').hidden) renderBoard();
       }).catch(function () {});
     }
@@ -3031,10 +3041,10 @@ var VIDEOS = {
     if (!db) { L.textContent = '인터넷에 연결되면 순위를 볼 수 있어요.'; return; }
     L.textContent = '불러오는 중...';
     var fld = boardType === 'wc' ? 'wtot' : boardType === 'sc' ? 'stot' : 'gtot';
-    db.collection('users').orderBy(fld, 'desc').limit(10).get().then(function (s) {
+    db.collection('users').orderBy(fld, 'desc').limit(30).get().then(function (s) {
       if (tok !== boardTok) return;
       var h = '', i = 0;
-      s.forEach(function (d) { var v = d.data(); if (String(user || '') === '최선혜' && d.id !== uid(user) && String(v.name || '').replace(/\s+/g, '') === '최선혜') return; i++; h += '<div class="brow' + (v.name === user ? ' mine' : '') + '"><span class="rk">' + i + '</span><span class="nm">' + esc(v.name) + '</span><b>' + (v[fld] || 0).toLocaleString() + '</b></div>'; });
+      s.forEach(function (d) { var v = d.data(); if (String(user || '').replace(/\s+/g, '') === '최선혜' && d.id !== uid(user) && String(v.name || '').replace(/\s+/g, '') === '최선혜') return; if (i >= 10) return; i++; h += '<div class="brow' + (v.name === user ? ' mine' : '') + '"><span class="rk">' + i + '</span><span class="nm">' + esc(v.name) + '</span><b>' + (v[fld] || 0).toLocaleString() + '</b></div>'; });
       L.innerHTML = h || '아직 순위에 오른 친구가 없어요.';
     }).catch(function () { if (tok === boardTok) L.textContent = '순위를 불러오지 못했어요.'; });
   }

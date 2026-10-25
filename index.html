@@ -1013,10 +1013,11 @@ var VIDEOS = {
     var area = document.getElementById('gameArea');
     area.innerHTML = '';
     document.getElementById('goBox').hidden = true;
-    gameCleanup = curGame.init(area, function (title, desc, gain) {
+    gameCleanup = curGame.init(area, function (title, desc, gain, successCoins) {
       var raw = Math.max(0, gain | 0), gg = grantGame(raw);
+      var sc = Math.max(0, successCoins | 0); if (sc && P) gainCoinSafe(sc);
       document.getElementById('goTitle').textContent = title;
-      document.getElementById('goDesc').textContent = desc + (gg.n ? ' 게임 코인 +' + gg.n : '') + (gg.msg ? ' ' + gg.msg : '');
+      document.getElementById('goDesc').textContent = desc + (gg.n ? ' · 게임 코인 +' + gg.n : '') + (sc ? ' · 성공 코인 +' + sc : '') + (gg.msg ? ' ' + gg.msg : '');
       var card = document.getElementById('sharedMissionCard'); if (card) card.remove();
       document.getElementById('goAgain').style.display = curGame.once ? 'none' : '';
       document.getElementById('goBox').hidden = false;
@@ -1782,13 +1783,13 @@ var VIDEOS = {
     P.stat = P.stat || {}; P.ach = P.ach || [];
     if (P.eq.hat === 'laurel') P.eq.hat = ''; if (P.eq.neck === 'tie') P.eq.neck = ''; if (P.eq.face === 'beard') P.eq.face = '';
   }
-  function blank() { return { wc: 0, gc: 0, tot: 0, wtot: 0, gtot: 0, own: [], eq: { ch: 'c0', hat: '', face: '', neck: '', theme: 'auto', font: 'default' }, wk: [], gr: [], stat: {}, ach: [] }; }
+  function blank() { return { wc: 0, gc: 0, sc: 0, tot: 0, wtot: 0, gtot: 0, stot: 0, own: [], eq: { ch: 'c0', hat: '', face: '', neck: '', theme: 'auto', font: 'default' }, wk: [], gr: [], stat: {}, ach: [] }; }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pkey() { return 'prof:' + user; }
   function mergeProfile(a, b) {
     a = a || {}; b = b || {};
     var out = Object.assign(blank(), a), cloudOwn = Array.isArray(b.own) ? b.own : [];
-    ['wc','gc','tot','wtot','gtot'].forEach(function(k) {
+    ['wc','gc','sc','tot','wtot','gtot','stot'].forEach(function(k) {
       var av = Number(out[k] || 0), bv = Number(b[k] != null ? b[k] : (k === 'gc' ? b.coins : 0)) || 0;
       out[k] = Math.max(av, bv);
     });
@@ -1868,7 +1869,7 @@ var VIDEOS = {
         P = mergeProfile(P, d); normEq();
         restoreRequestedProfile();
         saveLocal();
-        ref.set({ name: user, wc: P.wc, gc: P.gc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr, stat: P.stat, ach: P.ach }, { merge: true }).catch(function () {});
+        ref.set({ name: user, wc: P.wc, gc: P.gc, sc: P.sc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, stot: P.stot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr, stat: P.stat, ach: P.ach }, { merge: true }).catch(function () {});
       } else {
         ref.set(Object.assign({ name: user }, P)).catch(function () {}); welcome();
       }
@@ -1877,12 +1878,13 @@ var VIDEOS = {
   }
   function gain(type, n) {
     if (n <= 0) return;
-    var tk = type === 'wc' ? 'wtot' : 'gtot';
+    var tk = type === 'wc' ? 'wtot' : type === 'sc' ? 'stot' : 'gtot';
     P[type] += n; P.tot += n; P[tk] = (P[tk] || 0) + n; saveLocal();
     var f = { tot: inc(n) }; f[type] = inc(n); f[tk] = inc(n); cloud(f);
     renderAcct(); renderShop();
   }
   function addGame(n) { gain('gc', n); }
+  function gainCoinSafe(n) { gain('sc', n); toast('도전 성공! 성공 코인 ' + n + '개를 받았어요.'); }
   function meMsg(t) {
     var ov = document.getElementById('shopOv');
     if (ov && !ov.hidden) document.getElementById('shopMsg').textContent = t || ''; else if (t) toast(t);

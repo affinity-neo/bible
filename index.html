@@ -363,8 +363,18 @@
   .fm-panel-title svg{width:29px;height:29px;flex:none}.fm-panel-title span:not(.fm-pan-icon){display:flex;flex-direction:column;min-width:0}
   .fm-panel-title b{font-size:.76rem;line-height:1.2}.fm-panel-title small{font-size:.61rem;color:var(--muted);line-height:1.25}
   .fm-pan-icon{width:27px;height:27px;display:grid;place-items:center;background:#d3e6d4;color:#3d8052;border-radius:8px;flex:none;font-size:1rem}
-  .fm-pizza{height:108px;display:grid;place-items:center;margin:0 auto;width:100%}
-  .fm-pizza-svg{display:block;width:min(100%,112px);height:auto;overflow:visible;filter:drop-shadow(0 2px 1px rgba(45,35,20,.12))}
+  .fm-rolebar{display:flex;align-items:center;gap:7px;min-height:52px;text-align:left;margin-bottom:3px}
+  .fm-avatar{position:relative;width:50px;height:50px;flex:none;border-radius:11px;background:rgba(255,255,255,.55);border:1px solid rgba(127,100,70,.22);overflow:hidden}
+  .fm-avatar canvas.gcv{display:block;width:100%;height:100%;aspect-ratio:1;border:0;border-radius:0;background:transparent}
+  .fm-avatar-chef:before{content:"";position:absolute;z-index:2;left:14px;top:1px;width:22px;height:8px;background:#fffdf3;border:1px solid #d6c7a7;border-radius:6px 6px 3px 3px;pointer-events:none}
+  .fm-avatar-chef:after{content:"";position:absolute;z-index:2;left:11px;top:7px;width:28px;height:5px;background:#fffdf3;border:1px solid #d6c7a7;border-radius:3px;pointer-events:none}
+  .fm-role-copy{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0}
+  .fm-role-copy>small{font-size:.59rem;color:var(--muted);line-height:1.2}
+  .fm-role-pizza{font-size:.76rem;line-height:1.2;color:var(--fg);overflow-wrap:anywhere}
+  .fm-speech{font-size:.58rem;line-height:1.25;color:#755c43;background:#fff1dc;border:1px solid #ead0a8;border-radius:7px;padding:3px 5px;margin-top:2px}
+  .fm-build .fm-speech{background:#e5f2e7;border-color:#c3dec7;color:#3f6d49}
+  .fm-pizza{height:118px;display:grid;place-items:center;margin:0 auto;width:100%}
+  .fm-pizza-svg{display:block;width:min(100%,128px);height:auto;overflow:visible;filter:drop-shadow(0 2px 1px rgba(45,35,20,.12))}
   .fm-shape-choice .fm-pizza-svg{width:37px;filter:none}
   .fm-pizza-name{display:block;font-size:.75rem;line-height:1.2;margin:0 0 3px;min-height:1em}
   .fm-small{font-size:.62rem;color:var(--muted);line-height:1.2;min-height:1em}
@@ -381,19 +391,19 @@
   .fm-sauces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
   .fm-sauce-choice{padding:3px 1px;gap:3px}
   .fm-sauce-choice i{width:19px;height:19px;border-radius:50%;background:var(--sauce-color);border:3px solid #e3bd84;box-shadow:inset 0 0 0 2px rgba(255,255,255,.16)}
-  .fm-toppings{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-  .fm-top-choice{min-height:49px;padding:3px 1px;gap:2px}
-  .fm-top-choice span{height:27px;width:27px;display:grid;place-items:center}
+  .fm-toppings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .fm-top-choice{min-height:57px;padding:4px 2px;gap:3px;background:#fffaf1}
+  .fm-top-choice span{height:34px;width:34px;display:grid;place-items:center}
   .fm-top-choice svg{width:100%;height:100%;display:block;overflow:visible}
-  .fm-top-choice.on{box-shadow:inset 0 0 0 1px var(--accent)}
+  .fm-top-choice small{font-size:.66rem}.fm-top-choice.on{box-shadow:inset 0 0 0 1px var(--accent)}
   .fm-msg{font-size:.68rem;line-height:1.3;min-height:18px;text-align:center;color:var(--muted);padding:2px 0}
   .fm-msg.good{color:#2d7a43;font-weight:700}.fm-msg.bad{color:#b64234;font-weight:700}
   .fm-serve{width:100%;min-height:39px;border:0;border-radius:10px;background:var(--accent);color:var(--bg);font:inherit;font-weight:800;font-size:.82rem;cursor:pointer}
   .fm-serve:disabled{opacity:.6}
   @media(max-width:390px){
     .fm-shell{gap:4px}.fm-workbench{gap:5px}.fm-panel{padding:5px 3px}.fm-panel-title b{font-size:.69rem}.fm-panel-title small{font-size:.56rem}
-    .fm-pizza{height:90px}.fm-pizza-svg{width:min(100%,94px)}.fm-shape-choice span{height:32px}.fm-shape-choice .fm-pizza-svg{width:31px}
-    .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.56rem}.fm-top-choice{min-height:45px}.fm-top-choice span{height:25px;width:25px}
+    .fm-pizza{height:96px}.fm-pizza-svg{width:min(100%,112px)}.fm-shape-choice span{height:32px}.fm-shape-choice .fm-pizza-svg{width:31px}
+    .fm-avatar{width:43px;height:43px}.fm-avatar-chef:before{left:12px;top:0;width:19px}.fm-avatar-chef:after{left:9px;top:6px;width:25px}.fm-role-pizza{font-size:.71rem}.fm-speech{font-size:.54rem;padding:3px 4px}.fm-shape-choice small,.fm-sauce-choice small{font-size:.53rem}.fm-top-choice{min-height:51px}.fm-top-choice span{height:30px;width:30px}.fm-top-choice small{font-size:.61rem}
   }
 
 
@@ -1255,44 +1265,39 @@ var VIDEOS = {
         {id:'spicy',n:'매콤',c:'#e66a34'}
       ];
       var toppings=[
-        {id:'cheese',n:'치즈',c:'#f6df91'},{id:'pep',n:'페퍼로니',c:'#b73b32'},
-        {id:'tomato',n:'토마토',c:'#e25b49'},{id:'basil',n:'바질잎',c:'#39834a'},
-        {id:'mushroom',n:'버섯',c:'#b58a65'},{id:'olive',n:'올리브',c:'#353b35'},
-        {id:'corn',n:'옥수수',c:'#f0c44b'},{id:'pepper',n:'파프리카',c:'#4c9b59'},
-        {id:'onion',n:'적양파',c:'#a86b97'},{id:'shrimp',n:'새우',c:'#ed8a62'},
-        {id:'beef',n:'불고기',c:'#89513d'},{id:'sweetpotato',n:'고구마',c:'#e8ad66'},
-        {id:'pineapple',n:'파인애플',c:'#f2c94c'},{id:'ham',n:'햄',c:'#db8b91'},
-        {id:'arugula',n:'루꼴라',c:'#4e8b46'},{id:'chicken',n:'치킨',c:'#b77946'},
-        {id:'bacon',n:'베이컨',c:'#ad5d50'},{id:'sausage',n:'소시지',c:'#a9563b'}
+        {id:'cheese',n:'치즈',c:'#f6df91'},
+        {id:'pep',n:'페퍼로니',c:'#b73b32'},
+        {id:'mushroom',n:'버섯',c:'#b58a65'},
+        {id:'olive',n:'올리브',c:'#353b35'},
+        {id:'pepper',n:'파프리카',c:'#4c9b59'},
+        {id:'tomato',n:'토마토',c:'#e25b49'},
+        {id:'basil',n:'바질',c:'#39834a'},
+        {id:'sausage',n:'소시지',c:'#a9563b'}
       ];
       var recipes=[
         {n:'마르게리타',shape:'round',sauce:'tomato',t:['cheese','tomato','basil'],pts:12},
         {n:'페퍼로니 클래식',shape:'round',sauce:'tomato',t:['cheese','pep','olive'],pts:13},
-        {n:'시카고 불고기',shape:'square',sauce:'bbq',t:['cheese','beef','onion','pepper'],pts:15},
-        {n:'하트 고구마 피자',shape:'heart',sauce:'cream',t:['cheese','sweetpotato','corn'],pts:15},
-        {n:'버섯 크림 플랫브레드',shape:'oval',sauce:'cream',t:['cheese','mushroom','onion','arugula'],pts:16},
-        {n:'별빛 가든 피자',shape:'star',sauce:'pesto',t:['cheese','pepper','basil','olive','tomato'],pts:18},
-        {n:'새우 루꼴라 피자',shape:'oval',sauce:'pesto',t:['cheese','shrimp','arugula','tomato'],pts:18},
-        {n:'하와이안 네모 피자',shape:'square',sauce:'tomato',t:['cheese','ham','pineapple','pepper'],pts:15},
-        {n:'딥디시 포 치즈',shape:'deep',sauce:'cream',t:['cheese','mushroom','olive','basil'],pts:17},
-        {n:'핫치킨 별 피자',shape:'star',sauce:'spicy',t:['cheese','chicken','pepper','onion'],pts:17},
-        {n:'베이컨 포테이토',shape:'square',sauce:'cream',t:['cheese','bacon','sweetpotato','sausage'],pts:17},
-        {n:'토마토 바질 타원 피자',shape:'oval',sauce:'tomato',t:['cheese','tomato','basil','olive'],pts:16}
+        {n:'버섯 크림 피자',shape:'oval',sauce:'cream',t:['cheese','mushroom','olive'],pts:14},
+        {n:'소시지 가든 피자',shape:'square',sauce:'tomato',t:['cheese','sausage','pepper'],pts:15},
+        {n:'토마토 치즈 피자',shape:'heart',sauce:'tomato',t:['cheese','tomato'],pts:12},
+        {n:'베지 크런치 피자',shape:'round',sauce:'pesto',t:['cheese','pepper','mushroom'],pts:14},
+        {n:'더블 페퍼로니',shape:'deep',sauce:'bbq',t:['cheese','pep','sausage'],pts:15},
+        {n:'바질 올리브 피자',shape:'oval',sauce:'pesto',t:['cheese','basil','olive'],pts:14}
       ];
       var shapeMap={},sauceMap={},topMap={};
       shapes.forEach(function(x){shapeMap[x.id]=x;});
       sauces.forEach(function(x){sauceMap[x.id]=x;});
       toppings.forEach(function(x){topMap[x.id]=x;});
-      var deck=shuffle(recipes).slice(0,8),served=0,score=0,combo=0,bestCombo=0,time=60,ended=false,timer=null,order=null;
+      var deck=shuffle(recipes).slice(0,6),served=0,score=0,combo=0,bestCombo=0,time=75,ended=false,timer=null,order=null;
       var chosen={shape:'round',sauce:'tomato',tops:[]}, orderIndex=0;
       var uid='pizza'+Math.random().toString(36).slice(2,9);
       area.innerHTML='<div class="fm-shell">'+
-        '<div class="fm-status"><b id="fmRound">주문 1/8</b><b id="fmTime">60초</b><b id="fmScore">점수 0</b></div>'+
+        '<div class="fm-status"><b id="fmRound">주문 1/6</b><b id="fmTime">60초</b><b id="fmScore">점수 0</b></div>'+
         '<div class="fm-timebar"><i id="fmBar"></i></div>'+
         '<div class="fm-workbench">'+
-          '<section class="fm-panel fm-order"><div class="fm-panel-title"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#e9ba92"/><path d="M5 18 Q5 3 20 5 Q35 3 35 18 L35 15 Q24 7 17 13 Q10 7 5 15Z" fill="#5e422e"/><circle cx="14" cy="20" r="2" fill="#3d3029"/><circle cx="26" cy="20" r="2" fill="#3d3029"/><path d="M15 27 Q20 31 25 27" fill="none" stroke="#9c4e4e" stroke-width="2" stroke-linecap="round"/></svg><span><b>손님 주문</b><small id="fmGuest">단골 손님</small></span></div>'+
-            '<div id="fmOrderPizza" class="fm-pizza"></div><b id="fmOrderName" class="fm-pizza-name"></b><div id="fmOrderDetails" class="fm-small"></div></section>'+
-          '<section class="fm-panel fm-build"><div class="fm-panel-title"><span class="fm-pan-icon">✦</span><span><b>내가 만드는 피자</b><small>토핑을 누르면 바로 반영</small></span></div>'+
+          '<section class="fm-panel fm-order"><div class="fm-rolebar"><div class="fm-avatar" id="fmGuestAvatar"></div><div class="fm-role-copy"><small>손님 주문서</small><b id="fmOrderName" class="fm-role-pizza">마르게리타</b><span id="fmGuest" class="fm-speech">이 피자로 부탁해요!</span></div></div>'+
+            '<div id="fmOrderPizza" class="fm-pizza"></div><div id="fmOrderDetails" class="fm-small"></div></section>'+
+          '<section class="fm-panel fm-build"><div class="fm-rolebar"><div class="fm-avatar fm-avatar-chef" id="fmChefAvatar"></div><div class="fm-role-copy"><small>우리 가게</small><b class="fm-role-pizza">내 조리대</b><span class="fm-speech">주문과 똑같이 만들어 보세요.</span></div></div>'+
             '<div id="fmBuildPizza" class="fm-pizza"></div><b id="fmBuildName" class="fm-pizza-name">클래식</b><div id="fmCompare" class="fm-compare">주문과 비교해 보세요.</div></section>'+
         '</div>'+
         '<div class="fm-option-head"><b>도우 모양</b><small>그림을 눌러 선택</small></div><div id="fmShapes" class="fm-shapes"></div>'+
@@ -1301,6 +1306,15 @@ var VIDEOS = {
         '<div id="fmMsg" class="fm-msg" aria-live="polite">왼쪽의 완성 피자와 똑같이 만든 뒤 서빙하세요.</div>'+
         '<button type="button" id="fmServe" class="fm-serve">완성 확인 후 서빙</button></div>';
       var $=function(id){return area.querySelector('#'+id);};
+      var guestCanvas=mkCanvas($('fmGuestAvatar'),52,52),chefCanvas=mkCanvas($('fmChefAvatar'),52,52);
+      function drawRoleCharacters(){
+        guestCanvas.ctx.clearRect(0,0,52,52);chefCanvas.ctx.clearRect(0,0,52,52);
+        var guest=CHARS[(served+3)%CHARS.length]||CHARS[0];
+        drawChar(guestCanvas.ctx,5,5,42,42,guest,'smile',0);
+        drawHero(chefCanvas.ctx,5,5,42,42,'smile',0);
+      }
+      drawRoleCharacters();
+
       function toppingSVG(id,x,y,rot){
         var color=topMap[id].c, tr='translate('+x+' '+y+') rotate('+rot+')';
         if(id==='pep'||id==='tomato')return '<g transform="'+tr+'"><circle r="6.7" fill="'+color+'" stroke="'+(id==='pep'?'#7c2c27':'#be4437')+'" stroke-width="1.1"/><circle cx="-1.8" cy="-1.8" r="1.6" fill="#ffddb4"/><circle cx="2.2" cy="1.8" r="1" fill="#f6d8a9"/></g>';
@@ -1336,7 +1350,7 @@ var VIDEOS = {
         visibleItems.forEach(function(id,idx){
           for(var n=0;n<count;n++){
             var pi=Math.floor((idx*count+n)*positions.length/Math.max(1,totalPieces));
-            var p=coords[pi],sc=id==='olive'?1.08:1.32;
+            var p=coords[pi],sc=id==='olive'?1.18:1.58;
             out+='<g transform="translate('+p[0]+' '+p[1]+') scale('+sc+') translate('+(-p[0])+' '+(-p[1])+')">'+toppingSVG(id,p[0],p[1],(idx*47+n*31)%360)+'</g>';
           }
         });
@@ -1346,7 +1360,7 @@ var VIDEOS = {
         return out;
       }
       function uidSafe(s){return String(s).replace(/[^a-zA-Z0-9_-]/g,'');}
-      function iconSVG(id){return '<svg viewBox="34 34 32 32" aria-hidden="true">'+toppingSVG(id,50,50,0)+'</svg>';}
+      function iconSVG(id){return '<svg viewBox="38 38 24 24" aria-hidden="true">'+toppingSVG(id,50,50,0)+'</svg>';}
       function pill(s,ok){return '<span class="fm-pill '+(ok?'ok':'no')+'">'+s+'</span>';}
       function compare(){
         var miss=order.t.filter(function(id){return chosen.tops.indexOf(id)<0;});
@@ -1354,8 +1368,8 @@ var VIDEOS = {
         return {shape:chosen.shape===order.shape,sauce:chosen.sauce===order.sauce,miss:miss,extra:extra,exact:chosen.shape===order.shape&&chosen.sauce===order.sauce&&!miss.length&&!extra.length};
       }
       function render(){
-        $('fmRound').textContent='주문 '+Math.min(served+1,8)+'/8';
-        $('fmTime').textContent=time+'초';$('fmScore').textContent='점수 '+score;$('fmBar').style.width=(time/60*100)+'%';
+        $('fmRound').textContent='주문 '+Math.min(served+1,6)+'/6';
+        $('fmTime').textContent=time+'초';$('fmScore').textContent='점수 '+score;$('fmBar').style.width=(time/75*100)+'%';
         $('fmBar').style.background=time<12?'#d75b4b':'var(--accent)';
         $('fmOrderPizza').innerHTML=pizzaSVG(order.shape,order.sauce,order.t,'order');
         $('fmBuildPizza').innerHTML=pizzaSVG(chosen.shape,chosen.sauce,chosen.tops,'build');
@@ -1377,9 +1391,10 @@ var VIDEOS = {
       }
       function nextOrder(){
         if(ended)return;
-        if(served>=8){finishGame();return;}
+        if(served>=6){finishGame();return;}
         order=deck[served];chosen={shape:'round',sauce:'tomato',tops:[]};
-        $('fmGuest').textContent=['단골 손님','배고픈 여행자','가족 손님','바쁜 직장인'][served%4];
+        $('fmGuest').textContent=['이 피자로 부탁해요!','제가 좋아하는 피자예요.','치즈가 듬뿍 올라가게요!','맛있는 피자 기대할게요!'][served%4];
+        drawRoleCharacters();
         $('fmMsg').textContent='왼쪽의 완성 피자와 똑같이 만든 다음 서빙하세요.';
         render();
       }
@@ -1403,7 +1418,7 @@ var VIDEOS = {
       function finishGame(){
         if(ended)return;ended=true;if(timer)clearInterval(timer);
         $('fmServe').disabled=true;$('fmServe').textContent='영업 종료';
-        $('fmMsg').textContent='영업 종료 · '+served+'/8 주문 성공 · 최고 콤보 '+bestCombo;
+        $('fmMsg').textContent='영업 종료 · '+served+'/6 주문 성공 · 최고 콤보 '+bestCombo;
         finish('피자 주문 마스터',served+'/8 주문 성공 · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
       }
       buildChoices();$('fmServe').onclick=serve;nextOrder();

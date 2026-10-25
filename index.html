@@ -1817,7 +1817,7 @@ var VIDEOS = {
         $('grPause').disabled=true;$('grStart').hidden=false;$('grStart').textContent='다시 달리기';
         if(success){
           $('grStatus').textContent='완주 성공!';$('grStart').textContent='한 번 더 달리기';
-          finish('광야 골드런 완주!',gold+'개 골드 수집 · '+Math.floor(distance)+'m · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/35)),true);
+          finish('광야 골드런 완주!',gold+'개 골드 수집 · '+Math.floor(distance)+'m · 점수 '+Math.floor(score)+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/35)),true);
         }else{
           $('grStatus').textContent='달리기 종료';$('grStart').textContent='다시 도전';
           finish('달리기 종료',gold+'개 골드 수집 · '+Math.floor(distance)+'m / '+targetDistance+'m · 점수 '+Math.floor(score),Math.min(5,Math.floor(score/35)),false);

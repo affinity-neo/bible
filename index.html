@@ -351,6 +351,48 @@
   @media(max-width:480px){main{padding:16px 12px calc(100px + env(safe-area-inset-bottom))}h1{font-size:1.55rem}.player{padding:9px 0}.player .row{grid-template-columns:42px 48px 42px minmax(30px,1fr);gap:6px}.player .row button{width:40px;height:40px}.player .row #play{width:46px;height:46px}.verse{padding:.35em .45em;font-size:1rem}.game{margin-top:28px}.game .bread{width:min(170px,62vw);height:min(170px,62vw)}.game .mgrid{gap:6px}.game .crowd{min-height:100px}.chnav{gap:6px}.chnav a{padding:10px 12px;font-size:.85rem}.race-controls button{min-height:64px}}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
+
+  .fm-shell{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:10px;font-family:var(--ui)}
+  .fm-twin{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .fm-card{min-width:0;padding:10px 8px;border:1px solid var(--line);border-radius:16px;background:var(--card);text-align:center;overflow:hidden}
+  .fm-order{background:linear-gradient(180deg,#fff5e7,var(--card));border-color:#d6b994}
+  .fm-build{background:linear-gradient(180deg,#eef7ef,var(--card));border-color:#a5c6ad}
+  .fm-card-head{display:flex;align-items:center;gap:7px;text-align:left;margin-bottom:4px}
+  .fm-card-head div{display:flex;flex-direction:column;line-height:1.35;min-width:0}
+  .fm-card-head b{font-size:.86rem}.fm-card-head small{font-size:.66rem;color:var(--muted)}
+  .fm-number{width:25px;height:25px;display:grid;place-items:center;flex:none;border-radius:8px;background:#e4d1b8;color:#694a2a;font-size:.68rem;font-weight:900}
+  .fm-build .fm-number{background:#cbe2d0;color:#2e6043}
+  .fm-pizza{display:grid;place-items:center;min-height:118px}
+  .fm-pizza-svg{display:block;width:min(100%,140px);height:auto;filter:drop-shadow(0 3px 2px rgba(45,35,20,.12))}
+  .fm-shape-preview .fm-pizza-svg{width:48px;height:48px;filter:none}
+  .fm-card h3{font-size:.92rem;line-height:1.3;margin:2px 0 5px}
+  .fm-recipe{font-size:.73rem;line-height:1.5;min-height:2.8em;margin:0 0 7px;color:var(--muted)}
+  .fm-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+  .fm-tag{font-size:.64rem;line-height:1.25;padding:3px 5px;border-radius:6px;background:#f0e7d8;color:#67513a}
+  .fm-build .fm-tag{background:#e0eee3;color:#395b43}
+  .fm-tag.fm-ok{background:#d6edda;color:#285e39}.fm-tag.fm-no{background:#f7ded8;color:#8a372d}
+  .fm-picker{border:1px solid var(--line);border-radius:14px;padding:11px;background:var(--card)}
+  .fm-picker h4{font-size:.83rem;margin:2px 0 7px}.fm-picker h4:not(:first-child){margin-top:14px}
+  .fm-picker h4 small{font-size:.68rem;font-weight:400;color:var(--muted)}
+  .fm-shapes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .fm-choice,.fm-sauce,.fm-top{font:inherit;color:var(--fg);border:1px solid var(--line);background:var(--bg);border-radius:10px;cursor:pointer;min-width:0}
+  .fm-choice{display:flex;align-items:center;flex-direction:column;gap:2px;padding:5px 2px;font-size:.68rem;line-height:1.2}
+  .fm-choice.on,.fm-sauce.on,.fm-top.on{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent);background:var(--hl)}
+  .fm-shape-preview{display:grid;place-items:center;height:47px}
+  .fm-sauces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .fm-sauce{padding:7px 2px;display:flex;align-items:center;flex-direction:column;gap:4px;font-size:.67rem;line-height:1.15}
+  .fm-sauce i{display:block;width:22px;height:22px;border-radius:50%;border:3px solid #d8b27c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+  .fm-toppings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .fm-top{padding:8px 4px;display:flex;align-items:center;gap:6px;text-align:left;font-size:.72rem;line-height:1.2}
+  .fm-top i{width:14px;height:14px;display:block;flex:none;border-radius:50%;background:var(--top-color);border:1px solid rgba(0,0,0,.15);box-shadow:inset 0 0 0 3px rgba(255,255,255,.22)}
+  .fm-top span{overflow-wrap:anywhere}
+  .fm-serve{width:100%;min-height:48px;border:0;border-radius:12px;background:var(--accent);color:var(--bg);font:inherit;font-weight:800;font-size:.95rem;cursor:pointer}
+  .fm-serve:disabled{opacity:.55;cursor:default}
+  .fm-result{padding:10px;border-radius:10px;background:var(--hl);text-align:center;font-weight:700;font-size:.83rem}
+  .fm-msg{font-size:.84rem}
+  .dm-msg.fm-ok{color:#2d7a43;font-weight:700}.dm-msg.fm-no{color:#b64234;font-weight:700}
+  @media(max-width:390px){.fm-card{padding:8px 5px}.fm-pizza{min-height:104px}.fm-pizza-svg{width:min(100%,120px)}.fm-card-head b{font-size:.78rem}.fm-card-head small{font-size:.61rem}.fm-toppings{grid-template-columns:repeat(2,minmax(0,1fr))}.fm-sauce{font-size:.61rem}}
+
 </style>
 </head>
 <body>
@@ -1131,20 +1173,194 @@ var VIDEOS = {
     }
   };
 
-  // ================= 오병이어: 음식 조합 버전 =================
+  // ================= 피자 주문 제작 챌린지 =================
   GAMES.feastmix = {
-    name:'주문대로 만들기', short:'음식 조합',
-    desc:'손님의 주문서를 확인하고 재료를 골라 음식을 완성한 뒤 서빙하세요. 연속 성공과 제한 시간으로 높은 점수를 노리세요.',
-    init:function(area,finish){
-      var recipes=[{n:'치즈 피자',b:1,f:0,c:1,tip:5},{n:'바다 피자',b:1,f:2,c:1,tip:7},{n:'나눔 피자',b:2,f:1,c:2,tip:8},{n:'가족 피자',b:2,f:2,c:2,tip:10}],round=0,score=0,served=0,combo=0,best=0,time=18,p={b:0,f:0,c:0},order,ended=false,timer;
-      area.innerHTML='<div class="stage" style="gap:10px"><div class="dm-top"><span id="fmRound">주문 1 / 8</span><span id="fmScore">매출 0</span><span id="fmCombo">콤보 0</span></div><div style="height:7px;background:var(--line);border-radius:8px;overflow:hidden"><div id="fmBar" style="height:100%;width:100%;background:var(--accent)"></div></div><div style="display:grid;grid-template-columns:minmax(95px,.7fr) 1.3fr;gap:10px"><div style="background:#f3d3c8;border:2px solid #bb8574;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;color:#563b35;min-height:145px"><div style="width:58px;height:64px;border-radius:45%;background:#e9b58d;border:2px solid #a46e58;position:relative"><i style="position:absolute;width:5px;height:5px;border-radius:50%;background:#51352f;left:14px;top:25px;box-shadow:22px 0 #51352f"></i><i style="position:absolute;width:14px;height:7px;border-bottom:2px solid #a24e4e;border-radius:50%;left:21px;top:37px"></i></div><b id="fmGuest">손님</b><small>주문 기다리는 중</small></div><div style="background:#fff2d6;border:2px solid #c68f69;border-radius:14px;padding:10px;text-align:center;color:#513d31"><small>주문서</small><h3 id="fmTarget" style="margin:4px 0">치즈 피자</h3><p id="fmRecipe" style="margin:4px 0;font-size:.9rem"></p><div style="width:104px;height:104px;border-radius:50%;background:#f2d88b;border:7px solid #ce9560;box-shadow:inset 0 0 0 3px #fff0c9;margin:8px auto;position:relative"><span style="position:absolute;inset:8px;background:radial-gradient(circle at 20% 25%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 65% 20%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 45% 55%,#bd4b40 0 5px,transparent 6px),radial-gradient(circle at 75% 70%,#bd4b40 0 5px,transparent 6px);border-radius:50%"></span></div></div></div><div id="fmMsg" class="dm-msg">주문서를 확인하고 재료를 담으세요.</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px"><button type="button" id="fmB" style="min-height:68px">도우<br><b id="fmBc">0개</b></button><button type="button" id="fmF" style="min-height:68px">물고기 토핑<br><b id="fmFc">0개</b></button><button type="button" id="fmC" style="min-height:68px">치즈<br><b id="fmCc">0개</b></button></div><div id="fmPicked" style="text-align:center;font-size:.9rem">담은 재료: 도우 0 · 물고기 0 · 치즈 0</div><div style="display:flex;gap:8px"><button type="button" id="fmReset" style="flex:1">다시 만들기</button><button type="button" id="fmServe" style="flex:2;font-weight:800">완성하고 서빙</button></div></div>';
+    name: '피자 주문 제작 챌린지', short: '피자',
+    desc: '왼쪽 주문서와 오른쪽에서 직접 만든 피자를 비교하세요. 도우 모양, 소스, 토핑을 모두 맞춘 다음 손님에게 서빙해야 주문이 완료됩니다.',
+    init: function(area, finish) {
+      var shapes = [
+        {id:'round', n:'클래식 원형', crust:'#d99a45'},
+        {id:'square', n:'시카고 네모', crust:'#bb7a36'},
+        {id:'heart', n:'하트 크러스트', crust:'#e1a24c'},
+        {id:'oval', n:'로마 타원형', crust:'#d89b4a'},
+        {id:'star', n:'별 크러스트', crust:'#dfa14b'},
+        {id:'deep', n:'딥디시', crust:'#a9652e'}
+      ];
+      var sauces = [
+        {id:'tomato', n:'토마토', c:'#c94a3d'},
+        {id:'cream', n:'화이트 크림', c:'#f4d8a1'},
+        {id:'pesto', n:'바질 페스토', c:'#6a9b52'},
+        {id:'bbq', n:'바비큐', c:'#8b4935'},
+        {id:'spicy', n:'매콤 소스', c:'#e26a35'}
+      ];
+      var toppings = [
+        {id:'cheese',n:'모차렐라 치즈',c:'#f6df91'},
+        {id:'pep',n:'페퍼로니',c:'#b73b32'},
+        {id:'tomato',n:'방울토마토',c:'#e25b49'},
+        {id:'basil',n:'바질',c:'#39834a'},
+        {id:'mushroom',n:'버섯',c:'#b58a65'},
+        {id:'olive',n:'블랙 올리브',c:'#353b35'},
+        {id:'corn',n:'옥수수',c:'#f0c44b'},
+        {id:'pepper',n:'파프리카',c:'#4c9b59'},
+        {id:'onion',n:'적양파',c:'#a86b97'},
+        {id:'shrimp',n:'새우',c:'#ed8a62'},
+        {id:'beef',n:'불고기',c:'#89513d'},
+        {id:'sweetpotato',n:'고구마 무스',c:'#e8ad66'},
+        {id:'pineapple',n:'파인애플',c:'#f2c94c'},
+        {id:'ham',n:'햄',c:'#db8b91'},
+        {id:'arugula',n:'루꼴라',c:'#4e8b46'},
+        {id:'chicken',n:'치킨',c:'#b77946'},
+        {id:'bacon',n:'베이컨',c:'#ad5d50'},
+        {id:'scallion',n:'쪽파',c:'#63a85c'}
+      ];
+      var recipes = [
+        {n:'마르게리타',shape:'round',sauce:'tomato',t:['cheese','tomato','basil'],points:12},
+        {n:'페퍼로니 클래식',shape:'round',sauce:'tomato',t:['cheese','pep','olive'],points:13},
+        {n:'시카고 불고기',shape:'square',sauce:'bbq',t:['cheese','beef','onion','pepper'],points:15},
+        {n:'하트 고구마 피자',shape:'heart',sauce:'cream',t:['cheese','sweetpotato','corn'],points:15},
+        {n:'버섯 크림 플랫브레드',shape:'oval',sauce:'cream',t:['cheese','mushroom','onion','arugula'],points:16},
+        {n:'별빛 가든 피자',shape:'star',sauce:'pesto',t:['cheese','pepper','basil','olive','tomato'],points:18},
+        {n:'새우 루꼴라 피자',shape:'oval',sauce:'pesto',t:['cheese','shrimp','arugula','tomato'],points:18},
+        {n:'하와이안 네모 피자',shape:'square',sauce:'tomato',t:['cheese','ham','pineapple','pepper'],points:15},
+        {n:'딥디시 포 치즈',shape:'deep',sauce:'cream',t:['cheese','mushroom','olive','basil'],points:17},
+        {n:'핫치킨 별 피자',shape:'star',sauce:'spicy',t:['cheese','chicken','pepper','onion'],points:17},
+        {n:'베이컨 포테이토',shape:'square',sauce:'cream',t:['cheese','bacon','sweetpotato','scallion'],points:17},
+        {n:'토마토 바질 타원 피자',shape:'oval',sauce:'tomato',t:['cheese','tomato','basil','olive'],points:16}
+      ];
+      var byId={}; toppings.forEach(function(x){byId[x.id]=x;});
+      var shapeById={}; shapes.forEach(function(x){shapeById[x.id]=x;});
+      var sauceById={}; sauces.forEach(function(x){sauceById[x.id]=x;});
+      var deck=shuffle(recipes).slice(0,8), served=0, score=0, combo=0, bestCombo=0, time=80, ended=false, timer=null, order=null;
+      var selected={shape:'round',sauce:'tomato',toppings:[]};
+      var instance='fm'+Math.random().toString(36).slice(2,8);
+      area.innerHTML='<div class="fm-shell">'+
+        '<div class="dm-top"><span id="fmRound">주문 1 / 8</span><span id="fmTimer">80초</span><span id="fmScore">점수 0</span></div>'+
+        '<div class="dm-bar"><i id="fmBar"></i></div>'+
+        '<div class="fm-twin">'+
+          '<section class="fm-card fm-order"><div class="fm-card-head"><span class="fm-number">01</span><div><b>손님 주문서</b><small>이대로 만들어 주세요</small></div></div>'+
+            '<div id="fmOrderPizza" class="fm-pizza"></div><h3 id="fmOrderName"></h3><p id="fmOrderInfo" class="fm-recipe"></p><div id="fmOrderTags" class="fm-tags"></div></section>'+
+          '<section class="fm-card fm-build"><div class="fm-card-head"><span class="fm-number">02</span><div><b>내가 만든 피자</b><small>선택한 재료가 바로 보여요</small></div></div>'+
+            '<div id="fmBuildPizza" class="fm-pizza"></div><h3 id="fmBuildName">클래식 원형</h3><p id="fmCompare" class="fm-recipe">주문서와 비교해 보세요.</p><div id="fmBuildTags" class="fm-tags"></div></section>'+
+        '</div>'+
+        '<section class="fm-picker"><h4>1. 도우 모양 선택</h4><div class="fm-shapes" id="fmShapes"></div>'+
+          '<h4>2. 소스 선택</h4><div class="fm-sauces" id="fmSauces"></div>'+
+          '<h4>3. 토핑 선택 <small>눌러서 담거나 빼세요</small></h4><div class="fm-toppings" id="fmToppings"></div></section>'+
+        '<div id="fmMsg" class="dm-msg" aria-live="polite">주문서를 보고 오른쪽 피자를 직접 완성하세요.</div>'+
+        '<button type="button" id="fmServe" class="fm-serve">비교 완료 · 손님에게 서빙</button>'+
+        '<div id="fmResult" class="fm-result" hidden></div></div>';
       var $=function(id){return area.querySelector('#'+id);};
-      function render(){$('fmRound').textContent='주문 '+Math.min(round+1,8)+' / 8';$('fmScore').textContent='매출 '+score;$('fmCombo').textContent='콤보 '+combo;$('fmBc').textContent=p.b+'개';$('fmFc').textContent=p.f+'개';$('fmCc').textContent=p.c+'개';$('fmPicked').textContent='담은 재료: 도우 '+p.b+' · 물고기 '+p.f+' · 치즈 '+p.c;$('fmBar').style.width=(time/18*100)+'%';}
-      function reset(){p={b:0,f:0,c:0};render();}
-      function next(){if(ended)return;if(round>=8){ended=true;clearInterval(timer);['fmB','fmF','fmC','fmReset','fmServe'].forEach(function(id){$(id).disabled=true;});$('fmMsg').textContent='영업 종료! '+served+'/8 주문 성공 · 최고 콤보 '+best;finish('오늘의 인기 식당','주문 '+served+'/8 · 매출 '+score+' · 최고 콤보 '+best,Math.max(1,Math.min(5,Math.floor(score/20))),served>=6);return;}order=recipes[Math.floor(Math.random()*recipes.length)];time=18;reset();$('fmGuest').textContent=['단골 손님','배고픈 여행자','가족 손님','바쁜 직장인'][round%4];$('fmTarget').textContent=order.n;$('fmRecipe').textContent='도우 '+order.b+' · 물고기 '+order.f+' · 치즈 '+order.c;$('fmMsg').textContent='제한 시간 안에 정확히 만들어 서빙하세요.';render();}
-      function serve(){if(ended)return;round++;if(p.b===order.b&&p.f===order.f&&p.c===order.c){combo++;best=Math.max(best,combo);served++;var earned=order.tip+Math.min(combo*2,8)+Math.ceil(time/5);score+=earned;$('fmMsg').textContent='정확해요! 팁 +'+earned+' · 콤보 '+combo;}else{combo=0;$('fmMsg').textContent='주문과 달라요. 다음 손님을 준비하세요.';}render();setTimeout(next,550);}
-      [['fmB','b',3],['fmF','f',4],['fmC','c',4]].forEach(function(a){$(a[0]).onclick=function(){if(!ended&&p[a[1]]<a[2])p[a[1]]++;render();};});$('fmReset').onclick=function(){if(!ended)reset();};$('fmServe').onclick=serve;
-      timer=setInterval(function(){if(ended)return;time=Math.max(0,time-.2);render();if(time<=0)serve();},200);next();
+      function shapeGeo(shape,fill){
+        if(shape==='square')return '<rect x="7" y="7" width="86" height="86" rx="8" fill="'+fill+'"/>';
+        if(shape==='heart')return '<path d="M50 89 C42 80 9 59 9 34 C9 12 35 7 50 28 C65 7 91 12 91 34 C91 59 58 80 50 89Z" fill="'+fill+'"/>';
+        if(shape==='oval')return '<ellipse cx="50" cy="50" rx="46" ry="35" fill="'+fill+'"/>';
+        if(shape==='star')return '<path d="M50 5 L62 30 L90 29 L72 50 L81 80 L53 68 L30 89 L31 61 L7 45 L35 38Z" fill="'+fill+'"/>';
+        return '<circle cx="50" cy="50" r="'+(shape==='deep'?46:44)+'" fill="'+fill+'"/>';
+      }
+      var pts=[[28,28],[48,24],[69,30],[35,42],[57,43],[77,48],[24,52],[45,58],[65,60],[34,72],[54,77],[75,70],[47,38],[61,83],[19,40],[81,58],[42,84],[70,42]];
+      function toppingSVG(id,x,y,i){
+        var rot=(i*37)%360;
+        if(id==='pep')return '<g transform="translate('+x+' '+y+')"><circle r="5.2" fill="#b83b32" stroke="#7b2c27" stroke-width="1"/><circle cx="-1.1" cy="-1.2" r="1.3" fill="#e98b72"/></g>';
+        if(id==='tomato')return '<g transform="translate('+x+' '+y+')"><circle r="5.3" fill="#e85343" stroke="#bd3a30" stroke-width="1"/><circle r="2" fill="#ffd3a8"/></g>';
+        if(id==='cheese')return '<path d="M'+(x-5)+' '+(y-2)+' q-1 -5 4 -5 q4 -2 6 3 q3 5 -3 6 q-5 1 -7 -4Z" fill="#ffe7a3" stroke="#dfbd67" stroke-width=".8"/>';
+        if(id==='basil'||id==='arugula')return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><path d="M0 7 C-8 0 -6 -9 0 -9 C7 -7 8 1 0 7Z" fill="'+(id==='basil'?'#39834a':'#4e8b46')+'" stroke="#27633b" stroke-width=".8"/><path d="M0 5 L0 -6" stroke="#c6dba3" stroke-width=".8"/></g>';
+        if(id==='mushroom')return '<g transform="translate('+x+' '+y+')"><path d="M-6 1 Q-5 -7 0 -7 Q6 -7 6 1Z" fill="#b58a65" stroke="#7d5b41" stroke-width="1"/><rect x="-2.2" y="0" width="4.4" height="5" rx="1" fill="#f5d7ac"/></g>';
+        if(id==='olive')return '<g transform="translate('+x+' '+y+')"><circle r="4.6" fill="#303a32" stroke="#59604c" stroke-width="1"/><circle r="1.8" fill="#e9d8a0"/></g>';
+        if(id==='corn')return '<g transform="translate('+x+' '+y+')"><ellipse rx="3.7" ry="4.8" fill="#f3c83e" stroke="#d4a622" stroke-width=".8"/><path d="M-1 -3 L1 3" stroke="#ffe995" stroke-width=".8"/></g>';
+        if(id==='pepper')return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><ellipse rx="5.5" ry="3.9" fill="none" stroke="#4d984d" stroke-width="2.7"/><ellipse rx="2.3" ry="1.5" fill="#f4d78d"/></g>';
+        if(id==='onion')return '<g transform="translate('+x+' '+y+')"><circle r="5.2" fill="none" stroke="#b16d9d" stroke-width="2.3"/><circle r="2.5" fill="none" stroke="#d6a1c5" stroke-width="1.2"/></g>';
+        if(id==='shrimp')return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><path d="M-5 2 Q-8 -5 -2 -6 Q5 -6 5 1 Q2 7 -3 5" fill="#f09a70" stroke="#c9624c" stroke-width="1.4"/><path d="M-2 -4 L-1 3 M2 -3 L3 2" stroke="#ffd3b1" stroke-width="1"/></g>';
+        if(id==='beef'||id==='bacon'||id==='ham'||id==='chicken')return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><path d="M-6 -2 Q-5 -5 0 -4 L6 -2 Q7 2 3 4 L-4 4 Q-7 2 -6 -2Z" fill="'+({beef:'#89513d',bacon:'#ad5d50',ham:'#db8b91',chicken:'#b77946'}[id])+'" stroke="#754334" stroke-width=".8"/><path d="M-3 -1 L3 1" stroke="#f2c7a1" stroke-width=".8"/></g>';
+        if(id==='sweetpotato')return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><path d="M-6 -2 L-3 -5 L4 -4 L6 1 L2 5 L-5 4Z" fill="#e8ad66" stroke="#c17e42" stroke-width=".8"/><path d="M-3 -2 L3 2" stroke="#ffdf9e" stroke-width="1"/></g>';
+        if(id==='pineapple')return '<g transform="translate('+x+' '+y+') rotate(45)"><rect x="-3.8" y="-3.8" width="7.6" height="7.6" rx="1.2" fill="#f3cd55" stroke="#d8a52c" stroke-width=".8"/></g>';
+        return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><path d="M-6 0 L-2 -3 L6 -1 L3 3Z" fill="#63a85c" stroke="#3c7b3e" stroke-width=".8"/></g>';
+      }
+      function pizzaSVG(shape,sauce,items,key){
+        var id=instance+key, inner=shape==='deep'?.72:.83, crust=shapeById[shape].crust, sc=sauceById[sauce].c;
+        var out='<svg class="fm-pizza-svg" viewBox="0 0 100 100" role="img" aria-label="'+shapeById[shape].n+' 피자"><defs><clipPath id="'+id+'clip"><g transform="translate(50 50) scale('+inner+') translate(-50 -50)">'+shapeGeo(shape,'#fff')+'</g></clipPath></defs>';
+        out+=shapeGeo(shape,crust);
+        out+='<g transform="translate(50 50) scale('+inner+') translate(-50 -50)">'+shapeGeo(shape,sc)+'</g>';
+        out+='<g clip-path="url(#'+id+'clip)">';
+        if(items.indexOf('cheese')>=0){[[31,36],[54,31],[69,46],[39,58],[57,70],[27,68]].forEach(function(p,i){out+='<path d="M'+(p[0]-5)+' '+p[1]+' q2 -6 6 -3 q5 2 1 7 q-4 3 -7 -4Z" fill="#ffe7a3" opacity=".95"/>';});}
+        if(items.length){items.forEach(function(ti,tiN){var indexes=[];for(var j=0;j<pts.length;j++)if(j%items.length===tiN)indexes.push(j);indexes.forEach(function(pi){out+=toppingSVG(ti,pts[pi][0],pts[pi][1],pi+tiN);});});}
+        out+='</g><path d="M17 36 Q24 13 49 13" fill="none" stroke="#fff0bf" stroke-width="2" opacity=".62"/></svg>';
+        return out;
+      }
+      function recipeToppingsText(r){return r.t.map(function(id){return byId[id].n;}).join(' · ');}
+      function setMsg(s,cls){$('fmMsg').textContent=s;$('fmMsg').className='dm-msg'+(cls?' '+cls:'');}
+      function matchInfo(){
+        var shapeOk=selected.shape===order.shape,sauceOk=selected.sauce===order.sauce;
+        var missing=order.t.filter(function(x){return selected.toppings.indexOf(x)<0;});
+        var extra=selected.toppings.filter(function(x){return order.t.indexOf(x)<0;});
+        var same=order.t.length-missing.length;
+        var exact=shapeOk&&sauceOk&&missing.length===0&&extra.length===0;
+        return {exact:exact,shapeOk:shapeOk,sauceOk:sauceOk,missing:missing,extra:extra,same:same};
+      }
+      function render(){
+        if(!order)return;
+        $('fmRound').textContent='주문 '+Math.min(served+1,8)+' / 8';
+        $('fmTimer').textContent=time+'초';
+        $('fmScore').textContent='점수 '+score;
+        $('fmBar').style.width=(time/80*100)+'%';
+        $('fmBar').style.background=time<20?'#d65a4a':'var(--accent)';
+        $('fmOrderPizza').innerHTML=pizzaSVG(order.shape,order.sauce,order.t, 'order');
+        $('fmBuildPizza').innerHTML=pizzaSVG(selected.shape,selected.sauce,selected.toppings,'build');
+        $('fmOrderName').textContent=order.n;
+        $('fmOrderInfo').textContent=shapeById[order.shape].n+' · '+sauceById[order.sauce].n+' 소스';
+        $('fmOrderTags').innerHTML='<span class="fm-tag">도우 '+shapeById[order.shape].n+'</span><span class="fm-tag">소스 '+sauceById[order.sauce].n+'</span>'+order.t.map(function(x){return '<span class="fm-tag">'+byId[x].n+'</span>';}).join('');
+        $('fmBuildName').textContent=shapeById[selected.shape].n;
+        var m=matchInfo();
+        $('fmCompare').textContent='도우 '+(m.shapeOk?'일치':'다름')+' · 소스 '+(m.sauceOk?'일치':'다름')+' · 토핑 '+m.same+'/'+order.t.length+'개 일치'+(m.extra.length?' · 추가 '+m.extra.length+'개':'');
+        $('fmBuildTags').innerHTML='<span class="fm-tag '+(m.shapeOk?'fm-ok':'fm-no')+'">도우 '+(m.shapeOk?'일치':'확인')</span><span class="fm-tag '+(m.sauceOk?'fm-ok':'fm-no')+'">소스 '+(m.sauceOk?'일치':'확인')+'</span>'+selected.toppings.map(function(x){return '<span class="fm-tag '+(order.t.indexOf(x)>=0?'fm-ok':'fm-no')+'">'+byId[x].n+'</span>';}).join('');
+        Array.prototype.forEach.call($('fmShapes').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-shape')===selected.shape);});
+        Array.prototype.forEach.call($('fmSauces').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-sauce')===selected.sauce);});
+        Array.prototype.forEach.call($('fmToppings').querySelectorAll('button'),function(b){var on=selected.toppings.indexOf(b.getAttribute('data-top'))>=0;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+      }
+      function buildPickers(){
+        $('fmShapes').innerHTML=shapes.map(function(s){return '<button type="button" class="fm-choice" data-shape="'+s.id+'"><span class="fm-shape-preview">'+pizzaSVG(s.id,'tomato',['cheese'],'shape'+s.id)+'</span><b>'+s.n+'</b></button>';}).join('');
+        $('fmSauces').innerHTML=sauces.map(function(s){return '<button type="button" class="fm-sauce" data-sauce="'+s.id+'"><i style="background:'+s.c+'"></i><b>'+s.n+'</b></button>';}).join('');
+        $('fmToppings').innerHTML=toppings.map(function(t){return '<button type="button" class="fm-top" data-top="'+t.id+'" aria-pressed="false"><i style="--top-color:'+t.c+'"></i><span>'+t.n+'</span></button>';}).join('');
+        Array.prototype.forEach.call($('fmShapes').querySelectorAll('button'),function(b){b.onclick=function(){if(ended)return;selected.shape=b.getAttribute('data-shape');render();};});
+        Array.prototype.forEach.call($('fmSauces').querySelectorAll('button'),function(b){b.onclick=function(){if(ended)return;selected.sauce=b.getAttribute('data-sauce');render();};});
+        Array.prototype.forEach.call($('fmToppings').querySelectorAll('button'),function(b){b.onclick=function(){if(ended)return;var id=b.getAttribute('data-top'),i=selected.toppings.indexOf(id);if(i>=0)selected.toppings.splice(i,1);else selected.toppings.push(id);render();};});
+      }
+      function finishGame(){
+        if(ended)return;ended=true;if(timer)clearInterval(timer);
+        $('fmServe').disabled=true;$('fmServe').textContent='영업 종료';
+        $('fmResult').hidden=false;$('fmResult').textContent='영업 종료 · '+served+'/8 주문 성공 · 연속 성공 최고 '+bestCombo+'회';
+        setMsg(served>=6?'훌륭해요! 손님들이 만족했어요.':'영업이 끝났어요. 다음엔 주문을 더 정확하게 맞춰 보세요.',served>=6?'fm-ok':'');
+        finish('피자 주문 마스터',served+'/8 주문 성공 · 점수 '+score+' · 최고 콤보 '+bestCombo,Math.min(5,Math.floor(score/24)),served>=6);
+      }
+      function nextOrder(){
+        if(ended)return;
+        if(served>=8){finishGame();return;}
+        order=deck[served];selected={shape:'round',sauce:'tomato',toppings:[]};
+        setMsg('왼쪽 주문서와 오른쪽 피자를 비교하세요. 틀린 부분을 고친 뒤 서빙할 수 있어요.');
+        render();
+      }
+      function serve(){
+        if(ended||!order)return;
+        var m=matchInfo();
+        if(!m.exact){
+          combo=0;
+          var parts=[];
+          if(!m.shapeOk)parts.push('도우 모양');
+          if(!m.sauceOk)parts.push('소스');
+          if(m.missing.length)parts.push('빠진 토핑 '+m.missing.map(function(x){return byId[x].n;}).join(', '));
+          if(m.extra.length)parts.push('잘못 추가한 토핑 '+m.extra.map(function(x){return byId[x].n;}).join(', '));
+          setMsg('아직 주문과 달라요: '+parts.join(' · ')+'. 오른쪽 피자를 수정한 다음 다시 비교해 주세요.','fm-no');
+          return;
+        }
+        served++;combo++;bestCombo=Math.max(bestCombo,combo);
+        var earned=order.points+Math.min(combo,5)+Math.ceil(time/12);
+        score+=earned;
+        setMsg('정확히 만들었어요! 주문 완료 · 점수 +'+earned+' · 콤보 '+combo,'fm-ok');
+        $('fmServe').disabled=true;
+        setTimeout(function(){if(ended)return;$('fmServe').disabled=false;nextOrder();},500);
+      }
+      buildPickers();
+      $('fmServe').onclick=serve;
+      nextOrder();
+      timer=setInterval(function(){if(ended)return;time=Math.max(0,time-1);render();if(time<=0)finishGame();},1000);
       return function(){ended=true;if(timer)clearInterval(timer);};
     }
   };

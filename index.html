@@ -1333,6 +1333,7 @@ var VIDEOS = {
         var exact=shapeOk&&sauceOk&&missing.length===0&&extra.length===0;
         return {exact:exact,shapeOk:shapeOk,sauceOk:sauceOk,missing:missing,extra:extra,same:same};
       }
+      function tagPill(label,ok){return '<span class="fm-tag '+(ok?'fm-ok':'fm-no')+'">'+label+'</span>';}
       function render(){
         if(!order)return;
         $('fmRound').textContent='주문 '+Math.min(served+1,8)+' / 8';
@@ -1348,7 +1349,7 @@ var VIDEOS = {
         $('fmBuildName').textContent=shapeById[selected.shape].n;
         var m=matchInfo();
         $('fmCompare').textContent='도우 '+(m.shapeOk?'일치':'다름')+' · 소스 '+(m.sauceOk?'일치':'다름')+' · 토핑 '+m.same+'/'+order.t.length+'개 일치'+(m.extra.length?' · 추가 '+m.extra.length+'개':'');
-        $('fmBuildTags').innerHTML='<span class="fm-tag '+(m.shapeOk?'fm-ok':'fm-no')+'">도우 '+(m.shapeOk?'일치':'확인')</span><span class="fm-tag '+(m.sauceOk?'fm-ok':'fm-no')+'">소스 '+(m.sauceOk?'일치':'확인')+'</span>'+selected.toppings.map(function(x){return '<span class="fm-tag '+(order.t.indexOf(x)>=0?'fm-ok':'fm-no')+'">'+byId[x].n+'</span>';}).join('');
+        $('fmBuildTags').innerHTML=tagPill('도우 '+(m.shapeOk?'일치':'확인'),m.shapeOk)+tagPill('소스 '+(m.sauceOk?'일치':'확인'),m.sauceOk)+selected.toppings.map(function(x){return tagPill(byId[x].n,order.t.indexOf(x)>=0);}).join('');
         Array.prototype.forEach.call($('fmShapes').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-shape')===selected.shape);});
         Array.prototype.forEach.call($('fmSauces').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-sauce')===selected.sauce);});
         Array.prototype.forEach.call($('fmToppings').querySelectorAll('button'),function(b){var on=selected.toppings.indexOf(b.getAttribute('data-top'))>=0;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});

@@ -1095,7 +1095,7 @@ var VIDEOS = {
     document.getElementById('goBox').hidden = true;
     gameCleanup = curGame.init(area, function (title, desc, gain, successCoins) {
       var raw = Math.max(0, gain | 0), gg = grantGame(raw);
-      var sc = Math.max(0, successCoins | 0); if (sc && P) gainCoinSafe(sc);
+      var sc = successCoins ? 1 : 0; if (sc && P) gainCoinSafe(1);
       document.getElementById('goTitle').textContent = title;
       document.getElementById('goDesc').textContent = desc + (gg.n ? ' · 게임 코인 +' + gg.n : '') + (sc ? ' · 성공 코인 +' + sc : '') + (gg.msg ? ' ' + gg.msg : '');
       var card = document.getElementById('sharedMissionCard'); if (card) card.remove();
@@ -1149,7 +1149,7 @@ var VIDEOS = {
         var sc = score(), title = RANKS[0][1];
         RANKS.forEach(function (r) { if (sc >= r[0]) title = r[1]; });
         if (sc > best) { best = sc; lsSet('arkBest', best); }
-        finish('칭호: ' + title, sc + '층을 쌓았습니다. (최고 기록 ' + best + '층) 동물들은 무사히 헤엄쳐 나왔습니다. 아마도요.', sc * 2);
+        finish('칭호: ' + title, sc + '층을 쌓았습니다. (최고 기록 ' + best + '층) 동물들은 무사히 헤엄쳐 나왔습니다. 아마도요.', sc * 2, sc >= 10);
       }
       function tap() {
         if (st.state === 'ready') { st.state = 'play'; st.bubble = null; return; }
@@ -1421,7 +1421,7 @@ var VIDEOS = {
         if(done)return;done=true;clearInterval(timer);btn.disabled=true;
         var t=fed>=GOAL?'오천 명의 기적을 함께한 나눔 대장':fed>=3500?'열두 광주리를 채운 나눔 고수':fed>=2000?'기쁨을 나눈 따뜻한 이웃':'첫 빵을 나눈 견습생';
         M.textContent=fed>=GOAL?'기적 달성! 열두 광주리가 남았어요!':'도전 완료! 다음 판엔 '+Math.max(0,GOAL-fed).toLocaleString()+'명 더 먹여 봐요.';
-        finish(t,'25초 동안 '+fed.toLocaleString()+'명을 먹였습니다. 최고 콤보 '+comboEl.dataset.best+'회.',Math.round(fed/100),fed);
+        finish(t,'25초 동안 '+fed.toLocaleString()+'명을 먹였습니다. 최고 콤보 '+comboEl.dataset.best+'회.',Math.round(fed/100),fed>=GOAL);
       }
       function tick(){
         var left=Math.max(0,TOTAL-(performance.now()-startAt)/1000);
@@ -1465,8 +1465,8 @@ var VIDEOS = {
         if (win) {
           var left = Math.max(0, LIMIT - (performance.now() - startAt) / 1000);
           var t = moves <= 11 ? '기억력의 신' : moves <= 16 ? '방주 승선 담당 박사' : '다 태우긴 했는데 기진맥진한 노아';
-          finish('칭호: ' + t, moves + '번 만에 모두 태웠습니다. 남은 시간은 ' + left.toFixed(1) + '초입니다.', 20 + Math.floor(left));
-        } else finish('칭호: 비가 그치기 전에 다 못 태운 노아', pairs + '쌍을 태웠습니다. 나머지 동물들은 헤엄쳐서 따라왔습니다.', pairs * 2);
+          finish('칭호: ' + t, moves + '번 만에 모두 태웠습니다. 남은 시간은 ' + left.toFixed(1) + '초입니다.', 20 + Math.floor(left), true);
+        } else finish('칭호: 비가 그치기 전에 다 못 태운 노아', pairs + '쌍을 태웠습니다. 나머지 동물들은 헤엄쳐서 따라왔습니다.', pairs * 2, false);
       }
       function tick() {
         var left = Math.max(0, LIMIT - (performance.now() - startAt) / 1000);
@@ -1628,8 +1628,7 @@ var VIDEOS = {
       function endRace(){
         if(ended)return;ended=true;boosting=false;
         var rank=rankNow(),sorted=runners.slice().sort(function(a,b){return b.progress-a.progress;}),winner=sorted[0].name;
-        area.querySelector('#raceStart').hidden=false;area.querySelector('#raceStart').textContent='다시 달리기';
-        area.querySelector('#raceStart').onclick=function(){finish('레이스 기록 저장','이번 판 '+rank+'위 / 5명 · 점수 '+score+' · '+Math.floor(player.progress)+'%',Math.min(5,Math.floor(score/8)),rank===1);};
+        area.querySelector('#raceStart').hidden=true;
         setMessage((rank===1?'우승!':'레이스 완주')+' · '+rank+'위 / 5명 · 선두 '+winner);
         finish(rank===1?'광야 레이스 우승':'레이스 완주',rank+'위 / 5명 · 수집 점수 '+score+' · 진행 '+Math.floor(player.progress)+'%',Math.min(5,Math.floor(score/8)),rank===1);
       }
@@ -1843,7 +1842,7 @@ var VIDEOS = {
             return false;
           }return i.y<CH+35;
         });
-        if(lives<=0||timeLeft<=0){over=true;finish('칭호: '+rankOf(RANKS,score),'40초 동안 '+score+'점을 모았습니다. 최고 콤보 '+bestCombo+'회, 황금 만나 '+stars+'개를 모았습니다.',Math.round(score/2),score);}
+        if(lives<=0||timeLeft<=0){over=true;finish('칭호: '+rankOf(RANKS,score),'40초 동안 '+score+'점을 모았습니다. 최고 콤보 '+bestCombo+'회, 황금 만나 '+stars+'개를 모았습니다.',Math.round(score/2),score>=75);}
       }
       function draw(){
         ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
@@ -1878,7 +1877,7 @@ var VIDEOS = {
       var CW = 360, CH = 520, o = mkCanvas(area, CW, CH), cv = o.cv, ctx = o.ctx;
       var RANKS = [[0, '삼켜지자마자 기절한 요나'], [3, '뱃속에 적응 중인 요나'], [8, '뱃속 길을 아는 요나'], [15, '고래도 감탄한 수영 선수'], [25, '사흘 안에 탈출한 전설의 요나']];
       var k = Math.floor(Math.random() * KINDS.length), y = CH / 2, vy = 0, started = false, over = false, pipes = [], score = 0, tt = 0;
-      function die() { if (over) return; over = true; finish('칭호: ' + rankOf(RANKS, score), score + '개의 해초 사이를 통과했습니다.', score * 2); }
+      function die() { if (over) return; over = true; finish('칭호: ' + rankOf(RANKS, score), score + '개의 해초 사이를 통과했습니다.', score * 2, score >= 15); }
       function tap() { if (over) return; started = true; vy = -330; }
       cv.addEventListener('pointerdown', function (e) { e.preventDefault(); tap(); });
       cv.addEventListener('keydown', function (e) { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); tap(); } });
@@ -1946,7 +1945,7 @@ var VIDEOS = {
             if (Math.abs(b.x - 80) < 26 && Math.abs(b.y - (py - 18)) < 30) { bonus += 10; bub = { s: '냠냠! +10', t: 0 }; return false; }
           } else if (inv <= 0 && b.x + w / 2 > 62 && b.x - w / 2 < 98 && py > GY - h) {
             hp--; inv = 1.2; calm = 0;
-            if (hp <= 0) { over = true; chX = 50; finish('칭호: ' + rankOf(RANKS, sc()), '점수 ' + sc() + '점. 이집트 전차에 잡혔지만 홍해는 다시 닫혔습니다.', Math.round(sc() / 8)); }
+            if (hp <= 0) { over = true; chX = 50; finish('칭호: ' + rankOf(RANKS, sc()), '점수 ' + sc() + '점. 이집트 전차에 잡혔지만 홍해는 다시 닫혔습니다.', Math.round(sc() / 8), false); }
             else bub = { s: '으앗! 전차가 가까워요', t: 0 };
           }
           return b.x > -40;
@@ -1994,7 +1993,7 @@ var VIDEOS = {
         lions.push({ x: DX + Math.cos(a) * 330, y: DY + Math.sin(a) * 330, R: big ? 34 : 26, hp: big ? 2 : 1, sl: null, hit: 0, ph: Math.random() * 6,
           v: Math.min(120, (big ? 34 : 44) + t * 1.2) * (.85 + Math.random() * .3) });
       }
-      function end() { if (over) return; over = true; finish('칭호: ' + rankOf(RANKS, score), '사자 ' + score + '마리를 재웠습니다.', Math.round(score / 2)); }
+      function end() { if (over) return; over = true; finish('칭호: ' + rankOf(RANKS, score), '사자 ' + score + '마리를 재웠습니다.', Math.round(score / 2), score >= 55); }
       function calmAll() { var n = 0; lions.forEach(function (l) { if (l.sl == null) { l.sl = .9; n++; } }); score += n; glow = .8; say2('천사가 도와줬어요!'); }
       cv.addEventListener('pointerdown', function (e) {
         e.preventDefault(); if (over) return;
@@ -2078,7 +2077,7 @@ var VIDEOS = {
           Array.prototype.forEach.call(box.children, function (x) { if (x.textContent === ans) x.className = 'ok'; });
           if (o === ans) {
             var got = awardQuiz();
-            finish('정답이에요', got ? '말씀 코인 1개를 받았어요.' : '이번 달 퀴즈 코인은 이미 받았어요.', 0);
+            finish('정답이에요', got ? '말씀 코인 1개를 받았어요.' : '이번 달 퀴즈 코인은 이미 받았어요.', 0, true);
           } else { b.className = 'no'; finish('아쉬워요', '정답은 "' + ans + '"였어요. 다음 퀴즈에 다시 도전해요.', 0); }
         };
         box.appendChild(b);
@@ -2120,7 +2119,7 @@ var VIDEOS = {
           dead = true; beep(0, 0.5, true); var got = seq.length - 1, best = parseInt(lsGet('jgBest', '0'), 10) || 0;
           if (got > best) lsSet('jgBest', got);
           M.textContent = '성벽이 쿨쿨 웃고 있어요…';
-          finish('칭호: ' + rankOf(RANKS, got), got + '단계까지 성공했습니다. (최고 ' + Math.max(got, best) + '단계)', got * 4); return;
+          finish('칭호: ' + rankOf(RANKS, got), got + '단계까지 성공했습니다. (최고 ' + Math.max(got, best) + '단계)', got * 4, got >= 7); return;
         }
         lit(i, 250); pos++;
         if (pos === seq.length) {
@@ -2355,23 +2354,54 @@ var VIDEOS = {
   }
   function inc(n) { return db ? firebase.firestore.FieldValue.increment(n) : n; }
   function union(v) { return db ? firebase.firestore.FieldValue.arrayUnion(v) : v; }
+  var SC_FIX_MARKER = 'sc_accidental_6998_removed_v1';
+  function removeAccidentalSuccessCoins() {
+    if (!P) return;
+    P.sc = Math.max(0, Number(P.sc || 0) - 6998);
+    P.stot = Math.max(0, Number(P.stot || 0) - 6998);
+    P.tot = Math.max(0, Number(P.tot || 0) - 6998);
+    P.gr = Array.isArray(P.gr) ? P.gr : [];
+    if (P.gr.indexOf(SC_FIX_MARKER) < 0) P.gr.push(SC_FIX_MARKER);
+    saveLocal();
+  }
   function loadProfile() {
     loadLocal(); restoreRequestedProfile(); applyTheme(); renderAcct(); renderShop();
     if (!db || !user) { initAch(); renderAcct(); renderShop(); return; }
-    if (String(user || '') === '최선혜') { db.collection('users').doc(uid('최 선혜')).delete().catch(function () {}); }
     var ref = db.collection('users').doc(uid(user));
+    var isCoinCleanupAccount = String(user || '').replace(/\\s+/g, '') === '최선혜';
     ref.get().then(function (s) {
       if (s.exists) {
         var d = s.data();
         if (d.gc == null && d.coins != null) d.gc = d.coins;
         var localEq = P && P.eq ? Object.assign({}, P.eq) : null;
+        var localAlreadyFixed = Array.isArray(P.gr) && P.gr.indexOf(SC_FIX_MARKER) >= 0;
+        var cloudAlreadyFixed = Array.isArray(d.gr) && d.gr.indexOf(SC_FIX_MARKER) >= 0;
         P = mergeProfile(P, d); normEq();
         if (localEq && localEq.ch && localEq.ch !== 'c0') P.eq.ch = localEq.ch;
+        if (isCoinCleanupAccount) {
+          if (!cloudAlreadyFixed) {
+            // The cloud profile has not been corrected yet. Remove the erroneous award once,
+            // after combining cloud and local values, and persist a marker with the same write.
+            removeAccidentalSuccessCoins();
+          } else {
+            // If the local browser still has the old inflated balance, prefer the corrected
+            // cloud currency totals. If both copies were corrected, keep the newer merged state.
+            if (!localAlreadyFixed) {
+              P.sc = Math.max(0, Number(d.sc || 0));
+              P.stot = Math.max(0, Number(d.stot || 0));
+              P.tot = Math.max(0, Number(d.tot || 0));
+            }
+            P.gr = Array.isArray(P.gr) ? P.gr : [];
+            if (P.gr.indexOf(SC_FIX_MARKER) < 0) P.gr.push(SC_FIX_MARKER);
+          }
+        }
         restoreRequestedProfile();
         saveLocal();
         ref.set({ name: user, wc: P.wc, gc: P.gc, sc: P.sc, tot: P.tot, wtot: P.wtot, gtot: P.gtot, stot: P.stot, own: P.own, eq: P.eq, wk: P.wk, gr: P.gr, stat: P.stat, ach: P.ach }, { merge: true }).catch(function () {});
       } else {
-        ref.set(Object.assign({ name: user }, P)).catch(function () {}); welcome();
+        if (isCoinCleanupAccount && P.gr.indexOf(SC_FIX_MARKER) < 0) removeAccidentalSuccessCoins();
+        ref.set(Object.assign({ name: user }, P)).catch(function () {});
+        welcome();
       }
       applyTheme(); renderAcct(); renderShop(); initAch();
     }).catch(function () {});
@@ -2968,8 +2998,8 @@ var VIDEOS = {
       b.innerHTML = t[1] + (c ? '<span class="tc">' + c + '</span>' : ''); if (t[0] === shopTab) b.className = 'on';
       b.onclick = function () { shopTab = t[0]; pend = ''; meMsg(''); renderShop(); }; tb.appendChild(b);
     });
-    var INFO = { ch: '게임 코인으로 동물과 인물을 살 수 있어요.', theme: '게임 코인으로 화면 색을 바꿔요.', font: '게임 코인으로 글씨체를 바꿔요.', ach: '업적을 달성하면 레벨이 올라요.', rank: '지금까지 모은 코인을 기준으로 한 순위예요.' };
-    document.getElementById('sinfo').textContent = INFO[shopTab] || '말씀 코인으로 꾸미기 아이템을 살 수 있어요.';
+    var INFO = { ch: '영웅·전설 캐릭터는 성공 코인으로 구매해요.', theme: '영웅·전설 테마는 성공 코인으로 구매해요.', font: '등급에 따라 구매 코인이 달라져요.', ach: '업적을 달성하면 레벨이 올라요.', rank: '지금까지 모은 코인을 기준으로 한 순위예요.' };
+    document.getElementById('sinfo').textContent = INFO[shopTab] || '영웅·전설 등급은 성공 코인으로 구매해요. 예수님은 특별 전설 캐릭터입니다.';
     var grid = document.getElementById('sgrid'), board = document.getElementById('sboard'), sc = document.getElementById('scol');
     if (shopTab === 'rank' || shopTab === 'ach') { sc.hidden = true; grid.hidden = true; board.hidden = false; if (shopTab === 'rank') renderBoard(); else renderAch(); return; }
     var cc = tabCount(shopTab), pc = cc[1] ? Math.round(cc[0] / cc[1] * 100) : 0, full = cc[1] > 0 && cc[0] >= cc[1];
@@ -2982,7 +3012,7 @@ var VIDEOS = {
     else list = [{ id: '', v: '', n: '없음', p: 0 }].concat(ITEMS.filter(function (i) { return i.s === shopTab; }));
     list.forEach(function (it) {
       var owned = it.p === 0 || P.own.indexOf(it.id) >= 0, rk = rarity(it, cur);
-      var successPrice = shopTab === 'ch' && it.id === 'h6' ? 3 : shopTab === 'ch' && it.id === 'h19' ? 2 : 0;
+      var successPrice = rk === 'leg' ? (shopTab === 'ch' && it.id === 'h6' ? 100 : 25) : rk === 'epic' ? 8 : 0;
       var payType = successPrice ? 'sc' : cur, payPrice = successPrice || it.p;
       var on = shopTab === 'ch' ? P.eq.ch === it.id : shopTab === 'theme' ? (P.eq.theme || 'auto') === it.t : shopTab === 'font' ? (P.eq.font || 'default') === it.f : P.eq[shopTab] === it.v;
       var card = document.createElement('div'); card.className = 'sc' + (on ? ' on' : '') + (owned && it.p > 0 ? ' owned' : '') + (rk ? ' r-' + rk : '');
@@ -2990,7 +3020,7 @@ var VIDEOS = {
       if (rk) card.insertAdjacentHTML('afterbegin', '<span class="rb">' + RLAB[rk] + '</span>');
       card.insertAdjacentHTML('beforeend', '<div class="sn">' + it.n + '</div>');
       var b = document.createElement('button');
-      b.innerHTML = on ? '사용 중' : owned ? '사용하기' : (pend && pend === it.id ? '한 번 더!' : payPrice + (payType === 'sc' ? IC.trophy + '성공' : payType === 'gc' ? IC.game : IC.book)); b.disabled = on;
+      b.innerHTML = on ? '사용 중' : owned ? '사용하기' : (pend && pend === it.id ? '한 번 더!' : payType === 'sc' ? IC.trophy + payPrice + ' 성공' : payPrice + (payType === 'gc' ? IC.game : IC.book)); b.disabled = on;
       b.className = (pend && pend === it.id) ? 'conf' : (owned && it.p > 0 ? 'own' : '');
       b.onclick = function () {
         var bought = false;

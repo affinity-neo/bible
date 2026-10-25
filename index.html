@@ -1852,6 +1852,12 @@ var VIDEOS = {
         // Player, preserving the equipped character's normal wide proportions and accessories.
         drawHero(ctx,16,70,42,42,'happy',0);
         ctx.fillStyle='#fff8e6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillRect(17,61,42,13);ctx.fillStyle='#395146';ctx.fillText('나',38,70);
+        if(phase==='bite'){
+          var hintBob=Math.sin(ts*.025)*2;
+          ctx.strokeStyle='#fff7db';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(39,63+hintBob);ctx.lineTo(39,47+hintBob);ctx.stroke();
+          ctx.fillStyle='#fff7db';ctx.beginPath();ctx.moveTo(32,52+hintBob);ctx.lineTo(39,43+hintBob);ctx.lineTo(46,52+hintBob);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#264b5b';ctx.font='bold 9px sans-serif';ctx.textAlign='left';ctx.fillText('위로 쓸어 올리기',76,86);
+        }
         // Peter is a visible character who actively fishes beside the player.
         var peter=chById('h18');
         drawChar(ctx,258,70,42,42,peter,'smile',0);

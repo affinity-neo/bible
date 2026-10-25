@@ -641,7 +641,7 @@ var VIDEOS = {
   // ======== 미니 게임 모음: 장 번호에 따라 매일 다른 게임이 열립니다 ========
   // 1장=방주 쌓기, 2장=만나 받기, 3장=오병이어, 4장=요나, 5장=짝 맞추기, 6장=홍해, 7장=다니엘, 8장=여리고, 9장=다시 방주 쌓기 ...
   var QUIZ_DAYS = [10, 24];   // 한 달에 두 번: 이 날짜의 장에서는 말씀 퀴즈가 열립니다
-  var GAME_ORDER = ['stack', 'manna', 'loaves', 'feastmix', 'jonah', 'match', 'redsea', 'daniel', 'jericho', 'racing'];
+  var GAME_ORDER = ['stack', 'racing', 'feastmix', 'fishing', 'loaves', 'manna', 'jonah', 'match', 'redsea', 'daniel', 'jericho'];
   var GAMES = {};
   var gameCleanup = null, curGame = null;
 
@@ -1257,60 +1257,38 @@ var VIDEOS = {
   // Desert racing game: keyboard and touch controls, personal best stored locally.
   // Top-down desert survival RPG: roam, gather manna, evade creatures, level up.
   GAMES.racing = {
-    name: '광야 생존기: 만나의 땅',
-    desc: '캐릭터를 직접 움직이는 픽셀 아트 생존 RPG입니다. 만나와 메추라기를 모으고 전갈과 들개를 피하세요. 경험치를 모아 레벨을 올리고 오래 살아남으세요.',
-    init: function(area,finish){
-      var W=420,H=560; area.innerHTML='<div class="race-wrap survival-wrap"><div class="race-hud"><span id="raceScore">🍞 0</span><span id="raceDist">DAY 01</span><span id="raceLives">❤️❤️❤️</span><span id="raceSkin">LV 1</span></div><div class="race-progress"><span>EXP</span><i><b id="raceProgress"></b></i></div><canvas class="race-canvas" id="raceCanvas" aria-label="광야 생존 게임"></canvas><div class="race-power"><span>경험치</span><i><b id="raceBoost"></b></i><span id="raceCombo">콤보 0</span></div><div class="race-controls"><button id="raceLeft">◀ 왼쪽</button><button id="raceBoostBtn">💨 회피</button><button id="raceRight">오른쪽 ▶</button></div><div class="race-actions"><button id="raceStart">🌵 탐험 시작</button><button id="racePause">일시 정지</button></div><p class="godesc" id="raceMsg">화면을 탭하거나 방향키로 이동하세요. 만나를 모으고 적을 피하세요.</p></div>';
-      var cv=area.querySelector('#raceCanvas'),ctx=cv.getContext('2d'),dpr=Math.min(window.devicePixelRatio||1,2);cv.width=W*dpr;cv.height=H*dpr;ctx.scale(dpr,dpr);cv.style.touchAction='none';
-      var $=function(id){return area.querySelector(id)},scoreEl=$('#raceScore'),dayEl=$('#raceDist'),hpEl=$('#raceLives'),lvEl=$('#raceSkin'),bar=$('#raceBoost'),prog=$('#raceProgress'),comboEl=$('#raceCombo'),msg=$('#raceMsg'),start=$('#raceStart'),pause=$('#racePause'),evade=$('#raceBoostBtn');
-      var x=W/2,y=H*.62,keys={},items=[],foes=[],decor=[],score=0,xp=0,lv=1,hp=3,day=1,combo=0,best=0,t=0,spawn=.4,foeSpawn=3,inv=0,dash=0,over=true,paused=false,raf=0,last=0,world=0;
-      for(var i=0;i<45;i++)decor.push({x:Math.random()*W,y:Math.random()*H,type:Math.random()<.6?0:1});
-      function startGame(){x=W/2;y=H*.62;items=[];foes=[];score=xp=combo=best=t=world=0;lv=day=1;hp=3;spawn=.3;foeSpawn=3;inv=1;dash=0;over=paused=false;last=0;start.textContent='다시 시작';msg.textContent='탐험 시작! 만나를 모아 레벨을 올리세요.';raf=requestAnimationFrame(frame);}
-      function addItem(){var r=Math.random();items.push({x:20+Math.random()*(W-40),y:-12,type:r<.1?2:r<.23?1:r<.3?3:0});}
-      function addFoe(){if(foes.length>=3)return;var fx=24+Math.random()*(W-48),tries=0;while(tries++<8&&foes.some(function(f){return f.y<90&&Math.abs(f.x-fx)<72;}))fx=24+Math.random()*(W-48);foes.push({x:fx,y:-20,type:Math.random()<.5?0:1,v:22+day*2,ph:Math.random()*6});}
-      function draw(){
-        ctx.clearRect(0,0,W,H);ctx.fillStyle='#efc18d';ctx.fillRect(0,0,W,H);
-        for(var j=0;j<decor.length;j++){var p=decor[j],yy=(p.y+world*.5)%H;ctx.fillStyle=p.type?'#bd8967':'#639d69';if(p.type){ctx.fillRect(p.x,yy,8,5);ctx.fillRect(p.x+3,yy-3,4,3);}else{ctx.fillRect(p.x,yy,3,8);ctx.fillRect(p.x-4,yy+2,4,3);ctx.fillRect(p.x+3,yy+1,4,3);}}
-        ctx.fillStyle='#bd8b70';ctx.fillRect(26,125,54,24);ctx.fillRect(34,116,38,9);ctx.fillRect(W-80,300,48,22);
-        items.forEach(function(it){ctx.fillStyle=it.type===2?'#ffdf52':it.type===1?'#8b5538':it.type===3?'#63723c':'#fff1c3';ctx.fillRect(it.x-7,it.y-7,14,14);ctx.fillStyle=it.type===2?'#fff5b4':'#d7a542';ctx.fillRect(it.x-2,it.y-2,4,4);});
-        foes.forEach(function(f){ctx.fillStyle=f.type?'#a45f3d':'#703b4a';ctx.fillRect(f.x-11,f.y-7,22,14);ctx.fillRect(f.x-8,f.y-12,5,6);ctx.fillRect(f.x+3,f.y-12,5,6);ctx.fillStyle='#fff0c8';ctx.fillRect(f.x-6,f.y-2,3,3);ctx.fillRect(f.x+4,f.y-2,3,3);});
-        ctx.fillStyle='rgba(95,56,31,.25)';ctx.fillRect(x-16,y+14,32,5);drawHero(ctx,x-20,y-20,40,36,inv>0&&Math.floor(t*12)%2?'ouch':'happy',Math.sin(t*5)*.03);
-        if(inv>0){ctx.strokeStyle='#dff8ff';ctx.lineWidth=2;ctx.strokeRect(x-23,y-24,46,44);}
-        ctx.fillStyle='#713f38';ctx.fillRect(8,8,94,34);ctx.fillStyle='#fff';ctx.font='bold 12px monospace';ctx.fillText('HP',15,21);for(var h=0;h<5;h++){ctx.fillStyle=h<hp?'#ef4f56':'#5c3437';ctx.fillRect(15+h*16,26,13,8);}
-        ctx.fillStyle='#713f38';ctx.fillRect(W-91,8,83,34);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('DAY '+String(day).padStart(2,'0'),W-49,29);ctx.textAlign='left';
-        if(over){ctx.fillStyle='rgba(40,28,28,.7)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff1d4';ctx.textAlign='center';ctx.font='bold 23px monospace';ctx.fillText('광야 생존기',W/2,H/2-28);ctx.font='14px sans-serif';ctx.fillText('만나 '+score+'개 · 레벨 '+lv,W/2,H/2+3);ctx.fillText('탐험 시작을 눌러주세요',W/2,H/2+28);ctx.textAlign='left';}
-        else if(paused){ctx.fillStyle='rgba(40,28,28,.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='white';ctx.textAlign='center';ctx.font='bold 23px sans-serif';ctx.fillText('일시 정지',W/2,H/2);ctx.textAlign='left';}
+    name: '광야 레이스', short: '레이싱',
+    desc: '나를 포함한 참가자 5명이 결승선을 향해 달려요. 좌우 버튼이나 방향키로 차선을 바꾸고, 부스터를 적절히 사용해 라이벌을 추월하세요. 화면에 나오는 참가자는 경기 내내 같은 다섯 명으로 유지돼요.',
+    init: function(area, finish) {
+      var W=360,H=520, o=mkCanvas(area,W,H), cv=o.cv, ctx=o.ctx, ended=false, running=false, t=0, playerLane=1, boost=100, distance=0, score=0, last=0, raf=0;
+      cv.style.touchAction='none'; cv.setAttribute('tabindex','0');
+      var names=['나','요셉','다윗','에스더','여호수아'], cols=['#e8573f','#3f8fe8','#37a86b','#8a56d8','#e8a93f'];
+      var cars=names.map(function(n,i){return {name:n,col:cols[i],lane:i===0?1:(i%3),dist:i===0?0:-90-i*38,speed:i===0?1.0:0.82+i*0.055,idx:i};});
+      var obstacles=[], spawn=0, left=0,right=0,boosting=false;
+      var ctl=document.createElement('div');ctl.className='race-controls';ctl.innerHTML='<button type="button" aria-label="왼쪽">◀ 왼쪽</button><button type="button">부스터</button><button type="button" aria-label="오른쪽">오른쪽 ▶</button>';area.appendChild(ctl);
+      function change(d){playerLane=Math.max(0,Math.min(2,playerLane+d));}
+      function bindHold(b,k){b.addEventListener('pointerdown',function(e){e.preventDefault();if(k==='L')left=1;else if(k==='R')right=1;else boosting=true;cv.focus();running=true;});['pointerup','pointerleave','pointercancel'].forEach(function(ev){b.addEventListener(ev,function(){if(k==='L')left=0;else if(k==='R')right=0;else boosting=false;});});}
+      var bs=ctl.querySelectorAll('button');bindHold(bs[0],'L');bindHold(bs[1],'N');bindHold(bs[2],'R');
+      cv.addEventListener('pointerdown',function(e){e.preventDefault();running=true;cv.focus();var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;if(x<.34)change(-1);else if(x>.66)change(1);});
+      function kd(e){if(['ArrowLeft','KeyA'].includes(e.code)){left=1;e.preventDefault();running=true;}if(['ArrowRight','KeyD'].includes(e.code)){right=1;e.preventDefault();running=true;}if(['Space','ArrowUp','KeyW'].includes(e.code)){boosting=true;e.preventDefault();running=true;}}
+      function ku(e){if(['ArrowLeft','KeyA'].includes(e.code))left=0;if(['ArrowRight','KeyD'].includes(e.code))right=0;if(['Space','ArrowUp','KeyW'].includes(e.code))boosting=false;}
+      window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);
+      function rounded(x,y,w,h,r,col){ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+      function drawCar(x,y,col,name,isMe,scale){scale=Math.max(.82,Math.min(1.15,scale));var w=28*scale,h=43*scale;rounded(x-w/2,y-h/2,w,h,7,col);rounded(x-w*.34,y-h*.2,w*.68,h*.27,4,'#d9edf2');ctx.fillStyle='#252a32';ctx.fillRect(x-w*.55,y-h*.25,4*scale,10*scale);ctx.fillRect(x+w*.4,y-h*.25,4*scale,10*scale);ctx.fillStyle='#fff2b8';ctx.fillRect(x-w*.35,y+h*.31,5*scale,3*scale);ctx.fillRect(x+w*.18,y+h*.31,5*scale,3*scale);ctx.fillStyle='#17212b';ctx.font=(isMe?'bold ':'')+'10px sans-serif';ctx.textAlign='center';ctx.fillText(name,x,y-h/2-7);if(isMe){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x-w/2-2,y-h/2-2,w+4,h+4);}}
+      function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#8ebc77';ctx.fillRect(0,0,W,H);ctx.fillStyle='#555a61';ctx.fillRect(38,0,W-76,H);ctx.strokeStyle='#f5f1d9';ctx.lineWidth=3;ctx.setLineDash([22,18]);ctx.lineDashOffset=-(distance%40);ctx.beginPath();ctx.moveTo(W/2-48,0);ctx.lineTo(W/2-48,H);ctx.moveTo(W/2+48,0);ctx.lineTo(W/2+48,H);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillRect(38,16,W-76,4);
+        var sorted=cars.slice().sort(function(a,b){return a.dist-b.dist;});sorted.forEach(function(car){var relative=car.dist-cars[0].dist;if(car.idx===0){car.lane=playerLane;drawCar(86+playerLane*94,H-92,car.col,car.name,true,1.08);}else{var y=H-145-relative*.58; if(y>-30&&y<H+30){var scale=Math.max(.82,1-Math.max(0,Math.abs(relative)-80)/800);drawCar(86+car.lane*94,y,car.col,car.name,false,scale);}}});
+        ctx.fillStyle='#17212b';ctx.font='bold 13px sans-serif';ctx.textAlign='left';ctx.fillText('결승까지 '+Math.max(0,100-distance).toFixed(0)+'%',12,22);ctx.fillStyle='#e6e8ed';ctx.fillRect(12,32,100,7);ctx.fillStyle='#e9b84c';ctx.fillRect(12,32,Math.min(100,distance),7);ctx.fillStyle='#17212b';ctx.fillText('부스터',W-68,22);ctx.fillStyle='#e6e8ed';ctx.fillRect(W-68,32,56,7);ctx.fillStyle='#55b8df';ctx.fillRect(W-68,32,56*boost/100,7);
+        var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.textAlign='right';ctx.fillText(rank+'위 / 5',W-12,H-18);
       }
-      function frame(ts){if(over)return;if(paused){draw();return;}var dt=last?Math.min((ts-last)/1000,.04):0;last=ts;t+=dt;world+=dt*40;inv=Math.max(0,inv-dt);dash=Math.max(0,dash-dt);
-        var dx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),dy=(keys.ArrowDown||keys.KeyS?1:0)-(keys.ArrowUp||keys.KeyW?1:0),len=Math.hypot(dx,dy)||1;x=Math.max(17,Math.min(W-17,x+dx/len*(dash?280:150)*dt));y=Math.max(60,Math.min(H-17,y+dy/len*(dash?280:150)*dt));
-        spawn-=dt;foeSpawn-=dt;if(spawn<=0){spawn=Math.max(.32,.82-day*.025);addItem();}if(foeSpawn<=0){foeSpawn=Math.max(1.2,4-day*.17);addFoe();}
-        items=items.filter(function(it){it.y+=(it.type===1?42:26)*dt;if(Math.hypot(it.x-x,it.y-y)<24){if(it.type===3){if(inv<=0){hp--;inv=1.2;combo=0;msg.textContent='독초에 닿았어요! 체력이 줄었습니다.';}}else{combo++;best=Math.max(best,combo);score+=it.type===2?10:it.type===1?5:2;xp+=it.type===2?18:it.type===1?12:7;msg.textContent=it.type===2?'🌟 황금 만나!':it.type===1?'🐦 메추라기 획득!':'✨ 만나를 모았어요!';while(xp>=lv*35){xp-=lv*35;lv++;hp=Math.min(5,hp+1);msg.textContent='레벨 업! LV '+lv+' · 체력 회복';}}return false;}return it.y<H+20;});
-        foes=foes.filter(function(f){f.y+=f.v*dt;f.x+=Math.sin(t*1.2+f.ph)*10*dt;if(Math.hypot(f.x-x,f.y-y)<27&&inv<=0){hp--;inv=1.2;combo=0;msg.textContent='적과 부딪혔어요! 방향키로 피하세요.';}return f.y<H+30;});
-        day=Math.floor(t/20)+1;scoreEl.textContent='🍞 '+score;dayEl.textContent='DAY '+String(day).padStart(2,'0');hpEl.textContent='❤️'.repeat(Math.max(0,hp))+'♡'.repeat(Math.max(0,5-hp));lvEl.textContent='LV '+lv;bar.style.width=(xp/(lv*35)*100)+'%';prog.style.width=(xp/(lv*35)*100)+'%';comboEl.textContent='콤보 '+combo;
-        if(hp<=0){over=true;draw();finish('광야 생존자','만나 '+score+'개 · 생존 '+Math.floor(t)+'초 · 레벨 '+lv+' · 최고 콤보 '+best,Math.max(1,Math.floor(score/3)),score);return;}draw();raf=requestAnimationFrame(frame);}
-      function key(e){if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyW','KeyA','KeyS','KeyD'].indexOf(e.code)>=0)e.preventDefault();keys[e.code]=true;if(e.code==='Space'&&!over){dash=.45;inv=Math.max(inv,.45);}}
-      function up(e){keys[e.code]=false;}
-      function bind(id,code){var el=$(id);el.addEventListener('pointerdown',function(e){e.preventDefault();keys[code]=true;});['pointerup','pointerleave','pointercancel'].forEach(function(ev){el.addEventListener(ev,function(){keys[code]=false;});});}
-      bind('#raceLeft','ArrowLeft');bind('#raceRight','ArrowRight');evade.addEventListener('pointerdown',function(e){e.preventDefault();if(!over){dash=.45;inv=Math.max(inv,.45);msg.textContent='💨 회피! 잠시 무적 상태입니다.';}});
-      cv.addEventListener('pointerdown',function(e){if(over)return;var r=cv.getBoundingClientRect(),tx=(e.clientX-r.left)/r.width*W,ty=(e.clientY-r.top)/r.height*H;keys[tx<x?'ArrowLeft':tx>x?'ArrowRight':'']=true;keys[ty<y?'ArrowUp':'ArrowDown']=true;setTimeout(function(){keys={};},180);});
-      start.addEventListener('click',startGame);pause.addEventListener('click',function(){if(over)return;paused=!paused;pause.textContent=paused?'계속하기':'일시 정지';if(!paused){last=0;raf=requestAnimationFrame(frame);}else draw();});
-      window.addEventListener('keydown',key);window.addEventListener('keyup',up);draw();
-      return function(){over=true;if(raf)cancelAnimationFrame(raf);window.removeEventListener('keydown',key);window.removeEventListener('keyup',up);};
+      function frame(ts){if(ended)return;var dt=Math.min(.04,(ts-last)/1000||0);last=ts;if(running){t+=dt;if(left){change(-1);left=0;}if(right){change(1);right=0;}var v=boosting&&boost>0?1.8:1;distance+=dt*3.3*v;cars[0].dist=distance;boost=Math.max(0,Math.min(100,boost+(boosting?-32:8)*dt));cars.slice(1).forEach(function(car){car.dist+=dt*3.3*car.speed*(Math.random()<.04?1.08:1);});spawn-=dt;if(spawn<=0){spawn=1.2+Math.random()*1.3;obstacles.push({lane:Math.floor(Math.random()*3),dist:distance+20});}obstacles=obstacles.filter(function(o){if(o.dist<distance+2&&o.dist>distance-2&&o.lane===playerLane){distance=Math.max(0,distance-2);score=Math.max(0,score-1);}return o.dist>distance-3;});if(distance>=100){ended=true;var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;finish(rank===1?'광야 레이스 우승':'레이스 완주',rank+'위 / 5명 · 수집 점수 '+score,Math.max(1,Math.min(4,Math.floor(distance/30))),rank===1);return;}}
+        draw();raf=requestAnimationFrame(frame);}
+      // collect points by clean driving and passing rivals; fixed cast of five, no random character traffic
+      var prevRank=5;var rankTimer=setInterval(function(){if(ended||!running)return;var rank=1+cars.slice(1).filter(function(x){return x.dist>cars[0].dist;}).length;if(rank<prevRank)score+=2;prevRank=rank;},800);
+      draw();raf=requestAnimationFrame(frame);
+      return function(){ended=true;cancelAnimationFrame(raf);clearInterval(rankTimer);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku);};
     }
   };
 
-  // ---- 공용 도우미 ----
-  function loop(upd) {
-    var alive = true, last = 0;
-    function f(ts) { if (!alive) return; var dt = Math.min((ts - last) / 1000, 0.05); last = ts; upd(dt); requestAnimationFrame(f); }
-    requestAnimationFrame(function (ts) { last = ts; requestAnimationFrame(f); });
-    return function () { alive = false; };
-  }
-  function ptX(cv, e, CW) { var r = cv.getBoundingClientRect(); return (e.clientX - r.left) / r.width * CW; }
-  function rankOf(R, s) { var t = R[0][1]; R.forEach(function (r) { if (s >= r[0]) t = r[1]; }); return t; }
-  function skyBg(ctx, W, H, a, b) { var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, a); g.addColorStop(1, b); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
-
-  // ================= 만나 받기 =================
   GAMES.manna = {
     name: '광야 생존 챌린지',
     desc: '내 캐릭터를 움직여 만나와 메추라기를 모으세요. 황금 만나와 보호막을 챙기고, 썩은 만나를 피하세요. 메추라기 떼가 몰려오는 러시 구간에는 콤보 보너스가 커집니다.',
@@ -2445,12 +2423,12 @@ var VIDEOS = {
   function closeShop() { document.getElementById('shopOv').hidden = true; document.body.style.overflow = ''; }
   function renderBoard() {
     var b = document.getElementById('sboard'), tok = ++boardTok;
-    b.innerHTML = '<div class="bsw"><button data-t="wc"' + (boardType === 'wc' ? ' class="on"' : '') + '>' + IC.book + '말씀 코인</button><button data-t="gc"' + (boardType === 'gc' ? ' class="on"' : '') + '>' + IC.game + '게임 코인</button></div><div id="blist"></div>';
+    b.innerHTML = '<div class="bsw"><button data-t="wc"' + (boardType === 'wc' ? ' class="on"' : '') + '>' + IC.book + '말씀 코인</button><button data-t="gc"' + (boardType === 'gc' ? ' class="on"' : '') + '>' + IC.game + '게임 코인</button><button data-t="sc"' + (boardType === 'sc' ? ' class="on"' : '') + '>' + IC.trophy + '성공 코인</button></div><div id="blist"></div>';
     Array.prototype.forEach.call(b.querySelectorAll('.bsw button'), function (x) { x.onclick = function () { boardType = x.getAttribute('data-t'); renderBoard(); }; });
     var L = document.getElementById('blist');
     if (!db) { L.textContent = '인터넷에 연결되면 순위를 볼 수 있어요.'; return; }
     L.textContent = '불러오는 중...';
-    var fld = boardType === 'wc' ? 'wtot' : 'gtot';
+    var fld = boardType === 'wc' ? 'wtot' : boardType === 'sc' ? 'stot' : 'gtot';
     db.collection('users').orderBy(fld, 'desc').limit(10).get().then(function (s) {
       if (tok !== boardTok) return;
       var h = '', i = 0;

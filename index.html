@@ -1638,7 +1638,7 @@ var VIDEOS = {
         }
         // Overhead branches must be ducked under; low bars must be jumped over.
         if(Math.random()<.42)entities.push({type:Math.random()<.48?'hurdle':'branch',lane:safeLane,z:1.09,done:false,row:trailSerial+1});
-remove gold spawning from obstacle rows      }
+      }
       function pickObstacle(){var r=Math.random();return r<.28?'crate':r<.55?'hurdle':'branch';}
       function actor(x,groundY,scale,kind,ts,mode){
         var isJesus=kind==='jesus',timer=isJesus?guideHop:jump;

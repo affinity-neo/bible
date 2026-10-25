@@ -408,7 +408,7 @@
 
 
   .goldrun-shell{max-width:460px;margin:0 auto;font-family:var(--ui);display:flex;flex-direction:column;gap:7px}
-  .goldrun-hud{display:grid;grid-template-columns:1.15fr .65fr .8fr 35px;gap:5px;align-items:stretch}
+  .goldrun-hud{display:grid;grid-template-columns:1.15fr .58fr .6fr .8fr 32px;gap:4px;align-items:stretch}
   .goldrun-stat{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;padding:6px 8px;background:var(--card);border:1px solid var(--line);border-radius:10px}
   .goldrun-stat small{font-size:.62rem;color:var(--muted);line-height:1}
   .goldrun-stat b{font-size:.89rem;color:var(--accent);white-space:nowrap;line-height:1.15}
@@ -434,7 +434,7 @@
   .goldrun-start{width:100%;min-height:42px;border:0;border-radius:10px;background:var(--accent);color:var(--bg);font:inherit;font-size:.86rem;font-weight:850;cursor:pointer}
   .goldrun-start[hidden]{display:none}
   @media(max-width:390px){
-    .goldrun-shell{gap:5px}.goldrun-hud{grid-template-columns:1.15fr .62fr .8fr 31px;gap:4px}
+    .goldrun-shell{gap:5px}.goldrun-hud{grid-template-columns:1.1fr .55fr .58fr .78fr 28px;gap:3px}
     .goldrun-stat{padding:5px 5px}.goldrun-stat small{font-size:.58rem}.goldrun-stat b{font-size:.8rem}.goldrun-stat em{font-size:.52rem}
     .goldrun-scene{gap:5px;padding:5px 6px}.goldrun-scene b{font-size:.66rem}.goldrun-scene>span:nth-of-type(2){font-size:.55rem}.goldrun-scene i{display:none}
     .goldrun-road canvas.gcv{aspect-ratio:360/455}.goldrun-controls{gap:4px}.goldrun-controls button{min-height:47px}.goldrun-tip{font-size:.6rem}
@@ -1576,15 +1576,16 @@ var VIDEOS = {
       ];
       var sceneIndex=0,theme=themes[0],prevTheme=themes[0],themeFade=1,themeTimer=0;
       var started=false,paused=false,ended=false,last=0,raf=0,elapsed=0,distance=0,targetDistance=600;
-      var lane=1,jump=0,slide=0,invuln=0,hitFlash=0,lives=3,gold=0,score=0,combo=0,bestCombo=0;
+      var lane=1,jump=0,slide=0,invuln=0,hitFlash=0,lives=5,gold=0,score=0,combo=0,bestCombo=0;
       var guideLane=1,guideX=180,guideTurn=2.6,worldScroll=0,spawnTimer=.85,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0;
       var message='예수님이 달리는 길을 따라가세요!',messageTimer=0,touchX=null,touchY=null;
-      var JUMP_TIME=.92,SLIDE_TIME=.90,MAX_LIVES=3;
+      var JUMP_TIME=.92,SLIDE_TIME=.90,MAX_LIVES=5;
       area.innerHTML='<div class="goldrun-shell">'+
         '<div class="goldrun-hud">'+
           '<div class="goldrun-stat"><small>거리</small><b><span id="grDistance">0</span><em> / 600m</em></b><div class="goldrun-progress"><i id="grProgress"></i></div></div>'+
           '<div class="goldrun-stat"><small>골드</small><b><span id="grGold">0</span></b></div>'+
-          '<div class="goldrun-stat"><small>하트</small><b id="grLives">♥ ♥ ♥</b></div>'+
+          '<div class="goldrun-stat"><small>콤보</small><b id="grCombo">×1</b></div>'+
+          '<div class="goldrun-stat"><small>하트</small><b id="grLives">♥ ♥ ♥ ♥ ♥</b></div>'+
           '<button type="button" id="grPause" class="goldrun-pause" aria-label="일시 정지">Ⅱ</button>'+
         '</div>'+
         '<div class="goldrun-scene"><span id="grSceneDot"></span><b id="grSceneName">광야</b><span id="grSceneStep">여정 1 / 6</span><i id="grStatus">예수님을 따라가세요</i></div>'+
@@ -1608,7 +1609,7 @@ var VIDEOS = {
         $('grDistance').textContent=Math.min(targetDistance,Math.floor(distance));
         $('grProgress').style.width=Math.min(100,distance/targetDistance*100)+'%';
         $('grGold').textContent=gold;
-        $('grLives').textContent=Array.from({length:MAX_LIVES},function(_,i){return i<lives?'♥':'♡';}).join(' ');
+        $('grLives').textContent=Array.from({length:MAX_LIVES},function(_,i){return i<lives?'♥':'♡';}).join(' ');$('grCombo').textContent='×'+Math.min(5,1+Math.floor(combo/5));
         $('grSceneDot').style.background=theme.accent;
         $('grSceneName').textContent=theme.n;
         $('grSceneStep').textContent='여정 '+(sceneIndex+1)+' / '+themes.length;
@@ -1798,8 +1799,8 @@ var VIDEOS = {
         }
       }
       function collectGold(e){
-        if(e.done)return;e.done=true;gold++;score+=10;combo++;bestCombo=Math.max(bestCombo,combo);
-        if(combo%10===0){score+=10;say(combo+'연속 골드! 보너스 +10');}else say('골드 +1');
+        if(e.done)return;e.done=true;gold++;combo++;bestCombo=Math.max(bestCombo,combo);var mult=Math.min(5,1+Math.floor(combo/5));score+=10*mult;
+        if(combo%10===0){score+=10*mult;say(combo+'연속 골드! ×'+mult+' 콤보 보너스');}else say('골드 +1 · ×'+mult);
         resolveTrailCoin(e);
       }
       function takeHit(e){
@@ -1887,14 +1888,14 @@ var VIDEOS = {
             e.z-=dt*(.29+Math.min(.18,elapsed*.0025));
             if(e.type==='gold'){
               if(e.z<=.075){
-                if(e.lane===lane)collectGold(e);else{e.done=true;resolveTrailCoin(e);}
+                if(e.lane===lane)collectGold(e);else{e.done=true;combo=0;resolveTrailCoin(e);}
               }
             }else if(e.type==='magnet'){
               if(e.z<=.075){
                 e.done=true;
                 if(e.lane===lane){magnetTime=5;say('골드 자석! 잠시 동안 금빛 골드를 끌어당겨요.');}
               }
-            }else if(e.z<=.17){
+            }else if(e.z<=.13){
               e.done=true;takeHit(e);
             }
           });

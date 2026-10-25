@@ -1527,13 +1527,13 @@ var VIDEOS = {
         {id:'olive',n:'올리브 숲',color:'#76a568',sky1:'#c6e7b7',sky2:'#f1edc8',ground:'#8caf68',road:'#6d7563',edge:'#c8b98d',hill:'#4b8757',accent:'#376e44'},
         {id:'jericho',n:'여리고',color:'#d79b62',sky1:'#f3cf9f',sky2:'#f6ead3',ground:'#caa477',road:'#766f67',edge:'#e1c9a6',hill:'#b7865c',accent:'#99603a'}
       ];
-      var theme=themes[0],elapsed=0,gap=35,coins=0,score=0,lives=3,combo=0,bestCombo=0,started=false,ended=false;
+      var initialGap=25,theme=themes[0],elapsed=0,gap=initialGap,coins=0,score=0,lives=4,combo=0,bestCombo=0,started=false,ended=false;
       var lane=1,jump=0,slide=0,hit=0,invuln=0,spawnIn=.8,entities=[],last=0,raf=0,themeTick=8,jesusLane=1,jesusX=180,worldScroll=0,showMsg=0,msg='예수님을 따라가세요!',touchX=null,touchY=null;
       area.innerHTML='<div class="chase-shell">'+
         '<div class="chase-hud">'+
           '<div><small>예수님과 거리</small><b id="chaseGap">35m</b></div>'+
           '<div><small>금빛 코인</small><b id="chaseCoins">0</b></div>'+
-          '<div><small>남은 생명</small><b id="chaseLives">3 / 3</b></div></div>'+
+          '<div><small>남은 생명</small><b id="chaseLives">4 / 4</b></div></div>'+
         '<div class="chase-progress"><span id="chaseMsg">예수님을 따라가세요!</span><div><i id="chaseBar"></i></div></div>'+
         '<div class="chase-themes" id="chaseThemes"></div>'+
         '<div class="chase-track" id="chaseTrack"></div>'+
@@ -1551,8 +1551,8 @@ var VIDEOS = {
       function setMsg(s){msg=s;showMsg=2.2;$('chaseMsg').textContent=s;}
       function laneX(l,y){var t=Math.max(0,Math.min(1,(y-74)/(H-74))),rw=50+315*t;return W/2+(l-1)*rw/3;}
       function hud(){
-        $('chaseGap').textContent=Math.max(0,Math.ceil(gap))+'m';$('chaseCoins').textContent=coins;$('chaseLives').textContent=lives+' / 3';
-        $('chaseBar').style.width=(Math.max(0,Math.min(100,(35-gap)/35*100)))+'%';
+        $('chaseGap').textContent=Math.max(0,Math.ceil(gap))+'m';$('chaseCoins').textContent=coins;$('chaseLives').textContent=lives+' / 4';
+        $('chaseBar').style.width=(Math.max(0,Math.min(100,(initialGap-gap)/initialGap*100)))+'%';
       }
       function selectTheme(id){
         var found=themes.find(function(t){return t.id===id;});if(!found)return;theme=found;
@@ -1569,7 +1569,7 @@ var VIDEOS = {
         var roll=Math.random(),type=roll<.38?'rock':roll<.7?'hurdle':'branch';
         entities.push({type:type,lane:Math.floor(Math.random()*3),z:1,done:false});
       }
-      function spawnPattern(){if(Math.random()<.52)addCoinLine();else addObstacle();if(elapsed>17&&Math.random()<.20)addObstacle();}
+      function spawnPattern(){if(Math.random()<.52)addCoinLine();else addObstacle();if(elapsed>17&&Math.random()<.12)addObstacle();}
       function actor(x,groundY,s,kind,ts,action){
         var isJesus=kind==='jesus',bob=action==='run'?Math.sin(ts*.018+(isJesus?1:0))*2.2*s:0;
         var air=action==='jump'?Math.sin(Math.max(0,Math.min(1,jump/.7))*Math.PI)*39*s:0;
@@ -1643,7 +1643,7 @@ var VIDEOS = {
       }
       function draw(ts){
         background(ts);entities.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(e){if(e.z<1.03&&e.z>-.04)drawEntity(e,ts);});
-        var jY=176+Math.max(0,35-gap)*2.35,jScale=.72+Math.max(0,35-gap)*.006;actor(jesusX,jY,jScale,'jesus',ts,'run');
+        var jY=176+Math.max(0,initialGap-gap)*3.0,jScale=.72+Math.max(0,initialGap-gap)*.010;actor(jesusX,jY,jScale,'jesus',ts,'run');
         var playerX=laneX(lane,H-61),action=jump>0?'jump':slide>0?'slide':'run',py=H-46;if(hit>0)action='hit';actor(playerX,py,1.0,'player',ts,action);
         if(!started){ctx.fillStyle='rgba(40,48,37,.76)';rrect(ctx,31,206,298,70,12);ctx.fill();ctx.fillStyle='#fff6e4';ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('예수님을 따라가세요',180,233);ctx.font='11px sans-serif';ctx.fillText('금빛 코인으로 거리를 좁히고 장애물을 피하세요',180,254);}
         if(showMsg>0&&started){ctx.fillStyle='rgba(255,249,229,.94)';rrect(ctx,64,100,232,25,7);ctx.fill();ctx.fillStyle='#57482e';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(msg,180,116);}
@@ -1656,14 +1656,14 @@ var VIDEOS = {
       }
       function collision(e){
         if(e.type==='coin'){
-          coins++;score++;combo++;bestCombo=Math.max(bestCombo,combo);gap=Math.max(0,gap-1.3);
+          coins++;score++;combo++;bestCombo=Math.max(bestCombo,combo);gap=Math.max(0,gap-1.45);
           if(combo%5===0){score+=2;setMsg(combo+'연속 수집! 예수님과의 거리가 줄었어요.');}else setMsg('금빛 코인 +1 · '+Math.ceil(gap)+'m 남았어요.');
           return;
         }
         var safe=e.type==='rock'?lane!==e.lane:e.type==='hurdle'?jump>.12:e.type==='branch'?slide>.12:lane!==e.lane;
-        if(safe){score+=2;gap=Math.max(0,gap-.35);setMsg(e.type==='hurdle'?'훌쩍! 낮은 장애물을 넘었어요.':e.type==='branch'?'몸을 낮춰 통과했어요.':'잘 피했어요! 계속 따라가세요.');}
+        if(safe){score+=2;gap=Math.max(0,gap-.55);setMsg(e.type==='hurdle'?'훌쩍! 낮은 장애물을 넘었어요.':e.type==='branch'?'몸을 낮춰 통과했어요.':'잘 피했어요! 계속 따라가세요.');}
         else if(invuln<=0){
-          lives--;gap=Math.min(50,gap+4);invuln=1.15;hit=.42;combo=0;
+          lives--;gap=Math.min(40,gap+2.5);invuln=1.15;hit=.42;combo=0;
           setMsg(e.type==='rock'?'바위에 부딪혔어요. 차선을 바꾸세요.':e.type==='hurdle'?'장애물에 걸렸어요. 점프로 넘으세요.':'가지에 부딪혔어요. 슬라이드하세요.');
           if(lives<=0){endGame(false);}
         }
@@ -1689,7 +1689,7 @@ var VIDEOS = {
           spawnIn-=dt;themeTick-=dt;
           if(themeTick<=0){themeTick=7+Math.random()*3;jesusLane=(jesusLane+1+Math.floor(Math.random()*2))%3;setMsg('예수님께서 앞서 길을 이끄세요.');}
           jesusX+=(laneX(jesusLane,176)-jesusX)*Math.min(1,dt*1.5);
-          if(spawnIn<=0){spawnPattern();spawnIn=Math.max(.68,1.05-elapsed*.004)+Math.random()*.28;}
+          if(spawnIn<=0){spawnPattern();spawnIn=Math.max(.90,1.22-elapsed*.003)+Math.random()*.22;}
           entities.forEach(function(e){
             e.z-=dt*(.235+Math.min(.07,elapsed*.0012));if(e.done)return;
             if(e.type==='coin'&&e.z<=.09){e.done=true;if(e.lane===lane)collision(e);}

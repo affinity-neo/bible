@@ -396,6 +396,29 @@
     .fm-shape-choice small,.fm-sauce-choice small,.fm-top-choice small{font-size:.51rem}.fm-top-choice{min-height:40px}
   }
 
+
+  .chase-shell{max-width:460px;margin:0 auto;font-family:var(--ui);display:flex;flex-direction:column;gap:6px}
+  .chase-hud{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .chase-hud>div{display:flex;flex-direction:column;gap:2px;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  .chase-hud small{font-size:.65rem;color:var(--muted)}.chase-hud b{font-size:.88rem;color:var(--accent)}
+  .chase-progress{display:flex;flex-direction:column;gap:4px;font-size:.72rem;color:var(--muted)}
+  .chase-progress>div{height:6px;border-radius:99px;background:var(--line);overflow:hidden}.chase-progress i{display:block;width:0;height:100%;background:#d4a03e;transition:width .18s}
+  .chase-themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .chase-themes button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:5px 2px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer}
+  .chase-themes button.on{border:2px solid var(--accent);background:var(--hl);padding:4px 1px}
+  .chase-themes i{width:12px;height:12px;flex:none;border-radius:50%;background:var(--theme-color);border:1px solid rgba(0,0,0,.15)}
+  .chase-themes small{font-size:.67rem;white-space:nowrap}
+  .chase-track{overflow:hidden;border:1px solid #9c9a7b;border-radius:15px;background:#e8d3a3;box-shadow:0 4px 12px rgba(33,44,34,.09)}
+  .chase-track canvas.gcv{width:100%;max-width:100%;aspect-ratio:360/470;border:0;border-radius:0;background:var(--bg);touch-action:none}
+  .chase-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .chase-controls button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:50px;min-width:0;padding:4px 2px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--fg);font:inherit;touch-action:manipulation;cursor:pointer}
+  .chase-controls button:active{background:var(--hl);transform:scale(.97)}
+  .chase-arrow,.chase-action-icon{font-size:1.2rem;font-weight:900;line-height:1.2;color:var(--accent)}
+  .chase-controls small{font-size:.62rem;line-height:1.2}
+  .chase-help{text-align:center;font-size:.65rem;line-height:1.35;color:var(--muted)}
+  .chase-start{width:100%;min-height:42px;border:0;border-radius:10px;background:var(--accent);color:var(--bg);font:inherit;font-size:.86rem;font-weight:800;cursor:pointer}
+  .chase-start[hidden]{display:none}
+  @media(max-width:390px){.chase-shell{gap:5px}.chase-hud>div{padding:5px 6px}.chase-hud small{font-size:.61rem}.chase-hud b{font-size:.82rem}.chase-track canvas.gcv{aspect-ratio:360/440}.chase-controls button{min-height:47px}.chase-help{font-size:.62rem}}
   .race-shell,.fish-shell{max-width:460px;margin:0 auto;font-family:var(--ui)}
   .race-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:0 0 9px}
   .race-top>div{padding:8px;border:1px solid var(--line);border-radius:11px;background:var(--card);display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -1488,173 +1511,197 @@ var VIDEOS = {
   };
 
 
-  // ================= 캐릭터 러닝 레이스 =================
+  // ================= 예수님 따라 달리기: 1인 추격 러너 =================
   GAMES.racing = {
-    name: '광야 캐릭터 레이스', short: '레이싱',
-    desc: '직접 꾸민 캐릭터가 트랙을 달립니다. 5명의 고정 참가자와 경쟁하며 차선을 바꾸고, 장애물을 뛰어넘고, 스태미나를 모아 스퍼트하세요.',
-    init: function(area, finish) {
-      var W=360,H=520,o,cv,ctx,art;
-      area.innerHTML='<div class="race-shell">'+
-        '<div class="race-top"><div><small>광야 경기장</small><b id="raceTime">출발 준비</b></div><div><small>결승선까지</small><b id="raceDist">0%</b></div><div><small>현재 순위</small><b id="raceRank">3 / 5</b></div></div>'+
-        '<div class="race-track-wrap" id="raceTrack"></div>'+
-        '<div class="race-standings" id="raceStandings"></div>'+
-        '<div class="race-guidance" id="raceGuide">내 캐릭터로 5인 레이스에 도전하세요. 장애물 앞에서 점프하고 스퍼트를 활용하세요.</div>'+
-        '<div class="race-controls">'+
-          '<button type="button" id="raceLeft"><span>←</span><small>왼쪽 차선</small></button>'+
-          '<button type="button" id="raceJump"><span>↗</span><small>점프</small></button>'+
-          '<button type="button" id="raceBoost"><span>스퍼트</span><small>길게 누르기</small></button>'+
-          '<button type="button" id="raceRight"><span>→</span><small>오른쪽 차선</small></button>'+
-        '</div>'+
-        '<button type="button" id="raceStart" class="race-start">출발선에 서기</button>'+
-        '<div class="race-help">PC: ← → 이동 · Space 스퍼트 · ↑ 점프<br>모바일: 아래 버튼을 눌러 조작하세요.</div></div>';
-      art=area.querySelector('#raceTrack');o=mkCanvas(art,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='none';cv.setAttribute('tabindex','0');
-      var runners=[
-        {name:'나',player:true,ch:null,lane:2,progress:0,speed:2.92,col:'#e58b46',eq:null},
-        {name:'요셉',ch:chById('h16'),lane:1,progress:-1.4,speed:2.98,col:'#478dcb',eq:{ch:'',hat:'',face:'',neck:'scarf'}},
-        {name:'다윗',ch:chById('h0'),lane:0,progress:-.6,speed:2.90,col:'#5a9c63',eq:{hat:'crown',face:'',neck:''}},
-        {name:'에스더',ch:chById('h1'),lane:3,progress:-1.8,speed:3.04,col:'#ad78c8',eq:{hat:'ribbon',face:'',neck:'flower'}},
-        {name:'여호수아',ch:chById('h4'),lane:4,progress:-2.2,speed:2.94,col:'#d66e68',eq:{hat:'',face:'',neck:'medal'}}
+    name:'예수님 따라 달리기',short:'추격',
+    desc:'예수님께서 앞서 달리십니다. 좌우로 길을 바꾸고, 낮은 장애물은 점프하고, 높은 가지 아래는 슬라이드하세요. 금빛 코인을 모아 예수님과의 거리를 좁히세요. 광야·갈릴리·올리브 숲·여리고 테마를 바꿀 수 있어요.',
+    init:function(area,finish){
+      var W=360,H=470,o,cv,ctx;
+      var themes=[
+        {id:'desert',n:'광야',color:'#d9ad68',sky1:'#f8d8a0',sky2:'#f6ebcc',ground:'#d4b779',road:'#776d5b',edge:'#d6c29c',hill:'#d6ad70',accent:'#bb7e3e'},
+        {id:'galilee',n:'갈릴리',color:'#5bb5cc',sky1:'#a9e1ed',sky2:'#e2f3e7',ground:'#72b8ba',road:'#777d78',edge:'#e7d5a5',hill:'#5eaa8d',accent:'#2784a0'},
+        {id:'olive',n:'올리브 숲',color:'#76a568',sky1:'#c6e7b7',sky2:'#f1edc8',ground:'#8caf68',road:'#6d7563',edge:'#c8b98d',hill:'#4b8757',accent:'#376e44'},
+        {id:'jericho',n:'여리고',color:'#d79b62',sky1:'#f3cf9f',sky2:'#f6ead3',ground:'#caa477',road:'#766f67',edge:'#e1c9a6',hill:'#b7865c',accent:'#99603a'}
       ];
-      var player=runners[0],started=false,ended=false,elapsed=0,boost=100,boosting=false,jump=0,score=0,spawn=2.4,obstacles=[],last=0,raf=0,rankTick=0,message='',messageTime=0;
-      runners.forEach(function(r){if(!r.eq)r.eq={hat:'',face:'',neck:''};});
-      function setMessage(s){message=s;messageTime=2.4;var g=area.querySelector('#raceGuide');if(g)g.textContent=s;}
-      function laneX(lane,y){var f=Math.max(0,Math.min(1,(y-90)/(H-90))),left=65-42*f,right=295+42*f;return left+(right-left)*(lane+.5)/5;}
-      function roadAt(y){var f=Math.max(0,Math.min(1,(y-90)/(H-90)));return {l:65-42*f,r:295+42*f};}
-      function drawPersonRunner(r,y,scale,ts){
-        var x=laneX(r.lane,y),w=58*scale,h=40*scale,bob=Math.sin(ts*.012+runners.indexOf(r)*1.4)*2.2;
-        if(r.player&&jump>0)bob-=Math.sin((.72-jump)/.72*Math.PI)*17;
-        ctx.save();
-        ctx.fillStyle='rgba(38,47,39,.2)';ctx.beginPath();ctx.ellipse(x,y+h*.38,15*scale,4*scale,0,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle=r.col;ctx.beginPath();ctx.ellipse(x,y+h*.39,8*scale,4*scale,0,0,Math.PI*2);ctx.fill();
-        if(r.player){
-          drawHero(ctx,x-w/2,y-h/2+bob,w,h,'happy',0);
-        } else {
-          drawChar(ctx,x-w/2,y-h/2+bob,w,h,r.ch,'smile',0);
-          drawAcc(ctx,x-w/2,y-h/2+bob,w,h,r.eq,r.ch);
+      var theme=themes[0],elapsed=0,gap=35,coins=0,score=0,lives=3,combo=0,bestCombo=0,started=false,ended=false;
+      var lane=1,jump=0,slide=0,hit=0,invuln=0,spawnIn=.8,entities=[],last=0,raf=0,themeTick=8,jesusLane=1,jesusX=180,worldScroll=0,showMsg=0,msg='예수님을 따라가세요!',touchX=null,touchY=null;
+      area.innerHTML='<div class="chase-shell">'+
+        '<div class="chase-hud">'+
+          '<div><small>예수님과 거리</small><b id="chaseGap">35m</b></div>'+
+          '<div><small>금빛 코인</small><b id="chaseCoins">0</b></div>'+
+          '<div><small>남은 생명</small><b id="chaseLives">3 / 3</b></div></div>'+
+        '<div class="chase-progress"><span id="chaseMsg">예수님을 따라가세요!</span><div><i id="chaseBar"></i></div></div>'+
+        '<div class="chase-themes" id="chaseThemes"></div>'+
+        '<div class="chase-track" id="chaseTrack"></div>'+
+        '<div class="chase-controls">'+
+          '<button type="button" id="chaseLeft" aria-label="왼쪽으로 이동"><span class="chase-arrow">←</span><small>왼쪽</small></button>'+
+          '<button type="button" id="chaseSlide" aria-label="슬라이드"><span class="chase-action-icon">⌁</span><small>슬라이드</small></button>'+
+          '<button type="button" id="chaseJump" aria-label="점프"><span class="chase-action-icon">↗</span><small>점프</small></button>'+
+          '<button type="button" id="chaseRight" aria-label="오른쪽으로 이동"><span class="chase-arrow">→</span><small>오른쪽</small></button>'+
+        '</div><div class="chase-help">← → 길 바꾸기 · ↑ 점프 · ↓ 슬라이드 · 금빛 코인을 모아 따라잡으세요</div>'+
+        '<button type="button" id="chaseStart" class="chase-start">달리기 시작</button></div>';
+      var scene=area.querySelector('#chaseTrack');o=mkCanvas(scene,W,H);cv=o.cv;ctx=o.ctx;cv.style.touchAction='none';cv.setAttribute('tabindex','0');
+      var Jesus=chById('h6');
+      Jesus=Object.assign({},Jesus,{h:Object.assign({},Jesus.h||{},{glow:false})});
+      function $(id){return area.querySelector('#'+id);}
+      function setMsg(s){msg=s;showMsg=2.2;$('chaseMsg').textContent=s;}
+      function laneX(l,y){var t=Math.max(0,Math.min(1,(y-74)/(H-74))),rw=50+315*t;return W/2+(l-1)*rw/3;}
+      function hud(){
+        $('chaseGap').textContent=Math.max(0,Math.ceil(gap))+'m';$('chaseCoins').textContent=coins;$('chaseLives').textContent=lives+' / 3';
+        $('chaseBar').style.width=(Math.max(0,Math.min(100,(35-gap)/35*100)))+'%';
+      }
+      function selectTheme(id){
+        var found=themes.find(function(t){return t.id===id;});if(!found)return;theme=found;
+        Array.prototype.forEach.call($('chaseThemes').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-theme')===id);});
+        setMsg(theme.n+' 길로 바꿨어요. 계속 예수님을 따라가세요!');
+      }
+      $('chaseThemes').innerHTML=themes.map(function(t){return '<button type="button" data-theme="'+t.id+'" class="'+(t.id===theme.id?'on':'')+'"><i style="--theme-color:'+t.color+'"></i><small>'+t.n+'</small></button>';}).join('');
+      Array.prototype.forEach.call($('chaseThemes').querySelectorAll('button'),function(b){b.onclick=function(){selectTheme(b.getAttribute('data-theme'));};});
+      function addCoinLine(){
+        var l=Math.floor(Math.random()*3);
+        for(var i=0;i<3;i++)entities.push({type:'coin',lane:l,z:.99-i*.105,done:false,tw:i*.6});
+      }
+      function addObstacle(){
+        var roll=Math.random(),type=roll<.38?'rock':roll<.7?'hurdle':'branch';
+        entities.push({type:type,lane:Math.floor(Math.random()*3),z:1,done:false});
+      }
+      function spawnPattern(){if(Math.random()<.52)addCoinLine();else addObstacle();if(elapsed>17&&Math.random()<.20)addObstacle();}
+      function actor(x,groundY,s,kind,ts,action){
+        var isJesus=kind==='jesus',bob=action==='run'?Math.sin(ts*.018+(isJesus?1:0))*2.2*s:0;
+        var air=action==='jump'?Math.sin(Math.max(0,Math.min(1,jump/.7))*Math.PI)*39*s:0;
+        ctx.save();ctx.fillStyle='rgba(36,43,34,.18)';ctx.beginPath();ctx.ellipse(x,groundY+4*s,17*s*(action==='slide'?1.4:1),4*s,0,0,Math.PI*2);ctx.fill();
+        ctx.translate(x,groundY-air+bob);if(action==='hit')ctx.rotate(-.22);
+        if(action==='slide'){
+          ctx.strokeStyle=isJesus?'#dfcfb5':'#855d3c';ctx.lineWidth=7*s;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-5*s,7*s);ctx.lineTo(-18*s,14*s);ctx.moveTo(5*s,7*s);ctx.lineTo(18*s,13*s);ctx.stroke();
+          ctx.fillStyle=isJesus?'#f4e6cf':'#d95d4b';rrect(ctx,-21*s,-7*s,42*s,13*s,6*s);ctx.fill();
+          if(isJesus)drawChar(ctx,-18*s,-32*s,34*s,34*s,Jesus,'smile',0);else drawHero(ctx,-18*s,-32*s,34*s,34*s,'smile',0);
+        }else{
+          var phase=ts*.024+(isJesus?1.4:0),swing=Math.sin(phase)*10*s;
+          ctx.strokeStyle=isJesus?'#c9b79a':'#8e6545';ctx.lineWidth=7*s;ctx.lineCap='round';ctx.beginPath();
+          if(action==='jump'){ctx.moveTo(-5*s,14*s);ctx.lineTo(-13*s,23*s);ctx.moveTo(5*s,14*s);ctx.lineTo(14*s,23*s);}
+          else{ctx.moveTo(-4*s,11*s);ctx.lineTo(-8*s+swing,25*s);ctx.moveTo(4*s,11*s);ctx.lineTo(8*s-swing,25*s);}
+          ctx.stroke();ctx.fillStyle='#45392f';ctx.beginPath();ctx.ellipse(-8*s+swing,26*s,5*s,2.3*s,-.15,0,Math.PI*2);ctx.ellipse(8*s-swing,26*s,5*s,2.3*s,.15,0,Math.PI*2);ctx.fill();
+          var pch=heroChar(),outfit='#d95d4b';if(pch&&pch.h){if(/^#[0-9a-f]{3,8}$/i.test(pch.h.robe||''))outfit=pch.h.robe;else if(/^#[0-9a-f]{3,8}$/i.test(pch.h.cloth||''))outfit=pch.h.cloth;}
+          ctx.fillStyle=isJesus?'#efe0c5':outfit;rrect(ctx,-10*s,-13*s,20*s,27*s,7*s);ctx.fill();
+          ctx.fillStyle=isJesus?'#dfd0b4':'rgba(255,255,255,.32)';ctx.fillRect(-1*s,-9*s,2*s,17*s);
+          ctx.strokeStyle=isJesus?'#c9b79a':'#efbd91';ctx.lineWidth=6*s;
+          var armWave=isJesus&&Math.floor(elapsed/3)%3===1?-14*s:0;
+          ctx.beginPath();ctx.moveTo(-8*s,-8*s);ctx.lineTo(-15*s+swing*.45,-1*s);ctx.lineTo(-12*s+swing*.5,6*s);
+          ctx.moveTo(8*s,-8*s);ctx.lineTo(15*s-swing*.45,armWave);ctx.lineTo(13*s-swing*.5,5*s);ctx.stroke();
+          if(isJesus)drawChar(ctx,-18*s,-52*s,36*s,39*s,Jesus,'smile',0);else drawHero(ctx,-19*s,-52*s,38*s,39*s,'smile',0);
         }
-        ctx.font='bold '+Math.max(8,10*scale)+'px sans-serif';ctx.textAlign='center';
-        var label=r.name,tw=ctx.measureText(label).width;
-        ctx.fillStyle=r.player?'#fff2c9':'rgba(255,255,255,.92)';
-        ctx.fillRect(x-tw/2-4,y-h/2+bob-18*scale,tw+8,13*scale);
-        ctx.fillStyle='#24332c';ctx.fillText(label,x,y-h/2+bob-8*scale);
-        if(r.player){ctx.strokeStyle='#fff2b3';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y+5,21*scale,32*scale,0,0,Math.PI*2);ctx.stroke();}
+        if(isJesus&&Math.floor(elapsed/3)%3===1&&action==='run'){
+          ctx.fillStyle='#fff5dc';rrect(ctx,-29*s,-60*s,58*s,12*s,5*s);ctx.fill();ctx.fillStyle='#70533a';ctx.font='bold '+Math.max(7,8*s)+'px sans-serif';ctx.textAlign='center';ctx.fillText('이 길을 따라오렴',0,-52*s);
+        }
         ctx.restore();
       }
-      function drawHurdle(ob,y,ts){
-        var x=laneX(ob.lane,y),rb=roadAt(y),w=(rb.r-rb.l)/5*.58,h=Math.max(9,14*(.6+y/H));
-        ctx.save();ctx.translate(x,y);
-        ctx.fillStyle='rgba(25,35,31,.22)';ctx.beginPath();ctx.ellipse(0,h*.5,w*.7,4,0,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#f3e7c9';ctx.fillRect(-w/2,-h/2,w,h);
-        ctx.fillStyle='#d95148';for(var i=0;i<4;i++)ctx.fillRect(-w/2+i*w/4,-h/2,w/8,h);
-        ctx.fillStyle='#76533b';ctx.fillRect(-w/2+2,h/2-1,3,h*.8);ctx.fillRect(w/2-5,h/2-1,3,h*.8);
-        ctx.restore();
+      function background(ts){
+        ctx.clearRect(0,0,W,H);var sky=ctx.createLinearGradient(0,0,0,140);sky.addColorStop(0,theme.sky1);sky.addColorStop(1,theme.sky2);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+        ctx.fillStyle=theme.accent;ctx.globalAlpha=.72;ctx.beginPath();ctx.arc(294,42,15,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+        ctx.fillStyle=theme.hill;ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(34,80);ctx.lineTo(65,108);ctx.lineTo(108,66);ctx.lineTo(147,111);ctx.lineTo(206,82);ctx.lineTo(248,111);ctx.lineTo(308,71);ctx.lineTo(360,109);ctx.lineTo(360,160);ctx.lineTo(0,160);ctx.closePath();ctx.fill();
+        ctx.fillStyle=theme.ground;ctx.fillRect(0,126,W,H-126);
+        for(var i=0;i<6;i++){
+          var yy=118+((i*77+worldScroll)%330),t=Math.max(.12,(yy-74)/(H-74)),s=.3+t*.95;
+          ctx.save();ctx.translate(i%2===0?Math.max(8,24+Math.floor(i/2)*5):Math.min(W-8,336-Math.floor(i/2)*5),yy);ctx.scale(s,s);
+          if(theme.id==='desert'){
+            ctx.fillStyle='#b88752';ctx.beginPath();ctx.ellipse(0,0,17,8,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4c8b5b';rrect(ctx,-3,-28,6,28,3);ctx.fill();rrect(ctx,-13,-20,11,5,2);ctx.fill();rrect(ctx,3,-14,11,5,2);ctx.fill();
+          }else if(theme.id==='galilee'){
+            ctx.strokeStyle='#e5f6ed';ctx.lineWidth=2;for(var wv=0;wv<3;wv++){ctx.beginPath();ctx.moveTo(-17,wv*7);ctx.quadraticCurveTo(-6,wv*7-4,4,wv*7);ctx.lineTo(17,wv*7);ctx.stroke();}
+            ctx.fillStyle='#b88f60';ctx.beginPath();ctx.moveTo(-20,-10);ctx.lineTo(14,-10);ctx.lineTo(8,-3);ctx.lineTo(-16,-3);ctx.closePath();ctx.fill();
+          }else if(theme.id==='olive'){
+            ctx.strokeStyle='#6d5437';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-25);ctx.stroke();ctx.fillStyle=i%2?'#4e8752':'#67965b';ctx.beginPath();ctx.ellipse(-7,-26,13,10,-.4,0,Math.PI*2);ctx.ellipse(7,-32,13,11,.4,0,Math.PI*2);ctx.ellipse(0,-41,12,11,0,0,Math.PI*2);ctx.fill();
+          }else{
+            ctx.fillStyle='#c99b72';ctx.fillRect(-17,-38,34,38);ctx.fillStyle='#986d4e';for(var br=0;br<3;br++)for(var bc=0;bc<3;bc++)ctx.fillRect(-14+bc*11,-34+br*12,7,7);ctx.fillStyle='#e4c19a';ctx.fillRect(-4,-20,8,20);
+          }ctx.restore();
+        }
+        var ty=74,tw=50,bottom=H-8,bw=355;ctx.fillStyle=theme.edge;ctx.beginPath();ctx.moveTo(W/2-tw/2,ty);ctx.lineTo(W/2+tw/2,ty);ctx.lineTo(W/2+bw/2,bottom);ctx.lineTo(W/2-bw/2,bottom);ctx.closePath();ctx.fill();
+        ctx.fillStyle=theme.road;ctx.beginPath();ctx.moveTo(W/2-tw/2+4,ty);ctx.lineTo(W/2+tw/2-4,ty);ctx.lineTo(W/2+bw/2-5,bottom);ctx.lineTo(W/2-bw/2+5,bottom);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='rgba(255,246,220,.75)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(W/2-tw/2+2,ty);ctx.lineTo(W/2-bw/2+3,bottom);ctx.moveTo(W/2+tw/2-2,ty);ctx.lineTo(W/2+bw/2-3,bottom);ctx.stroke();
+        for(var ln=1;ln<3;ln++){var x1=W/2+(ln-1.5)*tw/3,x2=W/2+(ln-1.5)*bw/3;ctx.strokeStyle='rgba(255,248,224,.58)';ctx.lineWidth=1.6;ctx.setLineDash([14,14]);ctx.lineDashOffset=-(worldScroll*1.8)%28;ctx.beginPath();ctx.moveTo(x1,ty);ctx.lineTo(x2,bottom);ctx.stroke();ctx.setLineDash([]);}
+        for(var fp=0;fp<5;fp++){var fy=135+((fp*66+worldScroll*1.7)%280),ft=(fy-74)/(H-74),fx=W/2+Math.sin(fp*2+elapsed*.3)*10;ctx.fillStyle='rgba(255,245,218,.34)';ctx.beginPath();ctx.ellipse(fx-4,fy,2.2+ft*1.5,4+ft*2,-.3,0,Math.PI*2);ctx.ellipse(fx+4,fy+7,2.2+ft*1.5,4+ft*2,.3,0,Math.PI*2);ctx.fill();}
+      }
+      function drawCoin(x,y,s){
+        ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle='#f2c54f';ctx.strokeStyle='#976e2d';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,7,0,Math.PI*2);ctx.fill();ctx.stroke();
+        ctx.strokeStyle='#fff0a6';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,4.5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#a9782f';ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.fillText('+',0,3);ctx.restore();
+      }
+      function drawEntity(e,ts){
+        var t=1-e.z,y=74+t*t*(H-90),x=laneX(e.lane,y),s=.35+t*1.15;
+        if(e.type==='coin'){drawCoin(x,y,s);return;}
+        ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+        if(e.type==='rock'){
+          ctx.fillStyle='rgba(29,37,31,.18)';ctx.beginPath();ctx.ellipse(0,8,16,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=theme.id==='desert'?'#9c7955':theme.id==='galilee'?'#81959a':theme.id==='olive'?'#768068':'#a48b75';
+          ctx.beginPath();ctx.moveTo(-15,5);ctx.lineTo(-12,-8);ctx.lineTo(-4,-14);ctx.lineTo(7,-12);ctx.lineTo(15,-2);ctx.lineTo(11,7);ctx.closePath();ctx.fill();ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-8,-5);ctx.lineTo(-3,-10);ctx.lineTo(3,-8);ctx.stroke();
+        }else if(e.type==='hurdle'){
+          ctx.fillStyle='#6e4d35';ctx.fillRect(-19,-2,38,8);ctx.fillStyle='#d0a16b';ctx.fillRect(-20,-8,40,9);ctx.fillStyle='#f3d9a0';for(var h=0;h<4;h++)ctx.fillRect(-16+h*10,-7,4,7);ctx.fillStyle='#6e4d35';ctx.fillRect(-17,3,3,9);ctx.fillRect(14,3,3,9);
+        }else{
+          ctx.strokeStyle='#664b31';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-20,-5);ctx.lineTo(20,-5);ctx.stroke();ctx.strokeStyle='#8c6d47';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-16,-7);ctx.lineTo(14,-7);ctx.stroke();ctx.fillStyle='#4b8550';ctx.beginPath();ctx.ellipse(-10,-11,8,4,-.5,0,Math.PI*2);ctx.ellipse(2,-13,8,4,.3,0,Math.PI*2);ctx.ellipse(13,-10,7,4,-.2,0,Math.PI*2);ctx.fill();
+        }ctx.restore();
       }
       function draw(ts){
-        ctx.clearRect(0,0,W,H);
-        var sky=ctx.createLinearGradient(0,0,0,175);sky.addColorStop(0,'#bfe8fa');sky.addColorStop(1,'#f5efd7');
-        ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-        ctx.fillStyle='#f4ce76';ctx.beginPath();ctx.arc(292,48,18,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#8ab77b';ctx.beginPath();ctx.moveTo(0,139);ctx.lineTo(38,92);ctx.lineTo(73,127);ctx.lineTo(115,83);ctx.lineTo(151,129);ctx.lineTo(220,91);ctx.lineTo(267,127);ctx.lineTo(320,93);ctx.lineTo(360,132);ctx.lineTo(360,210);ctx.lineTo(0,210);ctx.closePath();ctx.fill();
-        ctx.fillStyle='#d8c9aa';ctx.fillRect(0,118,360,62);
-        for(var side=0;side<2;side++){
-          var sx=side===0?0:302;
-          ctx.fillStyle='#bd8b66';ctx.fillRect(sx,126,58,50);ctx.fillStyle='#e6bc8e';ctx.fillRect(sx,126,58,7);
-          for(var rr=0;rr<3;rr++)for(var cc=0;cc<5;cc++){ctx.fillStyle=['#d95e53','#4b8ec7','#e5c15a','#5f9b67','#956fba'][(rr+cc*2)%5];ctx.beginPath();ctx.arc(sx+7+cc*11,140+rr*12,3.5,0,Math.PI*2);ctx.fill();}
-        }
-        ctx.fillStyle='#7aaa6d';ctx.fillRect(0,175,360,345);
-        var rtop=roadAt(90),rbot=roadAt(H);
-        ctx.beginPath();ctx.moveTo(rtop.l,90);ctx.lineTo(rtop.r,90);ctx.lineTo(rbot.r,H);ctx.lineTo(rbot.l,H);ctx.closePath();
-        var road=ctx.createLinearGradient(0,100,0,H);road.addColorStop(0,'#c7b8a3');road.addColorStop(.5,'#9d9183');road.addColorStop(1,'#746c64');ctx.fillStyle=road;ctx.fill();
-        ctx.strokeStyle='#fff3d5';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(rtop.l,90);ctx.lineTo(rbot.l,H);ctx.moveTo(rtop.r,90);ctx.lineTo(rbot.r,H);ctx.stroke();
-        for(var ln=1;ln<5;ln++){
-          ctx.strokeStyle='rgba(255,247,222,.7)';ctx.lineWidth=1.5;ctx.setLineDash([18,14]);
-          var xt=rtop.l+(rtop.r-rtop.l)*ln/5,xb=rbot.l+(rbot.r-rbot.l)*ln/5;
-          ctx.lineDashOffset=-(elapsed*40)%32;ctx.beginPath();ctx.moveTo(xt,90);ctx.lineTo(xb,H);ctx.stroke();ctx.setLineDash([]);
-        }
-        // Running track speed marks
-        for(var mark=0;mark<8;mark++){
-          var y=205+((mark*45+elapsed*85)%310),bb=roadAt(y);
-          ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bb.l+4,y);ctx.lineTo(bb.r-4,y);ctx.stroke();
-        }
-        // Finish arch
-        ctx.fillStyle='#5e4f40';ctx.fillRect(106,85,7,53);ctx.fillRect(247,85,7,53);
-        ctx.fillStyle='#f8f0d7';ctx.fillRect(106,85,148,15);
-        for(var fl=0;fl<12;fl++){ctx.fillStyle=(fl%2?'#f2e7cf':'#343a35');ctx.fillRect(106+fl*12.3,85,12.3,15);}
-        ctx.fillStyle='#fff7dc';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText('FINISH',180,77);
-        var playerY=365-Math.min(100,player.progress)*2.4;
-        obstacles.forEach(function(ob){var gap=ob.at-player.progress;if(gap>-3&&gap<34){var yy=playerY-gap*5.8;if(yy>135&&yy<480)drawHurdle(ob,yy,ts);}});
-        var sorted=runners.slice().sort(function(a,b){return b.progress-a.progress;});
-        sorted.forEach(function(r){
-          var rel=r.progress-player.progress,y=r.player?playerY:playerY-rel*5.8;
-          y=Math.max(125,Math.min(418,y));var sc=.58+Math.max(0,Math.min(1,(y-125)/265))*.48;
-          drawPersonRunner(r,y,sc,ts);
-        });
-        if(!started){
-          ctx.fillStyle='rgba(28,47,39,.74)';ctx.fillRect(26,202,308,80);
-          ctx.fillStyle='#fff8e8';ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('5인 캐릭터 레이스',180,231);
-          ctx.font='12px sans-serif';ctx.fillText('내가 꾸민 캐릭터로 결승선을 향해!',180,254);
-        }
-        if(boosting&&boost>0){ctx.fillStyle='rgba(245,196,83,.14)';ctx.fillRect(0,0,W,H);}
-        if(messageTime>0){ctx.fillStyle='rgba(255,250,230,.92)';ctx.fillRect(55,55,250,25);ctx.fillStyle='#4a3e2d';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(message,180,72);}
-        var rank=1+runners.slice(1).filter(function(r){return r.progress>player.progress;}).length;
-        ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(12,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='left';ctx.font='bold 12px sans-serif';ctx.fillText(Math.floor(player.progress)+'% 진행',20,31);
-        ctx.fillStyle='rgba(30,40,33,.8)';ctx.fillRect(248,12,100,30);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText(rank+'위 / 5',340,31);
+        background(ts);entities.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(e){if(e.z<1.03&&e.z>-.04)drawEntity(e,ts);});
+        var jY=176+Math.max(0,35-gap)*2.35,jScale=.72+Math.max(0,35-gap)*.006;actor(jesusX,jY,jScale,'jesus',ts,'run');
+        var playerX=laneX(lane,H-61),action=jump>0?'jump':slide>0?'slide':'run',py=H-46;if(hit>0)action='hit';actor(playerX,py,1.0,'player',ts,action);
+        if(!started){ctx.fillStyle='rgba(40,48,37,.76)';rrect(ctx,31,206,298,70,12);ctx.fill();ctx.fillStyle='#fff6e4';ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('예수님을 따라가세요',180,233);ctx.font='11px sans-serif';ctx.fillText('금빛 코인으로 거리를 좁히고 장애물을 피하세요',180,254);}
+        if(showMsg>0&&started){ctx.fillStyle='rgba(255,249,229,.94)';rrect(ctx,64,100,232,25,7);ctx.fill();ctx.fillStyle='#57482e';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(msg,180,116);}
+        if(invuln>0&&Math.floor(invuln*18)%2===0){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(playerX,py-22,28,47,0,0,Math.PI*2);ctx.stroke();}
       }
-      function rankNow(){return 1+runners.slice(1).filter(function(r){if(player.progress>=100&&player.finishTime!=null)return r.finishTime!=null&&r.finishTime<player.finishTime;return r.progress>player.progress;}).length;}
-      function updateStandings(){
-        var box=area.querySelector('#raceStandings');
-        var ordered=runners.slice().sort(function(a,b){return b.progress-a.progress;});
-        box.innerHTML=ordered.map(function(r,i){return '<div class="race-rank-row '+(r.player?'mine':'')+'"><b class="race-pos">'+(i+1)+'</b><span class="race-dot" style="--runner-color:'+r.col+'"></span><span class="race-runner-name">'+r.name+'</span><span class="race-mini-bar"><i style="width:'+Math.max(0,Math.min(100,r.progress))+'%;background:'+r.col+'"></i></span><small>'+Math.floor(r.progress)+'%</small></div>';}).join('');
-        area.querySelector('#raceRank').textContent=rankNow()+' / 5';
-        area.querySelector('#raceDist').textContent=Math.floor(player.progress)+'%';
+      function endGame(caught){
+        if(ended)return;ended=true;$('chaseStart').hidden=true;
+        if(caught){setMsg('따라잡았어요! 예수님과 함께 길을 완주했어요.');finish('예수님을 따라잡았어요!',coins+'개 수집 · 점수 '+score+' · 남은 생명 '+lives,Math.min(5,score),true);}
+        else{setMsg('아직 거리가 남았어요. 다시 도전해 보세요.');finish('추격 종료',coins+'개 수집 · 점수 '+score+' · 예수님과 '+Math.ceil(gap)+'m 거리',Math.min(5,score),false);}
       }
-      function endRace(){
-        if(ended)return;ended=true;boosting=false;
-        var rank=rankNow(),sorted=runners.slice().sort(function(a,b){return b.progress-a.progress;}),winner=sorted[0].name;
-        area.querySelector('#raceStart').hidden=true;
-        setMessage((rank===1?'우승!':'레이스 완주')+' · '+rank+'위 / 5명 · 선두 '+winner);
-        finish(rank===1?'광야 레이스 우승':'레이스 완주',rank+'위 / 5명 · 수집 점수 '+score+' · 진행 '+Math.floor(player.progress)+'%',Math.min(5,Math.floor(score/8)),rank===1);
+      function collision(e){
+        if(e.type==='coin'){
+          coins++;score++;combo++;bestCombo=Math.max(bestCombo,combo);gap=Math.max(0,gap-1.3);
+          if(combo%5===0){score+=2;setMsg(combo+'연속 수집! 예수님과의 거리가 줄었어요.');}else setMsg('금빛 코인 +1 · '+Math.ceil(gap)+'m 남았어요.');
+          return;
+        }
+        var safe=e.type==='rock'?lane!==e.lane:e.type==='hurdle'?jump>.12:e.type==='branch'?slide>.12:lane!==e.lane;
+        if(safe){score+=2;gap=Math.max(0,gap-.35);setMsg(e.type==='hurdle'?'훌쩍! 낮은 장애물을 넘었어요.':e.type==='branch'?'몸을 낮춰 통과했어요.':'잘 피했어요! 계속 따라가세요.');}
+        else if(invuln<=0){
+          lives--;gap=Math.min(50,gap+4);invuln=1.15;hit=.42;combo=0;
+          setMsg(e.type==='rock'?'바위에 부딪혔어요. 차선을 바꾸세요.':e.type==='hurdle'?'장애물에 걸렸어요. 점프로 넘으세요.':'가지에 부딪혔어요. 슬라이드하세요.');
+          if(lives<=0){endGame(false);}
+        }
+      }
+      function actionJump(){if(!started||ended||slide>0)return;jump=.72;setMsg('점프! 낮은 장애물을 넘어요.');}
+      function actionSlide(){if(!started||ended||jump>0)return;slide=.68;setMsg('슬라이드! 낮은 가지 아래로 지나가요.');}
+      function moveLane(d){if(!started||ended)return;lane=Math.max(0,Math.min(2,lane+d));}
+      function start(){if(ended||started)return;started=true;$('chaseStart').hidden=true;cv.focus();setMsg('출발! 금빛 코인을 모아 예수님을 따라가세요.');}
+      $('chaseStart').onclick=start;$('chaseLeft').onclick=function(){moveLane(-1);};$('chaseRight').onclick=function(){moveLane(1);};$('chaseJump').onclick=actionJump;$('chaseSlide').onclick=actionSlide;
+      cv.addEventListener('pointerdown',function(e){touchX=e.clientX;touchY=e.clientY;});
+      cv.addEventListener('pointerup',function(e){if(touchX==null||touchY==null)return;var dx=e.clientX-touchX,dy=e.clientY-touchY;touchX=touchY=null;if(Math.abs(dx)>24&&Math.abs(dx)>Math.abs(dy))moveLane(dx<0?-1:1);else if(dy<-24)actionJump();else if(dy>24)actionSlide();});
+      function kd(e){
+        if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();moveLane(-1);}
+        else if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();moveLane(1);}
+        else if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'){e.preventDefault();actionJump();}
+        else if(e.code==='ArrowDown'||e.code==='KeyS'){e.preventDefault();actionSlide();}
+        else if(e.code==='Enter'&&!started)start();
       }
       function frame(ts){
-        if(ended)return;
-        var dt=Math.min(.045,((ts-last)/1000)||0);last=ts;
+        if(ended)return;var dt=Math.min(.05,((ts-last)/1000)||0);last=ts;if(showMsg>0)showMsg=Math.max(0,showMsg-dt);
         if(started){
-          elapsed+=dt;jump=Math.max(0,jump-dt);messageTime=Math.max(0,messageTime-dt);
-          if(boosting&&boost>0){player.progress+=dt*4.25;boost=Math.max(0,boost-35*dt);}
-          else {player.progress+=dt*2.92;boost=Math.min(100,boost+13*dt);}
-          runners.slice(1).forEach(function(r){if(r.progress<100){r.progress=Math.min(100,r.progress+r.speed*dt);if(r.progress>=100&&r.finishTime==null)r.finishTime=elapsed;}});
-          spawn-=dt;
-          if(spawn<=0){spawn=2.2+Math.random()*1.5;obstacles.push({lane:Math.floor(Math.random()*5),at:player.progress+11+Math.random()*9,done:false});}
-          obstacles.forEach(function(ob){
-            if(!ob.done&&player.progress>=ob.at){ob.done=true;if(ob.lane===player.lane){if(jump>.02){score+=4;setMessage('장애물을 멋지게 넘었어요! +4');}else{player.progress=Math.max(0,player.progress-2.2);boost=Math.max(0,boost-15);setMessage('장애물에 걸렸어요. 다음엔 점프하세요.');}}else score+=1;}
+          elapsed+=dt;worldScroll+=dt*(50+Math.min(40,elapsed)*.8);jump=Math.max(0,jump-dt);slide=Math.max(0,slide-dt);hit=Math.max(0,hit-dt);invuln=Math.max(0,invuln-dt);
+          spawnIn-=dt;themeTick-=dt;
+          if(themeTick<=0){themeTick=7+Math.random()*3;jesusLane=(jesusLane+1+Math.floor(Math.random()*2))%3;setMsg('예수님께서 앞서 길을 이끄세요.');}
+          jesusX+=(laneX(jesusLane,176)-jesusX)*Math.min(1,dt*1.5);
+          if(spawnIn<=0){spawnPattern();spawnIn=Math.max(.68,1.05-elapsed*.004)+Math.random()*.28;}
+          entities.forEach(function(e){
+            e.z-=dt*(.235+Math.min(.07,elapsed*.0012));if(e.done)return;
+            if(e.type==='coin'&&e.z<=.09){e.done=true;if(e.lane===lane)collision(e);}
+            else if(e.type!=='coin'&&e.z<=.065){e.done=true;collision(e);}
           });
-          obstacles=obstacles.filter(function(ob){return !ob.done&&ob.at>player.progress-3;});
-          area.querySelector('#raceTime').textContent=Math.floor(elapsed)+'s';
-          if(player.progress>=100){player.progress=100;player.finishTime=elapsed;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('결승선 통과!');endRace();return;}
-          if(elapsed>=60&&player.progress<100){player.progress=100;player.finishTime=elapsed;area.querySelector('#raceDist').textContent='100%';updateStandings();draw(ts);setMessage('연장 레이스에서 결승선 통과!');endRace();return;}
-          if(elapsed>rankTick){rankTick=elapsed+.5;updateStandings();}
+          entities=entities.filter(function(e){return !e.done&&e.z>-.06;});
+          if(gap<=0){gap=0;hud();draw(ts);endGame(true);return;}
+          if(ended)return;
+          if(elapsed>=55){hud();draw(ts);endGame(false);return;}
+          hud();
         }
         draw(ts);raf=requestAnimationFrame(frame);
       }
-      function moveLane(d){if(!started||ended)return;player.lane=Math.max(0,Math.min(4,player.lane+d));}
-      area.querySelector('#raceStart').onclick=function(){if(ended){location.reload();return;}started=true;area.querySelector('#raceStart').hidden=true;cv.focus();setMessage('출발! 장애물 앞에서 점프하고 스퍼트를 조절하세요.');};
-      area.querySelector('#raceLeft').onclick=function(){moveLane(-1);};
-      area.querySelector('#raceRight').onclick=function(){moveLane(1);};
-      area.querySelector('#raceJump').onclick=function(){if(started&&!ended)jump=.72;};
-      var boostBtn=area.querySelector('#raceBoost');
-      boostBtn.addEventListener('pointerdown',function(e){e.preventDefault();boosting=true;});
-      ['pointerup','pointerleave','pointercancel'].forEach(function(ev){boostBtn.addEventListener(ev,function(){boosting=false;});});
-      function kd(e){
-        if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();moveLane(-1);}
-        if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();moveLane(1);}
-        if(e.code==='ArrowUp'||e.code==='KeyW'){e.preventDefault();if(started)jump=.72;}
-        if(e.code==='Space'){e.preventDefault();if(started)boosting=true;}
-        if((e.code==='Enter')&&!started){started=true;area.querySelector('#raceStart').hidden=true;setMessage('출발! 장애물 앞에서 점프하고 스퍼트를 조절하세요.');}
-      }
-      function ku(e){if(e.code==='Space')boosting=false;}
-      window.addEventListener('keydown',kd);window.addEventListener('keyup',ku);
-      updateStandings();draw(0);raf=requestAnimationFrame(frame);
-      return function(){ended=true;boosting=false;cancelAnimationFrame(raf);window.removeEventListener('keydown',kd);window.removeEventListener('keyup',ku);};
+      window.addEventListener('keydown',kd);
+      hud();draw(0);raf=requestAnimationFrame(frame);
+      return function(){ended=true;cancelAnimationFrame(raf);window.removeEventListener('keydown',kd);};
     }
   };
 

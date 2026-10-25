@@ -1577,9 +1577,9 @@ var VIDEOS = {
       var sceneIndex=0,theme=themes[0],prevTheme=themes[0],themeFade=1,themeTimer=0;
       var started=false,paused=false,ended=false,last=0,raf=0,elapsed=0,distance=0,targetDistance=600;
       var lane=1,jump=0,slide=0,invuln=0,hitFlash=0,lives=5,gold=0,score=0,combo=0,bestCombo=0;
-      var guideLane=1,guideX=180,guideTurn=2.6,worldScroll=0,spawnTimer=.85,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0;
+      var guideLane=1,guideX=180,playerX=180,guideTurn=2.6,worldScroll=0,spawnTimer=.85,entities=[],trailActive=false,trailLeft=0,trailLane=-1,trailSerial=0,pendingTrailLane=1;
       var message='예수님이 달리는 길을 따라가세요!',messageTimer=0,touchX=null,touchY=null;
-      var JUMP_TIME=.92,SLIDE_TIME=.90,MAX_LIVES=5;
+      var JUMP_TIME=1.08,SLIDE_TIME=1.12,MAX_LIVES=5;
       area.innerHTML='<div class="goldrun-shell">'+
         '<div class="goldrun-hud">'+
           '<div class="goldrun-stat"><small>거리</small><b><span id="grDistance">0</span><em> / 600m</em></b><div class="goldrun-progress"><i id="grProgress"></i></div></div>'+
@@ -1619,46 +1619,55 @@ var VIDEOS = {
         $('grSceneName').textContent=theme.n;
         $('grSceneStep').textContent='여정 '+(sceneIndex+1)+' / '+themes.length;
       }
-      function addGoldTrail(){
+      function addGoldTrail(dropLane){
         if(trailActive)return;
-        trailActive=true;trailLane=guideLane;trailLeft=8;trailSerial++;
-        for(var i=0;i<8;i++)entities.push({type:'gold',lane:trailLane,z:1.02-i*.085,done:false,trail:trailSerial,tw:i*.7});
-        // Occasional power-up placed directly on Jesus' path.
-        if(Math.random()<.23)entities.push({type:'magnet',lane:trailLane,z:.63,done:false});
+        // Gold is left on the road behind Jesus, never in the horizon ahead of him.
+        trailActive=true;trailLane=dropLane===0||dropLane===1||dropLane===2?dropLane:guideLane;trailLeft=8;trailSerial++;
+        for(var i=0;i<8;i++)entities.push({type:'gold',lane:trailLane,z:.49-i*.05,done:false,trail:trailSerial,tw:i*.7});
+        // Power-ups also sit on a lane Jesus has already run through.
+        if(Math.random()<.20)entities.push({type:'magnet',lane:trailLane,z:.40,done:false});
       }
       function spawnRow(){
         if(trailActive)return;
-        var change=Math.random()<.72;
-        if(change){var choices=[0,1,2].filter(function(l){return l!==guideLane;});guideLane=choices[Math.floor(Math.random()*choices.length)];}
         var safeLane=guideLane;
-        // One or two lanes are blocked; at least one route stays clear.
         var other=[0,1,2].filter(function(l){return l!==safeLane;});
         var first=other[Math.floor(Math.random()*other.length)];
         entities.push({type:pickObstacle(),lane:first,z:1.02,done:false,row:trailSerial+1});
-        if(Math.random()<.25){
+        if(Math.random()<.28){
           var second=other.find(function(l){return l!==first;});
           if(second!==undefined)entities.push({type:pickObstacle(),lane:second,z:1.04,done:false,row:trailSerial+1});
         }
-        // Sometimes the safest gold route has a jumpable or slideable challenge.
-        if(Math.random()<.25)entities.push({type:Math.random()<.5?'hurdle':'branch',lane:safeLane,z:1.09,done:false,row:trailSerial+1});
-        addGoldTrail();
+        // Overhead branches must be ducked under; low bars must be jumped over.
+        if(Math.random()<.42)entities.push({type:Math.random()<.48?'hurdle':'branch',lane:safeLane,z:1.09,done:false,row:trailSerial+1});
+        var dropLane=pendingTrailLane>=0?pendingTrailLane:guideLane;
+        pendingTrailLane=-1;
+        addGoldTrail(dropLane);
       }
-      function pickObstacle(){var r=Math.random();return r<.30?'crate':r<.66?'hurdle':'branch';}
+      function pickObstacle(){var r=Math.random();return r<.28?'crate':r<.55?'hurdle':'branch';}
       function actor(x,groundY,scale,kind,ts,mode){
         var isJesus=kind==='jesus',timer=isJesus?guideHop:jump;
         var jumpTime=isJesus?.82:JUMP_TIME;
-        var lift=mode==='jump'?Math.sin(Math.max(0,Math.min(1,1-timer/jumpTime))*Math.PI)*47*scale:0;
-        var run=Math.sin(ts*.025+(isJesus?1.3:0))*5*scale;
+        var lift=mode==='jump'?Math.sin(Math.max(0,Math.min(1,1-timer/jumpTime))*Math.PI)*49*scale:0;
+        var runPhase=ts*.022+(isJesus?1.3:0);
+        var runBounce=mode==='run'?(1-Math.cos(runPhase*2))*1.1*scale:0;
+        var legSwing=Math.sin(runPhase)*5*scale;
+        var poseScale=mode==='slide'?.78:mode==='hit'?.96:1;
+        var lean=mode==='slide'?.24:mode==='hit'?.12:mode==='run'?Math.sin(runPhase)*.022:0;
         ctx.save();
         ctx.fillStyle='rgba(38,37,29,.20)';ctx.beginPath();ctx.ellipse(x,groundY+4*scale,16*scale,4*scale,0,0,Math.PI*2);ctx.fill();
-        ctx.translate(x,groundY-lift+(mode==='slide'?8*scale:0)+Math.sin(ts*.018)*1.5*scale);
-        if(mode==='slide')ctx.rotate(.12);
-        // Keep the user's equipped character artwork at its natural square ratio.
-        if(isJesus)drawChar(ctx,-22*scale,-22*scale,44*scale,44*scale,Jesus,Math.floor(elapsed/4)%2?'happy':'smile',0);
-        else drawHero(ctx,-22*scale,-22*scale,44*scale,44*scale,'smile',0);
-        // Running feet animate separately so the head and body are never squeezed.
+        ctx.translate(x,groundY-lift-runBounce+(mode==='slide'?9*scale:0));
+        ctx.rotate(lean);ctx.scale(poseScale,poseScale);
+        // Animate only the small legs; draw them first so they tuck naturally under the equipped avatar.
         ctx.strokeStyle=isJesus?'#c7b69b':'#805c40';ctx.lineWidth=3.2*scale;ctx.lineCap='round';
-        ctx.beginPath();ctx.moveTo(-5*scale,16*scale);ctx.lineTo(-7*scale+run,23*scale);ctx.moveTo(5*scale,16*scale);ctx.lineTo(7*scale-run,23*scale);ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-5*scale,15*scale);ctx.lineTo(-7*scale+legSwing,28*scale);
+        ctx.moveTo(5*scale,15*scale);ctx.lineTo(7*scale-legSwing,28*scale);
+        ctx.stroke();
+        ctx.fillStyle=isJesus?'#c4b69c':'#4d4036';
+        ctx.beginPath();ctx.ellipse(-7*scale+legSwing,28*scale,4.2*scale,2.1*scale,-.1,0,Math.PI*2);ctx.ellipse(7*scale-legSwing,28*scale,4.2*scale,2.1*scale,.1,0,Math.PI*2);ctx.fill();
+        // Use the full square viewport and uniformly scale the avatar during slides: never squash the face.
+        if(isJesus)drawChar(ctx,-22*scale,-22*scale,44*scale,44*scale,Jesus,Math.floor(elapsed/3)%2?'happy':'smile',0);
+        else drawHero(ctx,-22*scale,-22*scale,44*scale,44*scale,'smile',0);
         ctx.restore();
       }
       var guideHop=0;
@@ -1741,16 +1750,24 @@ var VIDEOS = {
           ctx.strokeStyle='#75492d';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-12,-18);ctx.lineTo(12,1);ctx.moveTo(12,-18);ctx.lineTo(-12,1);ctx.stroke();
           ctx.strokeStyle='#e0b77c';ctx.lineWidth=1.5;ctx.strokeRect(-13,-21,26,25);
         }else if(e.type==='hurdle'){
-          ctx.fillStyle='rgba(38,35,28,.16)';ctx.beginPath();ctx.ellipse(0,6,22,5,0,0,Math.PI*2);ctx.fill();
-          ctx.fillStyle='#68482f';ctx.fillRect(-20,-6,4,14);ctx.fillRect(16,-6,4,14);
-          ctx.fillStyle='#e0aa61';ctx.fillRect(-22,-12,44,10);ctx.fillStyle='#f7e6b9';
-          for(var h=0;h<4;h++)ctx.fillRect(-18+h*11,-11,5,8);
-          ctx.strokeStyle='#936136';ctx.lineWidth=1.5;ctx.strokeRect(-22,-12,44,10);
+          // A low striped bar across the lane, deliberately meant for a jump.
+          ctx.fillStyle='rgba(38,35,28,.16)';ctx.beginPath();ctx.ellipse(0,7,23,5,0,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#68482f';ctx.fillRect(-21,-4,4,14);ctx.fillRect(17,-4,4,14);
+          ctx.fillStyle='#d75045';ctx.fillRect(-24,-10,48,10);ctx.fillStyle='#fff0d4';
+          for(var h=0;h<4;h++)ctx.fillRect(-20+h*12,-9,6,8);
+          ctx.strokeStyle='#936136';ctx.lineWidth=1.5;ctx.strokeRect(-24,-10,48,10);
+          ctx.fillStyle='#fff5d6';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('↑',0,-14);
         }else if(e.type==='branch'){
-          ctx.strokeStyle='#64462e';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-24,-19);ctx.lineTo(24,-19);ctx.stroke();
-          ctx.strokeStyle='#9b754c';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-21,-21);ctx.lineTo(20,-21);ctx.stroke();
-          ctx.fillStyle=theme.leaf;ctx.beginPath();ctx.ellipse(-12,-25,8,4,-.5,0,Math.PI*2);ctx.ellipse(1,-27,8,4,.3,0,Math.PI*2);ctx.ellipse(15,-24,7,4,-.2,0,Math.PI*2);ctx.fill();
-          ctx.fillStyle='rgba(255,255,255,.22)';ctx.fillRect(-18,-16,36,2);
+          // A high, low-clearance gate: the player must duck underneath, not jump over.
+          ctx.fillStyle='rgba(38,35,28,.16)';ctx.beginPath();ctx.ellipse(0,7,25,5,0,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#6c4a30';ctx.fillRect(-27,-19,6,26);ctx.fillRect(21,-19,6,26);
+          ctx.fillStyle='#8c5b34';ctx.fillRect(-31,-23,62,11);
+          ctx.fillStyle='#c9985c';ctx.fillRect(-29,-22,58,5);
+          ctx.fillStyle='#6b8f45';ctx.beginPath();
+          ctx.ellipse(-18,-26,9,5,-.25,0,Math.PI*2);ctx.ellipse(-5,-29,9,5,.2,0,Math.PI*2);
+          ctx.ellipse(10,-28,10,5,-.2,0,Math.PI*2);ctx.ellipse(23,-25,8,5,.25,0,Math.PI*2);ctx.fill();
+          ctx.strokeStyle='#f7e9b7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-23,-16);ctx.lineTo(-16,-12);ctx.moveTo(-16,-12);ctx.lineTo(-9,-16);ctx.moveTo(9,-16);ctx.lineTo(16,-12);ctx.moveTo(16,-12);ctx.lineTo(23,-16);ctx.stroke();
+          ctx.fillStyle='#fff1cb';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('↓',0,-13);
         }
         ctx.restore();
       }
@@ -1763,16 +1780,21 @@ var VIDEOS = {
       }
       function drawEntity(e,ts){
         var t=1-e.z,y=68+t*t*(H-82)+t*40,x=laneX(e.lane,y),s=.28+t*1.22;
-        if(e.type==='gold'){drawGold(x,y,s,e.tw+ts*.003);return;}
-        if(e.type==='magnet'){drawMagnet(x,y,s);return;}
+        if(e.type==='gold'){drawGold(x,y+Math.sin(ts*.008+e.tw)*1.6*s,s,e.tw+ts*.004);return;}
+        if(e.type==='magnet'){drawMagnet(x,y+Math.sin(ts*.006)*2*s,s);return;}
         drawObstacle(e,x,y,s);
+        if((e.type==='hurdle'||e.type==='branch')&&e.z<.43&&e.z>.13){
+          ctx.save();ctx.font='bold 9px sans-serif';ctx.textAlign='center';
+          var cue=e.type==='hurdle'?'점프 ↑':'슬라이드 ↓',cw=ctx.measureText(cue).width+12,cy=y-48*s;
+          ctx.fillStyle='rgba(255,249,230,.95)';rrect(ctx,x-cw/2,cy-9,cw,17,6);ctx.fill();
+          ctx.fillStyle=e.type==='hurdle'?'#b5483f':'#3c7255';ctx.fillText(cue,x,cy+2);ctx.restore();
+        }
       }
       function draw(ts){
         background(ts);
         entities.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(e){if(e.z<1.08&&e.z>-.04)drawEntity(e,ts);});
-        var gx=laneX(guideLane,157);guideX+=(gx-guideX)*.12;
         actor(guideX,158,.70,'jesus',ts,guideHop>0?'jump':'run');
-        var py=H-61,px=laneX(lane,py),mode=jump>0?'jump':slide>0?'slide':'run';
+        var py=H-61,px=playerX,mode=jump>0?'jump':slide>0?'slide':'run';
         if(hitFlash>0)mode='hit';
         actor(px,py,1,'player',ts,mode);
         if(!started){
@@ -1870,17 +1892,20 @@ var VIDEOS = {
           elapsed+=dt;distance+=dt*(12+Math.min(7,elapsed*.12));score+=dt*3;
           worldScroll+=dt*(62+Math.min(68,elapsed*1.8));
           jump=Math.max(0,jump-dt);slide=Math.max(0,slide-dt);invuln=Math.max(0,invuln-dt);hitFlash=Math.max(0,hitFlash-dt);
-          themeTimer+=dt;guideTurn-=dt;themeFade=Math.min(1,themeFade+dt/1.4);guideHop=Math.max(0,guideHop-dt);
-          if(themeTimer>=7.5){
+          themeTimer+=dt;guideTurn-=dt;themeFade=Math.min(1,themeFade+dt/1.9);guideHop=Math.max(0,guideHop-dt);
+          if(themeTimer>=8.5){
             themeTimer=0;prevTheme=theme;sceneIndex=(sceneIndex+1)%themes.length;theme=themes[sceneIndex];themeFade=0;updateScene();say('새로운 길 — '+theme.n);
           }
           if(guideTurn<=0&&!trailActive){
             guideTurn=4.5+Math.random()*2;
+            var departedLane=guideLane;
             var nextLane=[0,1,2].filter(function(l){return l!==guideLane;});
             guideLane=nextLane[Math.floor(Math.random()*nextLane.length)];
+            pendingTrailLane=departedLane;
             if(Math.random()<.30)guideHop=.82;
           }
-          var targetX=laneX(guideLane,158);guideX+=(targetX-guideX)*Math.min(1,dt*2.8);
+          var targetX=laneX(guideLane,158);guideX+=(targetX-guideX)*(1-Math.exp(-dt*7.5));
+          playerX+=(laneX(lane,H-61)-playerX)*(1-Math.exp(-dt*15));
           spawnTimer-=dt;
           if(spawnTimer<=0){spawnRow();spawnTimer=Math.max(.78,1.38-elapsed*.009)+Math.random()*.25;}
           entities.forEach(function(e){

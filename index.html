@@ -807,6 +807,15 @@ var VIDEOS = {
     { id: 'c24', c: '#c98a54', ear: 'none', t: 'deer', nomouth: true },                  // 사슴
     { id: 'c27', c: '#f8d083', ear: 'round', ec: '#d98a32', t: 'lion', nobox: true, nomouth: true }   // 사자
   ];
+  // 미니 게임 공통 캔버스 배경: 누락되면 첫 draw()에서 ReferenceError가 나며 게임이 정지합니다.
+  function skyBg(ctx, w, h, topColor, bottomColor) {
+    var g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, topColor || '#d9edf7');
+    g.addColorStop(1, bottomColor || '#fff0d8');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
   function rrect(ctx, x, y, w, h, r) {
     var d = Math.min(r, w / 2, h / 2);
     ctx.beginPath(); ctx.moveTo(x + d, y);

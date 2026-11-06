@@ -1081,6 +1081,24 @@ var VIDEOS = {
     c.width = 80 * d; c.height = 76 * d; c.style.width = size + 'px'; c.style.height = (size * 0.95) + 'px';
     var x = c.getContext('2d'); x.scale(d, d); fn(x, 40, 36, 31); return c;
   }
+  // ---- 미니 게임 공통 애니메이션 루프 ----
+  // 각 프레임의 경과 시간을 초 단위로 전달하고, 게임 종료 시 정리 함수를 반환합니다.
+  function loop(step) {
+    var alive = true, rafId = 0, lastTime = 0;
+    function frame(now) {
+      if (!alive) return;
+      var dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0;
+      lastTime = now;
+      step(dt);
+      if (alive) rafId = requestAnimationFrame(frame);
+    }
+    rafId = requestAnimationFrame(frame);
+    return function () {
+      alive = false;
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }
+
   function mkCanvas(area, CW, CH) {
     var cv = document.createElement('canvas'), dpr = Math.min(window.devicePixelRatio || 1, 2);
     cv.className = 'gcv'; cv.tabIndex = 0;
